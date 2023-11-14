@@ -180,8 +180,8 @@ lazy_static! {
                      state_index_root TEXT NOT NULL,
                      -- miner's signature over the block
                      miner_signature TEXT NOT NULL,
-                     -- stackers' signature over the block
-                     stacker_signature TEXT NOT NULL,
+                     -- signers' signature over the block
+                     signer_signature TEXT NOT NULL,
           -- The following fields are not part of either the StacksHeaderInfo struct
           --   or its contained NakamotoBlockHeader struct, but are used for querying
                      -- what kind of header this is (nakamoto or stacks 2.x)
@@ -264,8 +264,8 @@ pub struct NakamotoBlockHeader {
     pub state_index_root: TrieHash,
     /// Recoverable ECDSA signature from the tenure's miner.
     pub miner_signature: MessageSignature,
-    /// Schnorr signature over the block header from the stacker set active during the tenure.
-    pub stacker_signature: SchnorrSignature,
+    /// Schnorr signature over the block header from the signer set active during the tenure.
+    pub signer_signature: SchnorrSignature,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -289,7 +289,7 @@ impl FromRow<NakamotoBlockHeader> for NakamotoBlockHeader {
         let parent_block_id = row.get("parent_block_id")?;
         let tx_merkle_root = row.get("tx_merkle_root")?;
         let state_index_root = row.get("state_index_root")?;
-        let stacker_signature = row.get("stacker_signature")?;
+        let signer_signature = row.get("signer_signature")?;
         let miner_signature = row.get("miner_signature")?;
 
         Ok(NakamotoBlockHeader {
@@ -300,7 +300,7 @@ impl FromRow<NakamotoBlockHeader> for NakamotoBlockHeader {
             parent_block_id,
             tx_merkle_root,
             state_index_root,
-            stacker_signature,
+            signer_signature,
             miner_signature,
         })
     }
@@ -316,7 +316,7 @@ impl StacksMessageCodec for NakamotoBlockHeader {
         write_next(fd, &self.tx_merkle_root)?;
         write_next(fd, &self.state_index_root)?;
         write_next(fd, &self.miner_signature)?;
-        write_next(fd, &self.stacker_signature)?;
+        write_next(fd, &self.signer_signature)?;
 
         Ok(())
     }
@@ -331,7 +331,7 @@ impl StacksMessageCodec for NakamotoBlockHeader {
             tx_merkle_root: read_next(fd)?,
             state_index_root: read_next(fd)?,
             miner_signature: read_next(fd)?,
-            stacker_signature: read_next(fd)?,
+            signer_signature: read_next(fd)?,
         })
     }
 }
@@ -354,7 +354,7 @@ impl NakamotoBlockHeader {
 
     /// Calculate the message digest for stackers to sign.
     /// This includes all fields _except_ the stacker signature.
-    pub fn stacker_signature_hash(&self) -> Result<Sha512Trunc256Sum, CodecError> {
+    pub fn signer_signature_hash(&self) -> Result<Sha512Trunc256Sum, CodecError> {
         let mut hasher = Sha512_256::new();
         let fd = &mut hasher;
         write_next(fd, &self.version)?;
@@ -416,7 +416,7 @@ impl NakamotoBlockHeader {
             tx_merkle_root: Sha512Trunc256Sum([0u8; 32]),
             state_index_root: TrieHash([0u8; 32]),
             miner_signature: MessageSignature::empty(),
-            stacker_signature: SchnorrSignature::default(),
+            signer_signature: SchnorrSignature::default(),
         }
     }
 
@@ -431,7 +431,7 @@ impl NakamotoBlockHeader {
             tx_merkle_root: Sha512Trunc256Sum([0u8; 32]),
             state_index_root: TrieHash([0u8; 32]),
             miner_signature: MessageSignature::empty(),
-            stacker_signature: SchnorrSignature::default(),
+            signer_signature: SchnorrSignature::default(),
         }
     }
 
@@ -446,7 +446,7 @@ impl NakamotoBlockHeader {
             tx_merkle_root: Sha512Trunc256Sum([0u8; 32]),
             state_index_root: TrieHash([0u8; 32]),
             miner_signature: MessageSignature::empty(),
-            stacker_signature: SchnorrSignature::default(),
+            signer_signature: SchnorrSignature::default(),
         }
     }
 }
@@ -1369,17 +1369,17 @@ impl NakamotoChainState {
             return Ok(false);
         };
 
-        let schnorr_signature = block.header.stacker_signature.to_wsts_signature().ok_or({
+        let schnorr_signature = block.header.signer_signature.to_wsts_signature().ok_or({
             let msg =
                 format!("Received block, signed by miner, but the block has no stacker signature");
             warn!("{}", msg);
             ChainstateError::InvalidStacksBlock(msg)
         })?;
 
-        if !sortdb.expects_stacker_signature(
+        if !sortdb.expects_signer_signature(
             &block.header.consensus_hash,
             &schnorr_signature,
-            &block.header.stacker_signature_hash()?.0,
+            &block.header.signer_signature_hash()?.0,
         )? {
             let msg = format!("Received block, but the stacker signature does not match the active stacking cycle");
             warn!("{}", msg);
@@ -1856,7 +1856,7 @@ impl NakamotoChainState {
             &u64_to_sql(header.chain_length)?,
             &u64_to_sql(header.burn_spent)?,
             &header.miner_signature,
-            &header.stacker_signature,
+            &header.signer_signature,
             &header.tx_merkle_root,
             &header.state_index_root,
             &block_hash,
@@ -1878,7 +1878,7 @@ impl NakamotoChainState {
 
                      header_type,
                      version, chain_length, burn_spent,
-                     miner_signature, stacker_signature, tx_merkle_root, state_index_root,
+                     miner_signature, signer_signature, tx_merkle_root, state_index_root,
 
                      block_hash,
                      index_block_hash,
