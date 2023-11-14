@@ -1379,6 +1379,7 @@ impl NakamotoChainState {
         if !sortdb.expects_stacker_signature(
             &block.header.consensus_hash,
             &schnorr_signature,
+            &block.header.stacker_signature_hash()?.0,
         )? {
             let msg = format!("Received block, but the stacker signature does not match the active stacking cycle");
             warn!("{}", msg);
