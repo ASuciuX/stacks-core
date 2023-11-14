@@ -1155,7 +1155,7 @@ impl StacksChainState {
                 sortdb,
                 block_id,
                 POX_4_NAME,
-                &format!("(get-aggregate-pubilc-key u{})", reward_cycle),
+                &format!("(get-aggregate-public-key u{})", reward_cycle),
             )?
             .expect_optional()
             .map(|value| {
