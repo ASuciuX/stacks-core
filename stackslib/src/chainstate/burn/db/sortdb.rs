@@ -28,6 +28,7 @@ use clarity::vm::costs::ExecutionCost;
 use clarity::vm::representations::{ClarityName, ContractName};
 use clarity::vm::types::PrincipalData;
 use clarity::vm::types::Value;
+use p256k1::point::Compressed;
 use rand;
 use rand::RngCore;
 use rusqlite::types::ToSql;
@@ -50,6 +51,8 @@ use stacks_common::util::log;
 use stacks_common::util::secp256k1::MessageSignature;
 use stacks_common::util::secp256k1::Secp256k1PublicKey;
 use stacks_common::util::vrf::*;
+use wsts::common::Signature as WSTSSignature;
+use wsts::Point;
 
 use crate::burnchains::affirmation::{AffirmationMap, AffirmationMapEntry};
 use crate::burnchains::bitcoin::BitcoinNetworkType;
@@ -1938,7 +1941,7 @@ impl<'a> SortitionHandleConn<'a> {
     pub fn expects_stacker_signature(
         &self,
         consensus_hash: &ConsensusHash,
-        _stacker_signature: &MessageSignature,
+        _stacker_signature: &WSTSSignature,
     ) -> Result<bool, db_error> {
         let sn = SortitionDB::get_block_snapshot(self, &self.context.chain_tip)?
             .ok_or(db_error::NotFoundError)
