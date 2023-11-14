@@ -177,6 +177,8 @@ pub struct PoxStartCycleInfo {
 pub struct RewardSet {
     pub rewarded_addresses: Vec<PoxAddress>,
     pub start_cycle_state: PoxStartCycleInfo,
+    /// The aggregate public key for the reward set.  This is only present in pox-4 cycles.
+    pub aggregate_public_key: Option<Point>,
 }
 
 const POX_CYCLE_START_HANDLED_VALUE: &'static str = "1";
@@ -203,6 +205,7 @@ impl RewardSet {
             start_cycle_state: PoxStartCycleInfo {
                 missed_reward_slots: vec![],
             },
+            aggregate_public_key: None,
         }
     }
 }
@@ -591,6 +594,7 @@ impl StacksChainState {
         threshold: u128,
         mut addresses: Vec<RawRewardSetEntry>,
         epoch_id: StacksEpochId,
+        aggregate_public_key: Option<Point>,
     ) -> RewardSet {
         let mut reward_set = vec![];
         let mut missed_slots = vec![];
@@ -680,6 +684,7 @@ impl StacksChainState {
             start_cycle_state: PoxStartCycleInfo {
                 missed_reward_slots: missed_slots,
             },
+            aggregate_public_key,
         }
     }
 
@@ -1247,7 +1252,7 @@ pub mod test {
             },
         ];
         assert_eq!(
-            StacksChainState::make_reward_set(threshold, addresses, StacksEpochId::Epoch2_05)
+            StacksChainState::make_reward_set(threshold, addresses, StacksEpochId::Epoch2_05, None)
                 .rewarded_addresses
                 .len(),
             3
