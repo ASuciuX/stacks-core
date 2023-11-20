@@ -815,6 +815,8 @@ mod tests {
                 .expect("Failed to convert schnorr signature to wsts signature");
             assert_eq!(reverted_signature.R, original_signature.R);
             assert_eq!(reverted_signature.z, original_signature.z);
+            assert!(original_signature.verify(&aggregate_public_key, msg));
+            assert!(reverted_signature.verify(&aggregate_public_key, msg));
         }
     }
 }

@@ -59,8 +59,8 @@ use super::stacks::{
     Error as ChainstateError, StacksBlock, StacksBlockHeader, StacksMicroblock, StacksTransaction,
     TenureChangeError, TenureChangePayload, TransactionPayload,
 };
-use crate::burnchains::PoxConstants;
 use crate::burnchains::Txid;
+use crate::burnchains::{Burnchain, PoxConstants};
 use crate::chainstate::burn::db::sortdb::SortitionDB;
 use crate::chainstate::burn::operations::LeaderBlockCommitOp;
 use crate::chainstate::burn::operations::LeaderKeyRegisterOp;
@@ -1369,12 +1369,17 @@ impl NakamotoChainState {
             return Ok(false);
         };
 
-        let schnorr_signature = block.header.signer_signature.to_wsts_signature().ok_or({
-            let msg =
-                format!("Received block, signed by miner, but the block has no stacker signature");
-            warn!("{}", msg);
-            ChainstateError::InvalidStacksBlock(msg)
-        })?;
+        let schnorr_signature = block
+            .header
+            .signer_signature
+            .to_wsts_signature()
+            .ok_or_else(|| {
+                let msg = format!(
+                    "Received block, signed by miner, but the block has no stacker signature"
+                );
+                warn!("{}", msg);
+                ChainstateError::InvalidStacksBlock(msg)
+            })?;
 
         if !sortdb.expects_signer_signature(
             &block.header.consensus_hash,

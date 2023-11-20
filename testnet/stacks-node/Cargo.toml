@@ -28,6 +28,8 @@ stacks-common = { path = "../../stacks-common" }
 chrono = "0.4.19"
 regex = "1"
 libsigner = { path = "../../libsigner" }
+wsts = "4.0.0"
+rand_core = "0.6"
 
 [dev-dependencies]
 ring = "0.16.19"
@@ -40,7 +42,6 @@ stacks = { package = "stackslib", path = "../../stackslib", features = ["default
 stacks-signer = { path = "../../stacks-signer" }
 tracing = "0.1.37"
 tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
-wsts = "4.0.0"
 
 [dependencies.rusqlite]
 version = "=0.24.2"

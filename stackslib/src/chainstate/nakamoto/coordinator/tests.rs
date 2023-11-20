@@ -14,10 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+use crate::burnchains::Burnchain;
+use crate::chainstate::nakamoto::tests::node::TestSigners;
+use crate::chainstate::stacks::boot::test::make_pox_4_aggregate_key;
 use crate::net::test::{TestPeer, TestPeerConfig};
 
 use clarity::vm::clarity::ClarityConnection;
 use clarity::vm::types::PrincipalData;
+use clarity::vm::Value;
+use p256k1::point::Compressed;
+use stacks_common::util::secp256k1::SchnorrSignature;
+use wsts::Point;
 
 use crate::chainstate::burn::db::sortdb::SortitionDB;
 use crate::chainstate::burn::operations::BlockstackOperationType;
@@ -60,7 +67,7 @@ use rand::thread_rng;
 use rand::RngCore;
 
 /// Bring a TestPeer into the Nakamoto Epoch
-fn advance_to_nakamoto(peer: &mut TestPeer) {
+fn advance_to_nakamoto(peer: &mut TestPeer, aggregate_public_key: &Point) {
     let mut peer_nonce = 0;
     let private_key = peer.config.private_key.clone();
     let addr = StacksAddress::from_public_keys(
@@ -71,14 +78,9 @@ fn advance_to_nakamoto(peer: &mut TestPeer) {
     )
     .unwrap();
 
-    // advance through cycle 6
-    for _ in 0..5 {
-        peer.tenure_with_txs(&[], &mut peer_nonce);
-    }
-
-    // stack to pox-3 in cycle 7
-    for sortition_height in 0..6 {
-        let txs = if sortition_height == 0 {
+    for sortition_height in 0..11 {
+        // stack to pox-3 in cycle 7
+        let txs = if sortition_height == 6 {
             // stack them all
             let stack_tx = make_pox_4_lockup(
                 &private_key,
@@ -88,7 +90,9 @@ fn advance_to_nakamoto(peer: &mut TestPeer) {
                 12,
                 34,
             );
-            vec![stack_tx]
+            let aggregate_tx: StacksTransaction =
+                make_pox_4_aggregate_key(&private_key, 1, 7, aggregate_public_key);
+            vec![stack_tx, aggregate_tx]
         } else {
             vec![]
         };
@@ -101,7 +105,11 @@ fn advance_to_nakamoto(peer: &mut TestPeer) {
 
 /// Make a peer and transition it into the Nakamoto epoch.
 /// The node needs to be stacking; otherwise, Nakamoto won't activate.
-fn boot_nakamoto(test_name: &str, mut initial_balances: Vec<(PrincipalData, u64)>) -> TestPeer {
+fn boot_nakamoto(
+    test_name: &str,
+    mut initial_balances: Vec<(PrincipalData, u64)>,
+    aggregate_public_key: Point,
+) -> TestPeer {
     let mut peer_config = TestPeerConfig::new(test_name, 0, 0);
     let private_key = peer_config.private_key.clone();
     let addr = StacksAddress::from_public_keys(
@@ -125,17 +133,17 @@ fn boot_nakamoto(test_name: &str, mut initial_balances: Vec<(PrincipalData, u64)
     peer_config.burnchain.pox_constants.pox_4_activation_height = 31;
 
     let mut peer = TestPeer::new(peer_config);
-    advance_to_nakamoto(&mut peer);
+    advance_to_nakamoto(&mut peer, &aggregate_public_key);
     peer
 }
 
 /// Make a replay peer, used for replaying the blockchain
-fn make_replay_peer<'a>(peer: &'a mut TestPeer<'a>) -> TestPeer<'a> {
+fn make_replay_peer<'a>(peer: &'a mut TestPeer<'a>, aggregate_public_key: &Point) -> TestPeer<'a> {
     let mut replay_config = peer.config.clone();
     replay_config.test_name = format!("{}.replay", &peer.config.test_name);
 
     let mut replay_peer = TestPeer::new(replay_config);
-    advance_to_nakamoto(&mut replay_peer);
+    advance_to_nakamoto(&mut replay_peer, aggregate_public_key);
 
     // sanity check
     let replay_tip = {
@@ -237,7 +245,8 @@ fn replay_reward_cycle(
 /// Mine a single Nakamoto tenure with a single Nakamoto block
 #[test]
 fn test_simple_nakamoto_coordinator_bootup() {
-    let mut peer = boot_nakamoto(function_name!(), vec![]);
+    let test_signers = TestSigners::default();
+    let mut peer = boot_nakamoto(function_name!(), vec![], test_signers.aggregate_public_key);
 
     let (burn_ops, tenure_change, miner_key) =
         peer.begin_nakamoto_tenure(TenureChangeCause::BlockFound);
@@ -275,7 +284,8 @@ fn test_simple_nakamoto_coordinator_bootup() {
 /// Mine a single Nakamoto tenure with 10 Nakamoto blocks
 #[test]
 fn test_simple_nakamoto_coordinator_1_tenure_10_blocks() {
-    let mut peer = boot_nakamoto(function_name!(), vec![]);
+    let test_signers = TestSigners::default();
+    let mut peer = boot_nakamoto(function_name!(), vec![], test_signers.aggregate_public_key);
     let private_key = peer.config.private_key.clone();
     let addr = StacksAddress::from_public_keys(
         C32_ADDRESS_VERSION_TESTNET_SINGLESIG,
@@ -347,7 +357,7 @@ fn test_simple_nakamoto_coordinator_1_tenure_10_blocks() {
 
     // replay the blocks and sortitions in random order, and verify that we still reach the chain
     // tip
-    let mut replay_peer = make_replay_peer(&mut peer);
+    let mut replay_peer = make_replay_peer(&mut peer, &test_signers.aggregate_public_key);
     replay_reward_cycle(&mut replay_peer, &[burn_ops], &blocks);
 
     let tip = {
@@ -374,7 +384,8 @@ fn test_simple_nakamoto_coordinator_1_tenure_10_blocks() {
 /// Mine a 10 Nakamoto tenures with 10 Nakamoto blocks
 #[test]
 fn test_simple_nakamoto_coordinator_10_tenures_10_blocks() {
-    let mut peer = boot_nakamoto(function_name!(), vec![]);
+    let test_signers = TestSigners::default();
+    let mut peer = boot_nakamoto(function_name!(), vec![], test_signers.aggregate_public_key);
     let private_key = peer.config.private_key.clone();
     let addr = StacksAddress::from_public_keys(
         C32_ADDRESS_VERSION_TESTNET_SINGLESIG,
@@ -543,7 +554,7 @@ fn test_simple_nakamoto_coordinator_10_tenures_10_blocks() {
 
     // replay the blocks and sortitions in random order, and verify that we still reach the chain
     // tip
-    let mut replay_peer = make_replay_peer(&mut peer);
+    let mut replay_peer = make_replay_peer(&mut peer, &test_signers.aggregate_public_key);
     for (burn_ops, blocks) in rc_burn_ops.iter().zip(rc_blocks.iter()) {
         replay_reward_cycle(&mut replay_peer, burn_ops, blocks);
     }
