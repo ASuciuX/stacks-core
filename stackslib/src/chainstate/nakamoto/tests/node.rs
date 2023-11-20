@@ -853,6 +853,7 @@ impl<'a> TestPeer<'a> {
         &mut self,
         consensus_hash: &ConsensusHash,
         tenure_change_payload: TenureChangePayload,
+        signers: &mut TestSigners,
         vrf_proof: VRFProof,
         block_builder: F,
     ) -> Vec<(NakamotoBlock, u64, ExecutionCost)>
@@ -873,7 +874,7 @@ impl<'a> TestPeer<'a> {
             &mut stacks_node.chainstate,
             &sortdb,
             &mut self.miner,
-            &mut self.signers,
+            signers,
             vrf_proof,
             tenure_change_payload,
             &mut self.coord,

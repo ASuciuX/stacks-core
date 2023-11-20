@@ -245,7 +245,7 @@ fn replay_reward_cycle(
 /// Mine a single Nakamoto tenure with a single Nakamoto block
 #[test]
 fn test_simple_nakamoto_coordinator_bootup() {
-    let test_signers = TestSigners::default();
+    let mut test_signers = TestSigners::default();
     let mut peer = boot_nakamoto(function_name!(), vec![], test_signers.aggregate_public_key);
 
     let (burn_ops, tenure_change, miner_key) =
@@ -255,6 +255,7 @@ fn test_simple_nakamoto_coordinator_bootup() {
     let blocks_and_sizes = peer.make_nakamoto_tenure(
         &consensus_hash,
         tenure_change,
+        &mut test_signers,
         vrf_proof,
         |_miner, _chainstate, _sort_dbconn, _count| vec![],
     );
@@ -284,7 +285,7 @@ fn test_simple_nakamoto_coordinator_bootup() {
 /// Mine a single Nakamoto tenure with 10 Nakamoto blocks
 #[test]
 fn test_simple_nakamoto_coordinator_1_tenure_10_blocks() {
-    let test_signers = TestSigners::default();
+    let mut test_signers = TestSigners::default();
     let mut peer = boot_nakamoto(function_name!(), vec![], test_signers.aggregate_public_key);
     let private_key = peer.config.private_key.clone();
     let addr = StacksAddress::from_public_keys(
@@ -307,6 +308,7 @@ fn test_simple_nakamoto_coordinator_1_tenure_10_blocks() {
     let blocks_and_sizes = peer.make_nakamoto_tenure(
         &consensus_hash,
         tenure_change,
+        &mut test_signers,
         vrf_proof,
         |miner, chainstate, sortdb, count| {
             if count < 10 {
@@ -384,7 +386,7 @@ fn test_simple_nakamoto_coordinator_1_tenure_10_blocks() {
 /// Mine a 10 Nakamoto tenures with 10 Nakamoto blocks
 #[test]
 fn test_simple_nakamoto_coordinator_10_tenures_10_blocks() {
-    let test_signers = TestSigners::default();
+    let mut test_signers = TestSigners::default();
     let mut peer = boot_nakamoto(function_name!(), vec![], test_signers.aggregate_public_key);
     let private_key = peer.config.private_key.clone();
     let addr = StacksAddress::from_public_keys(
@@ -417,6 +419,7 @@ fn test_simple_nakamoto_coordinator_10_tenures_10_blocks() {
         let blocks_and_sizes = peer.make_nakamoto_tenure(
             &consensus_hash,
             tenure_change,
+            &mut test_signers,
             vrf_proof,
             |miner, chainstate, sortdb, count| {
                 if count < 10 {
