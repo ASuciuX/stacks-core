@@ -101,6 +101,14 @@ pub fn pox_lock_extend_v3(
     Ok(amount_locked)
 }
 
+pub fn pox_lock_extend_v3_not_tested(
+    db: &mut ClarityDatabase,
+    principal: &PrincipalData,
+    unlock_burn_height: u64,
+) -> Result<u128, LockingError> {
+    Ok(1231)
+}
+
 /// Increase a STX lock up for PoX-3.  Does NOT touch the account nonce.
 /// Returns Ok( account snapshot ) when successful
 ///

@@ -83,13 +83,21 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: cargo mutants install
-        run: cargo install cargo-mutants
-      - name: Mutants run
+      - name: Relative diff
         run: |
-          mkdir mutants
-          cargo mutants --package stx-genesis --output mutants/stx-genesis || true
-          cargo mutants --package pox-locking --output mutants/pox-locking || true
+          git branch -av
+          git diff origin/${{ github.base_ref }}.. | tee git.diff
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo install cargo-mutants
+      - name: Mutants
+        run: |
+          cargo mutants --no-shuffle -j 2 -vV --in-diff git.diff || true
+      - name: Archive mutants.out
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: mutants-incremental.out
+          path: mutants.out
 
   ###############################################
   ## Build Tagged Release
