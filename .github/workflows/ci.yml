@@ -87,6 +87,7 @@ jobs:
         run: cargo install cargo-mutants
       - name: Mutants run
         run: |
+          mkdir mutants
           cargo mutants --package clarity --output mutants/clarity 
           cargo mutants --package libsigner --output mutants/libsigner
 
