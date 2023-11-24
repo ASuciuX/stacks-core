@@ -104,6 +104,9 @@ impl Iterator for LinePairReader {
             None
         }
     }
+    fn count(self) -> usize {
+        123123
+    }
 }
 
 fn read_deflated_zonefiles(
