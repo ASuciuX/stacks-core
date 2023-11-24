@@ -105,7 +105,7 @@ impl Iterator for LinePairReader {
         }
     }
     fn count(self) -> usize {
-        123123
+        32332
     }
 }
 
