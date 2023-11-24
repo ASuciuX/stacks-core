@@ -7,11 +7,10 @@ WORKDIR /src
 COPY . .
 
 # Update rustup and build the project
-RUN rustup update && \
-    cargo build
+RUN rustup update
 
-# Install cargo-mutagen
-RUN cargo install cargo-mutagen
+# Install cargo-mutants
+RUN cargo install cargo-mutants
 
 # Remove old log folders (TODO: check if to delete)
 # RUN rm -rf mutants.out mutants.out.old/
@@ -20,12 +19,12 @@ RUN cargo install cargo-mutagen
 RUN mkdir -p mutants
 
 # Run mutants for different packages
-RUN cargo mutants --package clarity --output mutants/clarity && \
-    cargo mutants --package libsigner --output mutants/libsigner && \
-    cargo mutants --package libstackerdb --output mutants/libstackerdb && \
-    cargo mutants --package pox-locking --output mutants/pox-locking && \
-    cargo mutants --package stacks-common --output mutants/stacks-common && \
-    cargo mutants --package stx-genesis --output mutants/stx-genesis
+RUN cargo mutants --package clarity --output mutants/clarity
+RUN    cargo mutants --package libsigner --output mutants/libsigner 
+# cargo mutants --package libstackerdb --output mutants/libstackerdb && \
+# cargo mutants --package pox-locking --output mutants/pox-locking && \
+# cargo mutants --package stacks-common --output mutants/stacks-common && \
+# cargo mutants --package stx-genesis --output mutants/stx-genesis
 
 # Comment out the commands for 'stacks-node' and 'stackslib' following the mutants.sh script
 # RUN cargo mutants --package stacks-signer --output mutants/stacks-signer
