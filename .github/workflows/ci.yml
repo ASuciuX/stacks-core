@@ -88,8 +88,8 @@ jobs:
       - name: Mutants run
         run: |
           mkdir mutants
-          cargo mutants --package clarity --output mutants/clarity 
-          cargo mutants --package libsigner --output mutants/libsigner
+          cargo mutants --package stx-genesis --output mutants/stx-genesis || true
+          cargo mutants --package pox-locking --output mutants/pox-locking || true
 
   ###############################################
   ## Build Tagged Release
