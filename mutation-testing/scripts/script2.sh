@@ -1,7 +1,7 @@
 #!/bin/bash
 
-PR_FOLDER="./../mutants.out"
-STABLE_FOLDER="./../mutants.out.old"
+PR_FOLDER="./../trials/mutants.out.old"
+STABLE_FOLDER="./../mutants-stable"
 FILES=("caught.txt" "missed.txt" "timeout.txt" "unviable.txt")
 
 echo "Starting script..."

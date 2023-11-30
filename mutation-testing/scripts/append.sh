@@ -3,7 +3,7 @@
 ### Delete irelevant files
 
 
-PR_DIR="./../mutants-initial"
+PR_DIR="./../trials/mutants.out.old"
 
 # Change to the PR_DIR
 cd "$PR_DIR"
@@ -18,7 +18,7 @@ find . -type d -empty -delete
 ### Append from PR_DIR to STABLE_DIR
 
 # Directories
-STABLE_DIR="./../mutants.out.old"
+STABLE_DIR="./../trials/mutants-stable"
 
 # Array of file names
 FILES=("caught.txt" "missed.txt" "timeout.txt" "unviable.txt")
