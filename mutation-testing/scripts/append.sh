@@ -5,14 +5,14 @@
 
 PR_DIR="./../trials/mutants.out.old"
 
-# Change to the PR_DIR
-cd "$PR_DIR"
+# # Change to the PR_DIR
+# cd "$PR_DIR"
 
-# Delete all files except .txt files
-find . -type f ! -name "*.txt" -delete
+# # Delete all files except .txt files
+# find . -type f ! -name "*.txt" -delete
 
-# Delete all empty directories (log dir)
-find . -type d -empty -delete
+# # Delete all empty directories (log dir)
+# find . -type d -empty -delete
 
 
 ### Append from PR_DIR to STABLE_DIR
