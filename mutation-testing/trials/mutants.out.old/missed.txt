@@ -1,2 +1,3 @@
 stx-genesis/src/lib.rs:23: replace <impl Iterator for LinePairReader>::count -> usize with 1
-stx-genesis/src/lib.rs:23: replace <impl Iterator for LinePairReader>::count -> usize with 0
+stx-genesis/src/lib.rs:109: replace <impl Iterator for LinePairReader>::count -> usize with 0
+stx-genesis/src/lib.rs:109: replace <impl Iterator for LinePairReader>::count -> usize with 2

@@ -61,10 +61,7 @@ for file in "${FILES[@]}"; do
     done < "$PR_DIR/$file"
 done
 
-# # After processing all lines, append contents from PR_DIR to STABLE_DIR
+# After processing all lines, append contents from PR_DIR to STABLE_DIR
 for file in "${FILES[@]}"; do
     cat "$PR_DIR/$file" >> "$STABLE_DIR/$file"
 done
-
-
-
