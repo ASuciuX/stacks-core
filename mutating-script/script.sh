@@ -62,9 +62,9 @@ for file in "${FILES[@]}"; do
 done
 
 # # After processing all lines, append contents from PR_DIR to STABLE_DIR
-# for file in "${FILES[@]}"; do
-#     cat "$PR_DIR/$file" >> "$STABLE_DIR/$file"
-# done
+for file in "${FILES[@]}"; do
+    cat "$PR_DIR/$file" >> "$STABLE_DIR/$file"
+done
 
 
 
