@@ -27,3 +27,7 @@ clarity/[^/]+/lib.rs.*(?:).*->
 # all functions from all files of 'stacks-node' package (570 mutants)
 stacks-node/[^/]+/.*(?:).*->
 ```
+
+# Create Stable
+
+Only run it once and the packages that should be updated from zero. Then it will be the reference point for the upcoming PRs that modify these functions
