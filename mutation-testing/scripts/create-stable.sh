@@ -24,10 +24,8 @@ cargo mutants --package pox-locking --output mutants/pox-locking
 # # Run mutation testing for stacks-common package
 # cargo mutants --package stacks-common --output mutants/stacks-common
 
-
 # # Run mutation testing for clarity package
 # cargo mutants --package clarity --output mutants/clarity
-
 
 # Run mutation testing for stacks-signer package - working, 10 min approx. 
 # cargo mutants --package stacks-signer --output mutants/stacks-signer
