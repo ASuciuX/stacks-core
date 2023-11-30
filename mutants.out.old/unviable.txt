@@ -1,0 +1,1 @@
+stx-genesis/src/lib.rs:115: replace read_deflated_zonefiles -> Box<dyn Iterator<Item = GenesisZonefile>> with Box::new(Default::default())
