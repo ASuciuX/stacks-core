@@ -3,7 +3,7 @@
 ### Delete irelevant files
 
 
-PR_DIR="./../mutants.out"
+PR_DIR="./../mutants-initial"
 
 # Change to the PR_DIR
 cd "$PR_DIR"

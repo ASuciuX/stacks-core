@@ -1,0 +1,34 @@
+name: Mutants
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+      - next
+    paths-ignore:
+      - '**.md'
+      - '**.yml'
+  workflow_dispatch:
+
+jobs:
+  cache_mutants:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the latest code
+        id: git_checkout
+        uses: actions/checkout@v3
+      - name: Cache mutants-initial folder
+        uses: actions/cache@v3
+        with:
+          path: mutants-initial
+          key: mutants-initial
+      - name: Print caught mutants
+        run: cat mutants-initial/caught.txt
+      - name: Print missed mutants
+        run: cat mutants-initial/missed.txt
+      - name: Print unviable mutants
+        run: cat mutants-initial/unviable.txt
+      - name: Print timeout mutants
+        run: cat mutants-initial/timeout.txt
