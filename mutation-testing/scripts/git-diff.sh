@@ -1,17 +1,18 @@
 # script that makes .git for the differences
 # it saves the .git on scripts folder
 
-# it runs cargo mutants for those specific changed functions
+# run from scripts folder
+cd ..
+git diff > git.diff
 
-# it creates a new output
+# it runs cargo mutants for those specific changed functions and outputs to /temp/mutants.out
+# for faster builds: increase number to 4 if at least 16 gb ram and 6 cores CPU
+cargo mutants --no-shuffle -j 2 -vV --in-diff git.diff --output temp/
 
 
-# then the append-match-package.sh is called
-## TODO: update append-match-package.sh with what would be the output from the cargo mutants diff
+# call append-match-package.sh to update the content from the stable output
+### sh scripts/append-match-package.sh
 
 
-# the append-match-package.sh
-## goes through each line in the output and based on the package ( first element before /)
-### verifies the line with the other lines in that specific folder
-#### in our case folder_name == package_name
+
 
