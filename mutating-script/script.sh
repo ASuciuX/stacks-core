@@ -24,12 +24,28 @@ STABLE_DIR="./../mutants.out.old"
 FILES=("caught.txt" "missed.txt" "timeout.txt" "unviable.txt")
 
 # Function to remove a line from a file
-# fails if the removed line is the only one in the file
 remove_line() {
     local line="$1"
     local file="$2"
-    echo "$file $line"
-    grep -Fvx "$line" "$file" > temp.txt && mv temp.txt "$file"
+    # Create a temporary file
+    local temp_file=$(mktemp)
+
+    # Use grep to filter out the line and save it back to the file
+    grep -Fvx "$line" "$file" > "$temp_file" 
+
+    # Check if the temporary file is empty
+    if [ -s "$temp_file" ]; then
+        # If not empty, move the temporary file to the original file
+        mv "$temp_file" "$file"
+    else
+        # If empty, remove the original file
+        rm -f "$file"
+        # Optionally, you could touch the file to recreate an empty file
+        touch "$file"
+    fi
+
+    # Clean up, remove the temporary file if it still exists
+    [ -f "$temp_file" ] && rm -f "$temp_file"
 }
 
 # Process each file
