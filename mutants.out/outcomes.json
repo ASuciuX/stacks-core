@@ -1,0 +1,2362 @@
+{
+  "outcomes": [
+    {
+      "scenario": "Baseline",
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/baseline.log",
+      "summary": "Success",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 50.483776167,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--package",
+            "pox-locking",
+            "--package",
+            "stx-genesis"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.446460417,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--package",
+            "pox-locking",
+            "--package",
+            "stx-genesis"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/lib.rs",
+          "line": 65,
+          "function": "handle_contract_call_special_cases",
+          "return_type": "-> Result<(), ClarityError>",
+          "replacement": "Ok(())",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__lib.rs_line_65.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 16.424274334,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.694827417,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "stx-genesis",
+          "file": "stx-genesis/src/lib.rs",
+          "line": 57,
+          "function": "GenesisData::read_balances",
+          "return_type": "-> Box<dyn Iterator<Item = GenesisAccountBalance>>",
+          "replacement": "Box::new(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/stx-genesis__src__lib.rs_line_57.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 11.300243542,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/stx-genesis/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "stx-genesis",
+          "file": "stx-genesis/src/lib.rs",
+          "line": 64,
+          "function": "GenesisData::read_lockups",
+          "return_type": "-> Box<dyn Iterator<Item = GenesisAccountLockup>>",
+          "replacement": "Box::new(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/stx-genesis__src__lib.rs_line_64.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.164520375,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/stx-genesis/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "stx-genesis",
+          "file": "stx-genesis/src/lib.rs",
+          "line": 71,
+          "function": "GenesisData::read_namespaces",
+          "return_type": "-> Box<dyn Iterator<Item = GenesisNamespace>>",
+          "replacement": "Box::new(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/stx-genesis__src__lib.rs_line_71.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.163111292,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/stx-genesis/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "stx-genesis",
+          "file": "stx-genesis/src/lib.rs",
+          "line": 78,
+          "function": "GenesisData::read_names",
+          "return_type": "-> Box<dyn Iterator<Item = GenesisName>>",
+          "replacement": "Box::new(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/stx-genesis__src__lib.rs_line_78.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.163015917,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/stx-genesis/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "stx-genesis",
+          "file": "stx-genesis/src/lib.rs",
+          "line": 85,
+          "function": "GenesisData::read_name_zonefiles",
+          "return_type": "-> Box<dyn Iterator<Item = GenesisZonefile>>",
+          "replacement": "Box::new(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/stx-genesis__src__lib.rs_line_85.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.160493417,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/stx-genesis/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "stx-genesis",
+          "file": "stx-genesis/src/lib.rs",
+          "line": 100,
+          "function": "<impl Iterator for LinePairReader>::next",
+          "return_type": "-> Option<Self::Item>",
+          "replacement": "None",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/stx-genesis__src__lib.rs_line_100.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.60007725,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/stx-genesis/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.96607275,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/stx-genesis/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "stx-genesis",
+          "file": "stx-genesis/src/lib.rs",
+          "line": 100,
+          "function": "<impl Iterator for LinePairReader>::next",
+          "return_type": "-> Option<Self::Item>",
+          "replacement": "Some(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/stx-genesis__src__lib.rs_line_100_001.log",
+      "summary": "CaughtMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.579615542,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/stx-genesis/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.913376042,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/stx-genesis/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "stx-genesis",
+          "file": "stx-genesis/src/lib.rs",
+          "line": 108,
+          "function": "<impl Iterator for LinePairReader>::count",
+          "return_type": "-> usize",
+          "replacement": "0",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/stx-genesis__src__lib.rs_line_108.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.546486083,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/stx-genesis/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.962676417,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/stx-genesis/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "stx-genesis",
+          "file": "stx-genesis/src/lib.rs",
+          "line": 108,
+          "function": "<impl Iterator for LinePairReader>::count",
+          "return_type": "-> usize",
+          "replacement": "1",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/stx-genesis__src__lib.rs_line_108_001.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.267165875,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/stx-genesis/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.8659295,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/stx-genesis/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "stx-genesis",
+          "file": "stx-genesis/src/lib.rs",
+          "line": 115,
+          "function": "read_deflated_zonefiles",
+          "return_type": "-> Box<dyn Iterator<Item = GenesisZonefile>>",
+          "replacement": "Box::new(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/stx-genesis__src__lib.rs_line_115.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.164122583,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/stx-genesis/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "stx-genesis",
+          "file": "stx-genesis/src/lib.rs",
+          "line": 129,
+          "function": "iter_deflated_csv",
+          "return_type": "-> Box<dyn Iterator<Item = Vec<String>>>",
+          "replacement": "Box::new(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/stx-genesis__src__lib.rs_line_129.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.16367525,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/stx-genesis/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "stx-genesis",
+          "file": "stx-genesis/src/lib.rs",
+          "line": 140,
+          "function": "read_balances",
+          "return_type": "-> Box<dyn Iterator<Item = GenesisAccountBalance>>",
+          "replacement": "Box::new(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/stx-genesis__src__lib.rs_line_140.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.168141459,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/stx-genesis/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "stx-genesis",
+          "file": "stx-genesis/src/lib.rs",
+          "line": 148,
+          "function": "read_lockups",
+          "return_type": "-> Box<dyn Iterator<Item = GenesisAccountLockup>>",
+          "replacement": "Box::new(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/stx-genesis__src__lib.rs_line_148.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.164233375,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/stx-genesis/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "stx-genesis",
+          "file": "stx-genesis/src/lib.rs",
+          "line": 157,
+          "function": "read_namespaces",
+          "return_type": "-> Box<dyn Iterator<Item = GenesisNamespace>>",
+          "replacement": "Box::new(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/stx-genesis__src__lib.rs_line_157.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.166543042,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/stx-genesis/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "stx-genesis",
+          "file": "stx-genesis/src/lib.rs",
+          "line": 171,
+          "function": "read_names",
+          "return_type": "-> Box<dyn Iterator<Item = GenesisName>>",
+          "replacement": "Box::new(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/stx-genesis__src__lib.rs_line_171.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.160294166,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/stx-genesis/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/events.rs",
+          "line": 32,
+          "function": "get_stacker",
+          "return_type": "-> Value",
+          "replacement": "Default::default()",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__events.rs_line_32.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.214588416,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/events.rs",
+          "line": 47,
+          "function": "create_event_info_stack_or_delegate_code",
+          "return_type": "-> String",
+          "replacement": "String::new()",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__events.rs_line_47.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.325841958,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.643638458,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/events.rs",
+          "line": 47,
+          "function": "create_event_info_stack_or_delegate_code",
+          "return_type": "-> String",
+          "replacement": "\"xyzzy\".into()",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__events.rs_line_47_001.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.32453975,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.432950709,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/events.rs",
+          "line": 76,
+          "function": "create_event_info_aggregation_code",
+          "return_type": "-> String",
+          "replacement": "String::new()",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__events.rs_line_76.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.318520166,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.492692792,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/events.rs",
+          "line": 76,
+          "function": "create_event_info_aggregation_code",
+          "return_type": "-> String",
+          "replacement": "\"xyzzy\".into()",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__events.rs_line_76_001.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.268882458,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.491478417,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/events.rs",
+          "line": 103,
+          "function": "create_event_info_data_code",
+          "return_type": "-> String",
+          "replacement": "String::new()",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__events.rs_line_103.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.324274709,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.476662583,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/events.rs",
+          "line": 103,
+          "function": "create_event_info_data_code",
+          "return_type": "-> String",
+          "replacement": "\"xyzzy\".into()",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__events.rs_line_103_001.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.276739584,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.432912083,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/events.rs",
+          "line": 351,
+          "function": "synthesize_pox_2_or_3_event_info",
+          "return_type": "-> Result<Option<Value>, ClarityError>",
+          "replacement": "Ok(None)",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__events.rs_line_351.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.274209292,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.490387625,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/events.rs",
+          "line": 351,
+          "function": "synthesize_pox_2_or_3_event_info",
+          "return_type": "-> Result<Option<Value>, ClarityError>",
+          "replacement": "Ok(Some(Default::default()))",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__events.rs_line_351_001.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.213507833,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_1.rs",
+          "line": 36,
+          "function": "parse_pox_stacking_result_v1",
+          "return_type": "-> std::result::Result<(PrincipalData, u128, u64), i128>",
+          "replacement": "Ok((Default::default(), 0, 0))",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_1.rs_line_36.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.220190084,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_1.rs",
+          "line": 36,
+          "function": "parse_pox_stacking_result_v1",
+          "return_type": "-> std::result::Result<(PrincipalData, u128, u64), i128>",
+          "replacement": "Ok((Default::default(), 0, 1))",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_1.rs_line_36_001.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.215484875,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_1.rs",
+          "line": 36,
+          "function": "parse_pox_stacking_result_v1",
+          "return_type": "-> std::result::Result<(PrincipalData, u128, u64), i128>",
+          "replacement": "Ok((Default::default(), 1, 0))",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_1.rs_line_36_002.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.220133166,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_1.rs",
+          "line": 36,
+          "function": "parse_pox_stacking_result_v1",
+          "return_type": "-> std::result::Result<(PrincipalData, u128, u64), i128>",
+          "replacement": "Ok((Default::default(), 1, 1))",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_1.rs_line_36_003.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.220399375,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_1.rs",
+          "line": 69,
+          "function": "is_read_only",
+          "return_type": "-> bool",
+          "replacement": "true",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_1.rs_line_69.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.3235115,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.59250275,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_1.rs",
+          "line": 69,
+          "function": "is_read_only",
+          "return_type": "-> bool",
+          "replacement": "false",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_1.rs_line_69_001.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.262698542,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.480857333,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_1.rs",
+          "line": 90,
+          "function": "pox_lock_v1",
+          "return_type": "-> Result<(), LockingError>",
+          "replacement": "Ok(())",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_1.rs_line_90.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.326782417,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.483960875,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_1.rs",
+          "line": 128,
+          "function": "handle_contract_call",
+          "return_type": "-> Result<(), ClarityError>",
+          "replacement": "Ok(())",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_1.rs_line_128.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.270394375,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.378989875,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_2.rs",
+          "line": 33,
+          "function": "is_read_only",
+          "return_type": "-> bool",
+          "replacement": "true",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_2.rs_line_33.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.322986833,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.600142417,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_2.rs",
+          "line": 33,
+          "function": "is_read_only",
+          "return_type": "-> bool",
+          "replacement": "false",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_2.rs_line_33_001.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.26911,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.551111625,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_2.rs",
+          "line": 64,
+          "function": "parse_pox_stacking_result",
+          "return_type": "-> std::result::Result<(PrincipalData, u128, u64), i128>",
+          "replacement": "Ok((Default::default(), 0, 0))",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_2.rs_line_64.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.218267917,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_2.rs",
+          "line": 64,
+          "function": "parse_pox_stacking_result",
+          "return_type": "-> std::result::Result<(PrincipalData, u128, u64), i128>",
+          "replacement": "Ok((Default::default(), 0, 1))",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_2.rs_line_64_001.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.217766083,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_2.rs",
+          "line": 64,
+          "function": "parse_pox_stacking_result",
+          "return_type": "-> std::result::Result<(PrincipalData, u128, u64), i128>",
+          "replacement": "Ok((Default::default(), 1, 0))",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_2.rs_line_64_002.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.213865916,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_2.rs",
+          "line": 64,
+          "function": "parse_pox_stacking_result",
+          "return_type": "-> std::result::Result<(PrincipalData, u128, u64), i128>",
+          "replacement": "Ok((Default::default(), 1, 1))",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_2.rs_line_64_003.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.218734541,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_2.rs",
+          "line": 98,
+          "function": "parse_pox_extend_result",
+          "return_type": "-> std::result::Result<(PrincipalData, u64), i128>",
+          "replacement": "Ok((Default::default(), 0))",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_2.rs_line_98.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.211459042,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_2.rs",
+          "line": 98,
+          "function": "parse_pox_extend_result",
+          "return_type": "-> std::result::Result<(PrincipalData, u64), i128>",
+          "replacement": "Ok((Default::default(), 1))",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_2.rs_line_98_001.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.222524958,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_2.rs",
+          "line": 127,
+          "function": "parse_pox_increase",
+          "return_type": "-> std::result::Result<(PrincipalData, u128), i128>",
+          "replacement": "Ok((Default::default(), 0))",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_2.rs_line_127.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.214612833,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_2.rs",
+          "line": 127,
+          "function": "parse_pox_increase",
+          "return_type": "-> std::result::Result<(PrincipalData, u128), i128>",
+          "replacement": "Ok((Default::default(), 1))",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_2.rs_line_127_001.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.213787709,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_2.rs",
+          "line": 164,
+          "function": "pox_lock_increase_v2",
+          "return_type": "-> Result<STXBalance, LockingError>",
+          "replacement": "Ok(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_2.rs_line_164.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.221469667,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_2.rs",
+          "line": 217,
+          "function": "pox_lock_extend_v2",
+          "return_type": "-> Result<u128, LockingError>",
+          "replacement": "Ok(0)",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_2.rs_line_217.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.325059375,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.578624208,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_2.rs",
+          "line": 217,
+          "function": "pox_lock_extend_v2",
+          "return_type": "-> Result<u128, LockingError>",
+          "replacement": "Ok(1)",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_2.rs_line_217_001.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.271453542,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.535522917,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_2.rs",
+          "line": 248,
+          "function": "pox_lock_v2",
+          "return_type": "-> Result<(), LockingError>",
+          "replacement": "Ok(())",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_2.rs_line_248.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.328592,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.584625,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_2.rs",
+          "line": 280,
+          "function": "handle_stack_lockup_pox_v2",
+          "return_type": "-> Result<Option<StacksTransactionEvent>, ClarityError>",
+          "replacement": "Ok(None)",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_2.rs_line_280.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.32273125,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.537397959,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_2.rs",
+          "line": 280,
+          "function": "handle_stack_lockup_pox_v2",
+          "return_type": "-> Result<Option<StacksTransactionEvent>, ClarityError>",
+          "replacement": "Ok(Some(Default::default()))",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_2.rs_line_280_001.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.220596916,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_2.rs",
+          "line": 345,
+          "function": "handle_stack_lockup_extension_pox_v2",
+          "return_type": "-> Result<Option<StacksTransactionEvent>, ClarityError>",
+          "replacement": "Ok(None)",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_2.rs_line_345.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.321972167,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.543705166,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_2.rs",
+          "line": 345,
+          "function": "handle_stack_lockup_extension_pox_v2",
+          "return_type": "-> Result<Option<StacksTransactionEvent>, ClarityError>",
+          "replacement": "Ok(Some(Default::default()))",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_2.rs_line_345_001.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.223436375,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_2.rs",
+          "line": 409,
+          "function": "handle_stack_lockup_increase_pox_v2",
+          "return_type": "-> Result<Option<StacksTransactionEvent>, ClarityError>",
+          "replacement": "Ok(None)",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_2.rs_line_409.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.273293166,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.541746334,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_2.rs",
+          "line": 409,
+          "function": "handle_stack_lockup_increase_pox_v2",
+          "return_type": "-> Result<Option<StacksTransactionEvent>, ClarityError>",
+          "replacement": "Ok(Some(Default::default()))",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_2.rs_line_409_001.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.223418625,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_2.rs",
+          "line": 473,
+          "function": "handle_contract_call",
+          "return_type": "-> Result<(), ClarityError>",
+          "replacement": "Ok(())",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_2.rs_line_473.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.318156333,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.484100333,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_3.rs",
+          "line": 42,
+          "function": "pox_lock_v3",
+          "return_type": "-> Result<(), LockingError>",
+          "replacement": "Ok(())",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_3.rs_line_42.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.316920833,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.585518334,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_3.rs",
+          "line": 72,
+          "function": "pox_lock_extend_v3_not_tested",
+          "return_type": "-> Result<u128, LockingError>",
+          "replacement": "Ok(0)",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_3.rs_line_72.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.320040083,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.5287755,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_3.rs",
+          "line": 72,
+          "function": "pox_lock_extend_v3_not_tested",
+          "return_type": "-> Result<u128, LockingError>",
+          "replacement": "Ok(1)",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_3.rs_line_72_001.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.269315958,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.371742292,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_3.rs",
+          "line": 87,
+          "function": "pox_lock_extend_v3",
+          "return_type": "-> Result<u128, LockingError>",
+          "replacement": "Ok(0)",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_3.rs_line_87.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.328804625,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.5306875,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_3.rs",
+          "line": 87,
+          "function": "pox_lock_extend_v3",
+          "return_type": "-> Result<u128, LockingError>",
+          "replacement": "Ok(1)",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_3.rs_line_87_001.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.270677584,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.473307041,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_3.rs",
+          "line": 123,
+          "function": "pox_lock_increase_v3",
+          "return_type": "-> Result<STXBalance, LockingError>",
+          "replacement": "Ok(Default::default())",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_3.rs_line_123.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.208587666,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_3.rs",
+          "line": 169,
+          "function": "handle_stack_lockup_pox_v3",
+          "return_type": "-> Result<Option<StacksTransactionEvent>, ClarityError>",
+          "replacement": "Ok(None)",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_3.rs_line_169.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.329902334,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.592432834,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_3.rs",
+          "line": 169,
+          "function": "handle_stack_lockup_pox_v3",
+          "return_type": "-> Result<Option<StacksTransactionEvent>, ClarityError>",
+          "replacement": "Ok(Some(Default::default()))",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_3.rs_line_169_001.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.21101925,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_3.rs",
+          "line": 236,
+          "function": "handle_stack_lockup_extension_pox_v3",
+          "return_type": "-> Result<Option<StacksTransactionEvent>, ClarityError>",
+          "replacement": "Ok(None)",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_3.rs_line_236.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.275964708,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.589157334,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_3.rs",
+          "line": 236,
+          "function": "handle_stack_lockup_extension_pox_v3",
+          "return_type": "-> Result<Option<StacksTransactionEvent>, ClarityError>",
+          "replacement": "Ok(Some(Default::default()))",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_3.rs_line_236_001.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.216048292,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_3.rs",
+          "line": 300,
+          "function": "handle_stack_lockup_increase_pox_v3",
+          "return_type": "-> Result<Option<StacksTransactionEvent>, ClarityError>",
+          "replacement": "Ok(None)",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_3.rs_line_300.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.323385042,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.581637958,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_3.rs",
+          "line": 300,
+          "function": "handle_stack_lockup_increase_pox_v3",
+          "return_type": "-> Result<Option<StacksTransactionEvent>, ClarityError>",
+          "replacement": "Ok(Some(Default::default()))",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_3.rs_line_300_001.log",
+      "summary": "Unviable",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.216785916,
+          "process_status": "Failure",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "package": "pox-locking",
+          "file": "pox-locking/src/pox_3.rs",
+          "line": 363,
+          "function": "handle_contract_call",
+          "return_type": "-> Result<(), ClarityError>",
+          "replacement": "Ok(())",
+          "genre": "FnValue"
+        }
+      },
+      "log_path": "/Users/asuciu/Documents/GitHub/my-core/stacks-core/mutants.out/log/pox-locking__src__pox_3.rs_line_363.log",
+      "summary": "MissedMutant",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.321006792,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--tests",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.598943084,
+          "process_status": "Success",
+          "argv": [
+            "/Users/asuciu/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--manifest-path",
+            "/var/folders/wr/nxd5pyh545z8rk128h04wj480000gs/T/cargo-mutants-stacks-core-ovu5kQ.tmp/pox-locking/Cargo.toml"
+          ]
+        }
+      ]
+    }
+  ],
+  "total_mutants": 67,
+  "missed": 33,
+  "caught": 1,
+  "timeout": 0,
+  "unviable": 33,
+  "success": 0,
+  "failure": 0
+}
