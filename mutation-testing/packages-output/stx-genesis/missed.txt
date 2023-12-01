@@ -1,1 +1,6 @@
 stx-genesis/src/lib.rs:100: replace <impl Iterator for LinePairReader>::next -> Option<Self::Item> with None
+stx-genesis/src/lib.rs:108: replace <impl Iterator for LinePairReader>::count -> usize with 0
+stx-genesis/src/lib.rs:108: replace <impl Iterator for LinePairReader>::count -> usize with 1
+stx-genesis/src/lib.rs:113: replace fn_option_remove -> Option<u8> with None
+stx-genesis/src/lib.rs:113: replace fn_option_remove -> Option<u8> with Some(0)
+stx-genesis/src/lib.rs:113: replace fn_option_remove -> Option<u8> with Some(1)
