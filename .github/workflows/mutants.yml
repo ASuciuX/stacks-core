@@ -79,7 +79,9 @@ jobs:
           echo "text 1" >> missed.txt
           echo "text 2" >> missed.txt
         working-directory: mutation-testing/packages-output/pox-locking
-
+      - name: outshow new cached file
+        run: cat missed.txt
+        working-directory: mutation-testing/packages-output/pox-locking
       - name: Cache mutants-initial folder
         uses: actions/cache/save@v3
         with:
