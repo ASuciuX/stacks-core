@@ -438,6 +438,7 @@ pub fn handle_contract_call_2_test(
             // for some reason.
             // Failure to synthesize an event due to a bug is *NOT* an excuse to crash the whole
             // network!  Event capture is not consensus-critical.
+            //  comm
             let event_info_opt = match synthesize_pox_2_or_3_event_info(
                 global_context,
                 contract_id,
