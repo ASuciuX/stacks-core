@@ -1,0 +1,20 @@
+[
+  {
+    "package": "pox-locking",
+    "file": "pox-locking/src/pox_3.rs",
+    "line": 72,
+    "function": "pox_lock_extend_v3_not_tested",
+    "return_type": "-> Result<u128, LockingError>",
+    "replacement": "Ok(0)",
+    "genre": "FnValue"
+  },
+  {
+    "package": "pox-locking",
+    "file": "pox-locking/src/pox_3.rs",
+    "line": 72,
+    "function": "pox_lock_extend_v3_not_tested",
+    "return_type": "-> Result<u128, LockingError>",
+    "replacement": "Ok(1)",
+    "genre": "FnValue"
+  }
+]
