@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # the append-match-package.sh
 ## goes through each line in the output and based on the package ( first element before /)
 ### verifies the line with the other lines in that specific folder
@@ -10,9 +12,6 @@
 ## if it is matchy, remove it from that file
 ## based on the file it was taken from, append it to the same file in the STABLE folder
 
-
-
-#!/bin/bash
 
 PR_FOLDER="./../temp/mutants.out"
 STABLE_FOLDER_PARENT="./../packages-output"
@@ -41,30 +40,25 @@ for file in "${FILES[@]}"; do
             # Extract the after the number line without the line number and escape it for awk
             # Escape the variables for use in a sed pattern
             var_1=$(echo "$line" | sed -E 's/^(.+):[0-9]+:[^:]+/\1/')
-            escaped_var_1=$(echo "$var_1" | sed -E 's/([][\/$*.^|])/\\&/g')
+            escaped_var_1=$(sed 's/[][/.^$]/\\&/g' <<< "$var_1")
 
             var_2=$(echo "$line" | sed -E 's/^[^:]+:[0-9]+:(.+)/\1/')
-            escaped_var_2=$(echo "$var_2" | sed -E 's/([][\/$*.^|])/\\&/g')
+            escaped_var_2=$(sed 's/[][/.^$]/\\&/g' <<< "$var_2")
+
+            regex="${escaped_var_1}:[0-9]\+: ${escaped_var_2}"
 
             # Iterate over each file in the STABLE folder combined with local_package
             for target_file in "${FILES[@]}"; do
                 target_path="$STABLE_FOLDER_PARENT/$local_package/$target_file"
                 echo "Checking against STABLE file: $target_path"
 
-                # Remove the line matching the pattern, ignoring line numbers
-                # awk -v pat="$escaped_pattern" '$0 !~ pat' "$target_path" > temp_file && mv temp_file "$target_path"
-
-                # Use sed to remove lines matching the pattern 
-                echo "$escaped_var_1" "$escaped_var_2"
-                sed -E "/^${escaped_var_1}:[0-9]+: ${escaped_var_2}/d" "$target_path"
+                # Use sed to remove lines matching the pattern
+                sed "/$regex/d" "$target_path" > temp_file && mv temp_file "$target_path"
             done
 
             # Append PR line to the corresponding package and file
-            # echo "$line" >> "$STABLE_FOLDER_PARENT/$local_package/$file"
-            echo "____________________"
-            echo "$line"
-            echo "$STABLE_FOLDER_PARENT/$local_package/$file"
-
+            echo "$line" >> "$STABLE_FOLDER_PARENT/$local_package/$file"
+            
         done < "$pr_file"
     else
         echo "PR file $pr_file is empty or does not exist, skipping..."
