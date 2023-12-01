@@ -20,3 +20,7 @@ pox-locking/src/events.rs:32: replace get_stacker -> Value with Default::default
 pox-locking/src/pox_1.rs:36: replace parse_pox_stacking_result_v1 -> std::result::Result<(PrincipalData, u128, u64), i128> with Ok((Default::default(), 0, 1))
 pox-locking/src/pox_2.rs:98: replace parse_pox_extend_result -> std::result::Result<(PrincipalData, u64), i128> with Ok((Default::default(), 1))
 pox-locking/src/pox_2.rs:98: replace parse_pox_extend_result -> std::result::Result<(PrincipalData, u64), i128> with Ok((Default::default(), 0))
+pox-locking/src/pox_4_remove.rs:123: replace pox_lock_increase_v3 -> Result<STXBalance, LockingError> with Ok(Default::default())
+pox-locking/src/pox_4_remove.rs:169: replace handle_stack_lockup_pox_v3 -> Result<Option<StacksTransactionEvent>, ClarityError> with Ok(Some(Default::default()))
+pox-locking/src/pox_4_remove.rs:236: replace handle_stack_lockup_extension_pox_v3 -> Result<Option<StacksTransactionEvent>, ClarityError> with Ok(Some(Default::default()))
+pox-locking/src/pox_4_remove.rs:300: replace handle_stack_lockup_increase_pox_v3 -> Result<Option<StacksTransactionEvent>, ClarityError> with Ok(Some(Default::default()))

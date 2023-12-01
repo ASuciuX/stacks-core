@@ -421,3 +421,74 @@ pub fn handle_contract_call(
 
     Ok(())
 }
+
+/// Handle special cases when calling into the PoX-3 API contract
+pub fn handle_contract_call_2_test(
+    global_context: &mut GlobalContext,
+    sender_opt: Option<&PrincipalData>,
+    contract_id: &QualifiedContractIdentifier,
+    function_name: &str,
+    args: &[Value],
+    value: &Value,
+) -> Result<(), ClarityError> {
+    // Generate a synthetic print event for all functions that alter stacking state
+    let print_event_opt = if let Value::Response(response) = value {
+        if response.committed {
+            // method succeeded.  Synthesize event info, but default to no event report if we fail
+            // for some reason.
+            // Failure to synthesize an event due to a bug is *NOT* an excuse to crash the whole
+            // network!  Event capture is not consensus-critical.
+            //  comm
+            let event_info_opt = match synthesize_pox_2_or_3_event_info(
+                global_context,
+                contract_id,
+                sender_opt,
+                function_name,
+                args,
+            ) {
+                Ok(Some(event_info)) => Some(event_info),
+                Ok(None) => None,
+                Err(e) => {
+                    error!("Failed to synthesize PoX-3 event info: {:?}", &e);
+                    None
+                }
+            };
+            if let Some(event_info) = event_info_opt {
+                let event_response =
+                    Value::okay(event_info).expect("FATAL: failed to construct (ok event-info)");
+                let tx_event =
+                    Environment::construct_print_transaction_event(contract_id, &event_response);
+                Some(tx_event)
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    } else {
+        None
+    };
+
+    // Execute function specific logic to complete the lock-up
+    let lock_event_opt = if function_name == "stack-stx" || function_name == "delegate-stack-stx" {
+        handle_stack_lockup_pox_v3(global_context, function_name, value)?
+    } else if function_name == "stack-extend" || function_name == "delegate-stack-extend" {
+        handle_stack_lockup_extension_pox_v3(global_context, function_name, value)?
+    } else if function_name == "stack-increase" || function_name == "delegate-stack-increase" {
+        handle_stack_lockup_increase_pox_v3(global_context, function_name, value)?
+    } else {
+        None
+    };
+
+    // append the lockup event, so it looks as if the print event happened before the lock-up
+    if let Some(batch) = global_context.event_batches.last_mut() {
+        if let Some(print_event) = print_event_opt {
+            batch.events.push(print_event);
+        }
+        if let Some(lock_event) = lock_event_opt {
+            batch.events.push(lock_event);
+        }
+    }
+
+    Ok(())
+}
