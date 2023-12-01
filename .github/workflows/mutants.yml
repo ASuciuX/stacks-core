@@ -52,27 +52,70 @@ jobs:
   #         name: mutants-stable-develop
   #         path: mutation-testing/packages-output
 
-  ## Mutants testing: Execute on PR on packages that have tested functions modified
-  ### download it && see how it is
-  incremental-mutants:
+  # ## Mutants testing: Execute on PR on packages that have tested functions modified
+  # ### download it && see how it is
+  # incremental-mutants:
+  #   name: Incremental Mutants Testing
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Download stable output artifact
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: mutants-stable-develop
+  #         path: mutation-testing/packages-output
+  #     - name: Display structure of downloaded files
+  #       run: ls -R
+  #       working-directory: mutation-testing/packages-output
+  #     - run: cargo install cargo-mutants
+  #     - name: Update stable mutants with modified functions
+  #       run: ./git-diff.sh
+  #       working-directory: mutation-testing/scripts
+  #     - name: Archive mutants output
+  #       uses: actions/upload-artifact@v3
+  #       if: always()
+  #       with:
+  #         name: mutants-stable-develop
+  #         path: mutation-testing/packages-output
+
+  incremental-mutants-2:
     name: Incremental Mutants Testing
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Check for the existence of the stable output artifact
+        id: check-artifact
+        uses: actions/github-script@v5
         with:
-          fetch-depth: 0 # do we want to fetch all?
+          script: |
+            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.runId,
+            });
+            const artifactExists = artifacts.data.artifacts.some(artifact => artifact.name === 'mutants-stable-develop');
+            core.setOutput('exists', artifactExists);
+
       - name: Download stable output artifact
+        if: steps.check-artifact.outputs.exists == 'true'
         uses: actions/download-artifact@v3
         with:
           name: mutants-stable-develop
           path: mutation-testing/packages-output
+
       - name: Display structure of downloaded files
+        if: steps.check-artifact.outputs.exists == 'true'
         run: ls -R
         working-directory: mutation-testing/packages-output
+
       - run: cargo install cargo-mutants
+
       - name: Update stable mutants with modified functions
+        if: steps.check-artifact.outputs.exists == 'true'
         run: ./git-diff.sh
         working-directory: mutation-testing/scripts
+
       - name: Archive mutants output
         uses: actions/upload-artifact@v3
         if: always()
