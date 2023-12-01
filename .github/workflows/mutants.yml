@@ -68,6 +68,17 @@ jobs:
           key: mutants-stable-develop
       - name: Print caught mutants
         run: cat mutation-testing/packages-output/pox-locking/missed.txt
+      - run: cargo install cargo-mutants
+      - name: Update stable mutants with modified functions
+        run: ./git-diff.sh
+        working-directory: mutation-testing/scripts
+      - name: Print updated missed mutants
+        run: cat mutation-testing/packages-output/pox-locking/missed.txt
+      - name: Cache mutants-initial folder
+        uses: actions/cache/save@v3
+        with:
+          path: mutation-testing/packages-output
+          key: mutants-stable-develop
 
   # # Upload stable output version
   # stable-mutants:
