@@ -82,11 +82,20 @@ jobs:
       - name: outshow new cached file
         run: cat missed.txt
         working-directory: mutation-testing/packages-output/pox-locking
-      - name: Cache mutants-initial folder
-        uses: actions/cache/save@v3
+      # - name: Cache mutants-initial folder
+      #   uses: actions/cache/save@v3
+      #   with:
+      #     path: mutation-testing/packages-output
+      #     key: mutants-stable-develop
+      - name: Save Cache
+        uses: Wandalen/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
         with:
-          path: mutation-testing/packages-output
-          key: mutants-stable-develop
+          action: actions/cache/save@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+          with: |
+            path: mutation-testing/packages-output
+            key: mutants-stable-develop
+          attempt_limit: 5
+          attempt_delay: 3000
 
   # # Upload stable output version
   # stable-mutants:
