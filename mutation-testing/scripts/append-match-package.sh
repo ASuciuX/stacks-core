@@ -41,11 +41,24 @@ for file in "${FILES[@]}"; do
             echo "Reading line from PR file: $line"
 
             # Extract the package from which the line is coming from
-            local_package=${$line%%/*}
+            local_package=${line%%/*}
 
             # Extract the after the number line without the line number and escape it for awk
-            core_pattern=$(echo "$line" | sed -E 's/^[^:]+:[0-9]+:(.+)/\1/')
-            escaped_pattern=$(escape_for_awk "$core_pattern")
+            # Escape the variables for use in a sed pattern
+
+            # # Use sed to remove lines matching the pattern
+            # sed "/$escaped_var_1:[0-9]+:$escaped_var_2/d" "$FILE" > "$FILE"
+
+            var_1=$(echo "$line" | sed -E 's/^(.+):[0-9]+:[^:]+/\1/')
+            escaped_var_1=$(escape_for_awk "$var_1")
+
+            var_2=$(echo "$line" | sed -E 's/^[^:]+:[0-9]+:(.+)/\1/')
+            escaped_var_2=$(escape_for_awk "$var_2")
+
+
+            escaped_var_1=$(echo "$escaped_var_1" | sed -E 's/([][\/$*.^|])/\\&/g')
+            escaped_var_2=$(echo "$escaped_var_2" | sed -E 's/([][\/$*.^|])/\\&/g')
+
             echo "Extracted and escaped pattern: $escaped_pattern"
 
             # Iterate over each file in the STABLE folder combined with local_package
@@ -54,11 +67,16 @@ for file in "${FILES[@]}"; do
                 echo "Checking against STABLE file: $target_path"
 
                 # Remove the line matching the pattern, ignoring line numbers
-                awk -v pat="$escaped_pattern" '$0 !~ pat' "$target_path" > temp_file && mv temp_file "$target_path"
+                # awk -v pat="$escaped_pattern" '$0 !~ pat' "$target_path" > temp_file && mv temp_file "$target_path"
+                echo "$escaped_var_1" "$escaped_var_2"
+                sed -E "s/{$escaped_var_1}:[0-9]+:${escaped_var_2}//g" "$target_path" > "$target_path"
             done
 
             # Append PR line to the corresponding package and file
             echo "$line" >> "$STABLE_FOLDER_PARENT/$local_package/$file"
+            echo "____________________"
+            echo "$line"
+            echo "$STABLE_FOLDER_PARENT/$local_package/$file"
 
         done < "$pr_file"
     else
