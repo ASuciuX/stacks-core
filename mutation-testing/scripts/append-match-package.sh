@@ -45,7 +45,7 @@ for file in "${FILES[@]}"; do
             var_2=$(echo "$line" | sed -E 's/^[^:]+:[0-9]+:(.+)/\1/')
             escaped_var_2=$(sed 's/[][/.^$]/\\&/g' <<< "$var_2")
 
-            regex="${escaped_var_1}:[0-9]\+: ${escaped_var_2}"
+            regex="${escaped_var_1}.*${escaped_var_2}"
 
             # Iterate over each file in the STABLE folder combined with local_package
             for target_file in "${FILES[@]}"; do
