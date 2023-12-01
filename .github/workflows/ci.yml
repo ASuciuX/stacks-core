@@ -83,7 +83,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # do we want to fetch all?
       - name: Relative diff
         run: |
           git branch -av

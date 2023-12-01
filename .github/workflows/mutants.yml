@@ -1,6 +1,12 @@
 name: Mutants
 # to be tried cache vs artifacts
 
+# only run on push in order to update the artifact output
+# flow:
+# download artifact
+# run sh script for cargo mutants diff
+# upload artifact
+
 on:
   push:
     branches:
@@ -8,27 +14,65 @@ on:
       - develop
       - next
       - deployer/testing-shell-script
-  pull_request:
-  workflow_dispatch:
 
 jobs:
-  cache_mutants:
-    runs-on: ubuntu-latest
+  # cache_mutants:
+  #   runs-on: ubuntu-latest
 
+  #   steps:
+  #     - name: Checkout the latest code
+  #       id: git_checkout
+  #       uses: actions/checkout@v3
+  #     - name: Cache mutants-initial folder
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: mutants-initial
+  #         key: mutants-initial
+  #     - name: Print caught mutants
+  #       run: cat mutants-initial/caught.txt
+  #     - name: Print missed mutants
+  #       run: cat mutants-initial/missed.txt
+  #     - name: Print unviable mutants
+  #       run: cat mutants-initial/unviable.txt
+  #     - name: Print timeout mutants
+  #       run: cat mutants-initial/timeout.txt
+
+  # Upload stable version first
+  stable-mutants:
+    name: Upload Stable Mutants Testing
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout the latest code
-        id: git_checkout
-        uses: actions/checkout@v3
-      - name: Cache mutants-initial folder
-        uses: actions/cache@v3
+      - uses: actions/checkout@v3
         with:
-          path: mutants-initial
-          key: mutants-initial
-      - name: Print caught mutants
-        run: cat mutants-initial/caught.txt
-      - name: Print missed mutants
-        run: cat mutants-initial/missed.txt
-      - name: Print unviable mutants
-        run: cat mutants-initial/unviable.txt
-      - name: Print timeout mutants
-        run: cat mutants-initial/timeout.txt
+          fetch-depth: 0 # do we want to fetch all?
+      - name: Archive mutants.out
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: mutants-stable-develop
+          path: mutation-testing/packages-output
+
+  # ## Mutants testing: Execute on PR on packages that have tested functions modified
+  # ### download it && see how it is
+  # incremental-mutants:
+  #   name: Incremental Mutants Testing
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0 # do we want to fetch all?
+  #     - name: Relative diff
+  #       run: |
+  #         git branch -av
+  #         git diff origin/${{ github.base_ref }}.. | tee git.diff
+  #     - uses: Swatinem/rust-cache@v2
+  #     - run: cargo install cargo-mutants
+  #     - name: Mutants
+  #       run: |
+  #         cargo mutants --no-shuffle -j 2 -vV --in-diff git.diff || true
+  #     - name: Archive mutants.out
+  #       uses: actions/upload-artifact@v3
+  #       if: always()
+  #       with:
+  #         name: mutants-stable-develop.out
+  #         path: mutants.out
