@@ -31,3 +31,8 @@ stacks-node/[^/]+/.*(?:).*->
 # Create Stable
 
 Only run it once and the packages that should be updated from zero. Then it will be the reference point for the upcoming PRs that modify these functions
+
+### recap flow for a developer which
+
+1. works on functions and modifies them
+2. before commiting -> `call git-diff.sh`
