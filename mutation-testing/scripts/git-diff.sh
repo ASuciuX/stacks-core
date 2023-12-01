@@ -1,8 +1,23 @@
 # script that makes .git for the differences
 # it saves the .git on scripts folder
 
-# run from scripts folder
-cd ..
+# add untracked files to git diff
+# go to root folder
+cd ./../..
+
+# run git status on root
+untracked_files=($(git ls-files --others --exclude-standard))
+
+# for each file untracked -> run git add file path
+echo "${untracked_files[@]}"
+for file in "${untracked_files[@]}"; do
+  git add -N "$file"
+done
+
+cd mutation-testing
+
+
+# run from mutation-testing folder
 git diff > git.diff
 
 # it runs cargo mutants for those specific changed functions and outputs to /temp/mutants.out
