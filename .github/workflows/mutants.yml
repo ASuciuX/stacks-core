@@ -69,11 +69,17 @@ jobs:
       - name: Print caught mutants
         run: cat mutation-testing/packages-output/pox-locking/missed.txt
       - run: cargo install cargo-mutants
-      - name: Update stable mutants with modified functions
-        run: ./git-diff.sh
-        working-directory: mutation-testing/scripts
-      - name: Print updated missed mutants
-        run: cat mutation-testing/packages-output/pox-locking/missed.txt
+      # - name: Update stable mutants with modified functions
+      #   run: ./git-diff.sh
+      #   working-directory: mutation-testing/scripts
+      # - name: Print updated missed mutants
+      #   run: cat mutation-testing/packages-output/pox-locking/missed.txt
+      - name: Append 2 line to one file
+        run: |
+          echo "text 1" >> missed.txt
+          echo "text 2" >> missed.txt
+        working-directory: mutation-testing/packages-output/pox-locking
+
       - name: Cache mutants-initial folder
         uses: actions/cache/save@v3
         with:
