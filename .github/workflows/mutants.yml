@@ -38,20 +38,36 @@ jobs:
   #       run: cat mutants-initial/timeout.txt
 
   # Upload cache stable output version
-  cache_mutants_output:
+  # cache_mutants_output:
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Checkout the latest code
+  #       id: git_checkout
+  #       uses: actions/checkout@v3
+  #     - name: Cache mutants-initial folder
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: mutation-testing/packages-output
+  #         key: mutants-stable-develop
+  #     # - name: Print caught mutants
+  #     #   run: cat mutants-initial/caught.txt
+
+  # ## Mutants testing: Execute on push on packages that have tested functions modified
+  cache_update_output:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout the latest code
         id: git_checkout
         uses: actions/checkout@v3
-      - name: Cache mutants-initial folder
-        uses: actions/cache@v3
+      - name: Restore mutants-output cached folder
+        uses: actions/cache/restore@v3
         with:
           path: mutation-testing/packages-output
           key: mutants-stable-develop
-      # - name: Print caught mutants
-      #   run: cat mutants-initial/caught.txt
+      - name: Print caught mutants
+        run: cat mutation-testing/packages-output/pox-locking/missed.txt
 
   # # Upload stable output version
   # stable-mutants:
