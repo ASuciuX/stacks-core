@@ -9,10 +9,12 @@ git diff > git.diff
 # for faster builds: increase number to 4 if at least 16 gb ram and 6 cores CPU
 cargo mutants --no-shuffle -j 2 -vV --in-diff git.diff --output temp/
 
+# go to scripts folder level
+cd scripts
 
 # call append-match-package.sh to update the content from the stable output
-### sh scripts/append-match-package.sh
+sh append-match-package.sh
 
-
-
-
+# removes extra files
+rm -rf ../git.diff
+rm -rf ../temp

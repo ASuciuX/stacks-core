@@ -13,8 +13,8 @@
 ## based on the file it was taken from, append it to the same file in the STABLE folder
 
 
-PR_FOLDER="./../temp/mutants.out"
-STABLE_FOLDER_PARENT="./../packages-output"
+PR_FOLDER="../temp/mutants.out"
+STABLE_FOLDER_PARENT="../packages-output"
 FILES=("caught.txt" "missed.txt" "timeout.txt" "unviable.txt")
 
 echo "Starting script..."
@@ -66,7 +66,3 @@ for file in "${FILES[@]}"; do
 done
 
 echo "Script completed."
-
-
-# remove temp/mutants.out
-## rm -rf ../temp/
