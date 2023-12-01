@@ -5,14 +5,14 @@
 # go to root folder
 cd ./../..
 
-# run git status on root
-untracked_files=($(git ls-files --others --exclude-standard))
+# # run git status on root
+# untracked_files=($(git ls-files --others --exclude-standard))
 
-# for each file untracked -> run git add file path
-echo "${untracked_files[@]}"
-for file in "${untracked_files[@]}"; do
-  git add -N "$file"
-done
+# # for each file untracked -> run git add file path
+# echo "${untracked_files[@]}"
+# for file in "${untracked_files[@]}"; do
+#   git add -N "$file"
+# done
 
 cd mutation-testing
 

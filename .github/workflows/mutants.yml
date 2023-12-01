@@ -37,42 +37,45 @@ jobs:
   #     - name: Print timeout mutants
   #       run: cat mutants-initial/timeout.txt
 
-  # Upload stable version first
-  stable-mutants:
-    name: Upload Stable Mutants Testing
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0 # do we want to fetch all?
-      - name: Archive mutants.out
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: mutants-stable-develop
-          path: mutation-testing/packages-output
-
-  # ## Mutants testing: Execute on PR on packages that have tested functions modified
-  # ### download it && see how it is
-  # incremental-mutants:
-  #   name: Incremental Mutants Testing
+  # # Upload stable output version
+  # stable-mutants:
+  #   name: Upload Stable Mutants Testing
   #   runs-on: ubuntu-latest
   #   steps:
   #     - uses: actions/checkout@v3
   #       with:
   #         fetch-depth: 0 # do we want to fetch all?
-  #     - name: Relative diff
-  #       run: |
-  #         git branch -av
-  #         git diff origin/${{ github.base_ref }}.. | tee git.diff
-  #     - uses: Swatinem/rust-cache@v2
-  #     - run: cargo install cargo-mutants
-  #     - name: Mutants
-  #       run: |
-  #         cargo mutants --no-shuffle -j 2 -vV --in-diff git.diff || true
-  #     - name: Archive mutants.out
+  #     - name: Archive mutants output
   #       uses: actions/upload-artifact@v3
   #       if: always()
   #       with:
-  #         name: mutants-stable-develop.out
-  #         path: mutants.out
+  #         name: mutants-stable-develop
+  #         path: mutation-testing/packages-output
+
+  ## Mutants testing: Execute on PR on packages that have tested functions modified
+  ### download it && see how it is
+  incremental-mutants:
+    name: Incremental Mutants Testing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # do we want to fetch all?
+      - name: Download stable output artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: mutants-stable-develop
+          path: mutation-testing/packages-output
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: mutation-testing/packages-output
+      - run: cargo install cargo-mutants
+      - name: Update stable mutants with modified functions
+        run: ./git-diff.sh
+        working-directory: mutation-testing/scripts
+      - name: Archive mutants output
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: mutants-stable-develop
+          path: mutation-testing/packages-output

@@ -39,6 +39,7 @@ mod pox_1;
 mod pox_2;
 mod pox_3;
 mod pox_4_remove;
+mod pox_5_remove;
 
 #[derive(Debug)]
 pub enum LockingError {
