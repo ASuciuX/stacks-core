@@ -1,4 +1,5 @@
 name: Mutants
+# to be tried cache vs artifacts
 
 on:
   push:
@@ -7,9 +8,6 @@ on:
       - develop
       - next
       - deployer/testing-shell-script
-    paths-ignore:
-      - '**.md'
-      - '**.yml'
   pull_request:
   workflow_dispatch:
 
