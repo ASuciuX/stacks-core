@@ -31,7 +31,7 @@ jobs:
           path: mutation-testing/packages-output
 
       - name: Print missed mutants from stx-genesis crate
-        run: cat mutants-initial/stx-genesis/missed.txt
+        run: cat mutation-testing/packages-output/stx-genesis/missed.txt
 
   # cache_mutants:
   #   runs-on: ubuntu-latest
