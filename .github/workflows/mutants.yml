@@ -16,6 +16,23 @@ on:
       - deployer/testing-shell-script
 
 jobs:
+  save_cache:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      - name: Archive mutants output
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: mutants-stable-develop
+          path: mutation-testing/packages-output
+
+      - name: Print missed mutants from stx-genesis crate
+        run: cat mutants-initial/stx-genesis/missed.txt
+
   # cache_mutants:
   #   runs-on: ubuntu-latest
 
@@ -54,48 +71,48 @@ jobs:
   #     #   run: cat mutants-initial/caught.txt
 
   # ## Mutants testing: Execute on push on packages that have tested functions modified
-  cache_update_output:
-    runs-on: ubuntu-latest
+  # cache_update_output:
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout the latest code
-        id: git_checkout
-        uses: actions/checkout@v3
-      - name: Restore mutants-output cached folder
-        uses: actions/cache/restore@v3
-        with:
-          path: mutation-testing/packages-output
-          key: mutants-stable-develop
-      - name: Print caught mutants
-        run: cat mutation-testing/packages-output/pox-locking/missed.txt
-      - run: cargo install cargo-mutants
-      # - name: Update stable mutants with modified functions
-      #   run: ./git-diff.sh
-      #   working-directory: mutation-testing/scripts
-      # - name: Print updated missed mutants
-      #   run: cat mutation-testing/packages-output/pox-locking/missed.txt
-      - name: Append 2 line to one file
-        run: |
-          echo "text 1" >> missed.txt
-          echo "text 2" >> missed.txt
-        working-directory: mutation-testing/packages-output/pox-locking
-      - name: outshow new cached file
-        run: cat missed.txt
-        working-directory: mutation-testing/packages-output/pox-locking
-      # - name: Cache mutants-initial folder
-      #   uses: actions/cache/save@v3
-      #   with:
-      #     path: mutation-testing/packages-output
-      #     key: mutants-stable-develop
-      - name: Save Cache
-        uses: Wandalen/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
-        with:
-          action: actions/cache/save@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
-          with: |
-            path: mutation-testing/packages-output
-            key: mutants-stable-develop
-          attempt_limit: 5
-          attempt_delay: 3000
+  #   steps:
+  #     - name: Checkout the latest code
+  #       id: git_checkout
+  #       uses: actions/checkout@v3
+  #     - name: Restore mutants-output cached folder
+  #       uses: actions/cache/restore@v3
+  #       with:
+  #         path: mutation-testing/packages-output
+  #         key: mutants-stable-develop
+  #     - name: Print caught mutants
+  #       run: cat mutation-testing/packages-output/pox-locking/missed.txt
+  #     - run: cargo install cargo-mutants
+  #     # - name: Update stable mutants with modified functions
+  #     #   run: ./git-diff.sh
+  #     #   working-directory: mutation-testing/scripts
+  #     # - name: Print updated missed mutants
+  #     #   run: cat mutation-testing/packages-output/pox-locking/missed.txt
+  #     - name: Append 2 line to one file
+  #       run: |
+  #         echo "text 1" >> missed.txt
+  #         echo "text 2" >> missed.txt
+  #       working-directory: mutation-testing/packages-output/pox-locking
+  #     - name: outshow new cached file
+  #       run: cat missed.txt
+  #       working-directory: mutation-testing/packages-output/pox-locking
+  #     # - name: Cache mutants-initial folder
+  #     #   uses: actions/cache/save@v3
+  #     #   with:
+  #     #     path: mutation-testing/packages-output
+  #     #     key: mutants-stable-develop
+  #     - name: Save Cache
+  #       uses: Wandalen/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
+  #       with:
+  #         action: actions/cache/save@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+  #         with: |
+  #           path: mutation-testing/packages-output
+  #           key: mutants-stable-develop
+  #         attempt_limit: 5
+  #         attempt_delay: 3000
 
   # # Upload stable output version
   # stable-mutants:
