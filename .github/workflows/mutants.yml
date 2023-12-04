@@ -23,15 +23,39 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         
-      - name: Archive mutants output
-        uses: actions/upload-artifact@v3
-        if: always()
+      - name: Restore mutants-output cached folder
+        id: cache-restore
+        uses: actions/cache/restore@v3
         with:
-          name: mutants-stable-develop
-          path: mutation-testing/packages-output
+          path: ./mutation-testing/packages-output
+          key: mutants-stable-develop
 
-      - name: Print missed mutants from stx-genesis crate
-        run: cat mutation-testing/packages-output/stx-genesis/missed.txt
+      - name: Print missed mutants from stx-genesis crate (from cache)
+        run: cat ./mutation-testing/packages-output/stx-genesis/missed.txt
+
+      - name: Append 2 lines to one file
+        run: |
+          echo "text 1" >> missed.txt
+          echo "text 2" >> missed.txt
+        working-directory: ./mutation-testing/packages-output/stx-genesis
+
+      - name: Print missed mutants from stx-genesis crate (updated)
+        run: cat ./mutation-testing/packages-output/stx-genesis/missed.txt
+
+      - name: Delete Previous Cache
+        if: ${{ steps.cache-restore.outputs.cache-hit }}
+        continue-on-error: true
+        run: |
+          gh extension install actions/gh-actions-cache
+          gh actions-cache delete "mutants-stable-develop" --confirm
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Save Cache
+        uses: actions/cache/save@v3
+        with:
+          path: ./mutation-testing/packages-output
+          key: mutants-stable-develop
 
   # cache_mutants:
   #   runs-on: ubuntu-latest
