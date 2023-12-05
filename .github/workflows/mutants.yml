@@ -30,22 +30,19 @@ jobs:
           path: ./mutation-testing/packages-output
           key: mutants-stable-develop
 
-      - name: Print old commit hash (before creating)
-        run: cat ./mutation-testing/last_commit_hash.txt
-
       - name: Create file with current commit hash if it doesn't exist
         run: |
           if [ ! -f last_commit_hash.txt ]; then
             echo "${{ github.sha }}" > last_commit_hash.txt
           fi
-        working-directory: ./mutation-testing
+        working-directory: ./mutation-testing/packages-output
 
       - name: Print old commit hash
-        run: cat ./mutation-testing/last_commit_hash.txt
+        run: cat ./mutation-testing/packages-output/last_commit_hash.txt
 
       # - name: Run the mutation testing on the differences
       #   run: |
-      #     if [ -f last_commit_hash.txt ]; then
+      #     if [ -f ../packages-output/last_commit_hash.txt ]; then
       #       ./git-diff.sh
       #     fi
       #   working-directory: ./mutation-testing/scripts
@@ -53,10 +50,10 @@ jobs:
       - name: Re-write the old commit hash with the current one
         run: |
           echo "${{ github.sha }}" > last_commit_hash.txt
-        working-directory: ./mutation-testing
+        working-directory: ./mutation-testing/packages-output
 
       - name: Print new commit hash
-        run: cat ./mutation-testing/last_commit_hash.txt
+        run: cat ./mutation-testing/packages-output/last_commit_hash.txt
 
       - name: Delete Previous Cache
         if: ${{ steps.cache-restore.outputs.cache-hit }}
