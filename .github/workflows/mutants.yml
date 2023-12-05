@@ -32,8 +32,8 @@ jobs:
           path: ./mutation-testing/packages-output
           key: mutants-stable-develop
 
-      # - name: Install cargo-mutants crate
-      #   run: cargo install cargo-mutants
+      - name: Install cargo-mutants crate
+        run: cargo install cargo-mutants
 
       - name: Create file with current commit hash if it doesn't exist
         run: |
@@ -45,12 +45,12 @@ jobs:
       - name: Print old commit hash
         run: cat ./mutation-testing/packages-output/last_commit_hash.txt
 
-      # - name: Run the mutation testing on the differences
-      #   run: |
-      #     if [ -f ../packages-output/last_commit_hash.txt ]; then
-      #       ./git-diff.sh
-      #     fi
-      #   working-directory: ./mutation-testing/scripts
+      - name: Run the mutation testing on the differences
+        run: |
+          if [ -f ../packages-output/last_commit_hash.txt ]; then
+            ./git-diff.sh
+          fi
+        working-directory: ./mutation-testing/scripts
 
       - name: Re-write the old commit hash with the current one
         run: |
