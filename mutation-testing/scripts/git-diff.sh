@@ -20,7 +20,7 @@ cd mutation-testing
 
 # get the differences since the last commit
 last_commit_hash=$(<./packages-output/last_commit_hash.txt)
-git diff "$last_commit_hash" > git.diff
+git diff $last_commit_hash > git.diff
 
 # it runs cargo mutants for those specific changed functions and outputs to /temp/mutants.out
 # for faster builds: increase number to 4 if at least 16 gb ram and 6 cores CPU
