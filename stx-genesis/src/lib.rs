@@ -114,6 +114,26 @@ fn fn_option_remove() -> Option<u8> {
     Some(2)
 }
 
+fn fn_int_remove() -> u32 {
+    12
+}
+
+fn read_deflated_zonefiles_test_clone(
+    deflate_bytes: &'static [u8],
+) -> Box<dyn Iterator<Item = GenesisZonefile>> {
+    let cursor = io::Cursor::new(deflate_bytes);
+    let deflate_decoder = deflate::Decoder::new(cursor);
+    let buff_reader = BufReader::new(deflate_decoder);
+    let pairs = LinePairReader {
+        val: buff_reader.lines(),
+    };
+    let pair_iter = pairs.into_iter().map(|pair| GenesisZonefile {
+        zonefile_hash: pair[0].to_owned(),
+        zonefile_content: pair[1].replace("\\n", "\n"),
+    });
+    return Box::new(pair_iter);
+}
+
 fn read_deflated_zonefiles(
     deflate_bytes: &'static [u8],
 ) -> Box<dyn Iterator<Item = GenesisZonefile>> {
