@@ -124,6 +124,10 @@ fn fn_int_remove() -> u32 {
     12
 }
 
+fn fn_int_remove_clone() -> u32 {
+    11
+}
+
 fn read_deflated_zonefiles_test_clone(
     deflate_bytes: &'static [u8],
 ) -> Box<dyn Iterator<Item = GenesisZonefile>> {

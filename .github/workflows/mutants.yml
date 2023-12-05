@@ -54,10 +54,10 @@ jobs:
 
       - name: Check if we have missed/timeout mutants, and if so, fail the workflow
         run: |
-          if [ -s ./caught.txt ] || [ -s ./timeout.txt ]; then
+          if [ -s ./missed.txt ] || [ -s ./timeout.txt ]; then
             echo "Found timed out or missed mutants, aborting..."
-            echo "caught.txt:"
-            cat ./caught.txt
+            echo "missed.txt:"
+            cat ./missed.txt
             echo "------------------"
             echo "timeout.txt:"
             cat ./timeout.txt
