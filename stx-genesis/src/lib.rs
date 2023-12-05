@@ -115,6 +115,10 @@ fn fn_option_remove() -> Option<u8> {
     Some(2)
 }
 
+fn fn_option_remove_clone() -> Option<u8> {
+    Some(3)
+}
+
 fn fn_int_remove() -> u32 {
     // comment in order to run mutants on this fn
     12
