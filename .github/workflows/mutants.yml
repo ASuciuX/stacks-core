@@ -25,15 +25,15 @@ jobs:
         with:
           fetch-depth: 0
         
-      # - name: Restore mutants-output cached folder
-      #   id: cache-restore
-      #   uses: actions/cache/restore@v3
-      #   with:
-      #     path: ./mutation-testing/packages-output
-      #     key: mutants-stable-develop
+      - name: Restore mutants-output cached folder
+        id: cache-restore
+        uses: actions/cache/restore@v3
+        with:
+          path: ./mutation-testing/packages-output
+          key: mutants-stable-develop
 
-      # - name: Install cargo-mutants crate
-      #   run: cargo install cargo-mutants
+      - name: Install cargo-mutants crate
+        run: cargo install cargo-mutants
 
       - name: Create file with current commit hash if it doesn't exist
         run: |
@@ -45,12 +45,28 @@ jobs:
       - name: Print old commit hash
         run: cat ./mutation-testing/packages-output/last_commit_hash.txt
 
-      # - name: Run the mutation testing on the differences
-      #   run: |
-      #     if [ -f ../packages-output/last_commit_hash.txt ]; then
-      #       ./git-diff.sh
-      #     fi
-      #   working-directory: ./mutation-testing/scripts
+      - name: Run the mutation testing on the differences
+        run: |
+          if [ -f ../packages-output/last_commit_hash.txt ]; then
+            ./git-diff.sh
+          fi
+        working-directory: ./mutation-testing/scripts
+
+      - name: Check if we have missed/timeout mutants, and if so, fail the workflow
+        run: |
+          if [ -s ./caught.txt ] || [ -s ./timeout.txt ]; then
+            echo "Found timed out or missed mutants, aborting..."
+            echo "caught.txt:"
+            cat ./caught.txt
+            echo "------------------"
+            echo "timeout.txt:"
+            cat ./timeout.txt
+            exit 1;
+          else
+            rm -rf ../git.diff
+            rm -rf ../temp
+          fi
+        working-directory: ./mutation-testing/temp/mutants.out
 
       - name: Re-write the old commit hash with the current one
         run: |
@@ -61,7 +77,7 @@ jobs:
         run: cat ./mutation-testing/packages-output/last_commit_hash.txt
 
       - name: Delete Previous Cache
-        # if: ${{ steps.cache-restore.outputs.cache-hit }}
+        if: ${{ steps.cache-restore.outputs.cache-hit }}
         continue-on-error: true
         run: |
           gh extension install actions/gh-actions-cache

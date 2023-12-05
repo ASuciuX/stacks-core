@@ -111,16 +111,19 @@ impl Iterator for LinePairReader {
 }
 
 fn fn_option_remove() -> Option<u8> {
+    // comment in order to run mutants on this fn
     Some(2)
 }
 
 fn fn_int_remove() -> u32 {
+    // comment in order to run mutants on this fn
     12
 }
 
 fn read_deflated_zonefiles_test_clone(
     deflate_bytes: &'static [u8],
 ) -> Box<dyn Iterator<Item = GenesisZonefile>> {
+    // comment in order to run mutants on this fn
     let cursor = io::Cursor::new(deflate_bytes);
     let deflate_decoder = deflate::Decoder::new(cursor);
     let buff_reader = BufReader::new(deflate_decoder);

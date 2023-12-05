@@ -42,7 +42,3 @@ for file in ../temp/mutants.out/*.txt; do
         echo "-------------------------"
     fi
 done
-
-# removes extra files
-rm -rf ../git.diff
-rm -rf ../temp
