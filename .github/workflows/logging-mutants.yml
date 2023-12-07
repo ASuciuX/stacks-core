@@ -49,11 +49,11 @@ jobs:
         run: cat ./mutation-testing/packages-output/last_commit_hash.txt
 
       - name: Remove deleted functions from output files
-        run: ./remove-deleted-functions-from-output.sh.sh
+        run: ./remove-deleted-functions-from-output.sh
         working-directory: ./mutation-testing/scripts
 
       - name: Remove deleted file lines from git.diff file
-        run: ./remove_deleted_file_lines.sh
+        run: ./remove-deleted-file-lines.sh
         working-directory: ./mutation-testing/scripts
 
       - name: Run the mutation testing on the differences

@@ -27,7 +27,7 @@ jobs:
         - run: cargo install cargo-mutants
 
         - name: Remove deleted file lines from git.diff file
-          run: ./remove_deleted_file_lines.sh
+          run: ./remove-deleted-file-lines.sh
           working-directory: ./mutation-testing/scripts
 
         - name: Mutants
