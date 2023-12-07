@@ -48,11 +48,23 @@ jobs:
       - name: Print old commit hash
         run: cat ./mutation-testing/packages-output/last_commit_hash.txt
 
+      - name: Remove deleted functions from output files
+        run: ./remove-deleted-functions-from-output.sh.sh
+        working-directory: ./mutation-testing/scripts
+
+      - name: Remove deleted file lines from git.diff file
+        run: ./remove_deleted_file_lines.sh
+        working-directory: ./mutation-testing/scripts
+
       - name: Run the mutation testing on the differences
         run: |
           if [ -f ../packages-output/last_commit_hash.txt ]; then
             ./git-diff.sh
           fi
+        working-directory: ./mutation-testing/scripts
+
+      - name: Update the content from the stable output
+        run: bash append-match-package.sh
         working-directory: ./mutation-testing/scripts
 
       - name: Re-write the old commit hash with the current one

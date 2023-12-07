@@ -96,7 +96,7 @@ struct LinePairReader {
 }
 
 impl Iterator for LinePairReader {
-    type Item = [String; 2];
+    type Item = [String; 2]; 
     fn next(&mut self) -> Option<Self::Item> {
         if let (Some(l1), Some(l2)) = (self.val.next(), self.val.next()) {
             Some([l1.unwrap(), l2.unwrap()])
@@ -124,8 +124,9 @@ fn fn_int_remove() -> u32 {
     12
 }
 
-fn fn_int_remove_clone() -> u32 {
-    11
+fn fn_int_remove_test() -> u32 {
+    // comment in order to run mutants on this fn
+    13
 }
 
 fn read_deflated_zonefiles_test_clone(
@@ -178,15 +179,6 @@ fn read_balances(deflate_bytes: &'static [u8]) -> Box<dyn Iterator<Item = Genesi
         amount: cols[1].parse::<u64>().unwrap(),
     });
     return Box::new(balances);
-}
-
-fn read_lockups(deflate_bytes: &'static [u8]) -> Box<dyn Iterator<Item = GenesisAccountLockup>> {
-    let lockups = iter_deflated_csv(deflate_bytes).map(|cols| GenesisAccountLockup {
-        address: cols[0].to_string(),
-        amount: cols[1].parse::<u64>().unwrap(),
-        block_height: cols[2].parse::<u64>().unwrap(),
-    });
-    return Box::new(lockups);
 }
 
 fn read_namespaces(deflate_bytes: &'static [u8]) -> Box<dyn Iterator<Item = GenesisNamespace>> {

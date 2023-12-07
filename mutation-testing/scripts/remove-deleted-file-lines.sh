@@ -1,6 +1,6 @@
 #!/bin/bash
 
-input_file="clone_git.diff"
+input_file="git.diff"
 temp_file="temp_diff_file.diff"
 
 # Reverse the file, remove 4 lines after '+++ /dev/null', then reverse it back (editors can't go backwards - to remove lines above)

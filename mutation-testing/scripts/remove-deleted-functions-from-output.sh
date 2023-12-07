@@ -24,7 +24,7 @@
 #       Else, add to the list the following matching: '{file_path}.*{impl_block}::{fn_name}'
 # Then parse through every fn in {functions}, and if the fn matches any line in the files from 'packages-output' folder, remove it
 
-input_file="clone_git.diff"
+input_file="git.diff"
 functions=()
 
 # Read the file line by line
@@ -64,13 +64,16 @@ while IFS= read -r line; do
   fi
 done < "$input_file"
 
+# Print the lines to be removed
+echo "Removing these lines from the stable output:"
+for func in "${functions[@]}"; do
+  grep -r "$func" ../packages-output/*
+done
+
 # Remove the lines matching the regex for all deleted functions
-find "./mutation-testing/packages-output" -type f -print0 | while IFS= read -r -d $'\0' file; do
+find "../packages-output" -type f -print0 | while IFS= read -r -d $'\0' file; do
   grep -Ev "$(printf '%s\n' "${functions[@]}" | sed 's/\([[].*[]]\)/[\\1]/g')" "$file" > "temp_file" && mv "temp_file" "$file"
   if [[ -e "temp_file" ]]; then
     rm "temp_file"
   fi
 done
-
-# Remove the lines of deleted files from git.diff so that cargo mutants can run on it 
-./remove-deleted-file-lines.sh
