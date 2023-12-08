@@ -33,8 +33,10 @@ jobs:
 
         - name: Run mutants and check the exit code of the command, fail the workflow if mutations are not caught
           run: |
+            set +e  # Disable immediate exit on error
             cargo mutants --no-shuffle -j 2 -vV --in-diff git.diff --output ./
             exit_code=$?
+            set -e  # Enable immediate exit on error again
 
             case $exit_code in
                 0)
