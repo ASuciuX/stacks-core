@@ -33,7 +33,7 @@ jobs:
 
         - name: Mutants
           run: |
-            cargo mutants --no-shuffle -j 2 -vV --in-diff git.diff
+            cargo mutants --no-shuffle -j 2 -vV --in-diff git.diff || true
           working-directory: ./mutation-testing/scripts
 
         - name: Check the exit code of the 'mutants' command, and if the mutations are not caught, fail the workflow
