@@ -31,21 +31,17 @@ jobs:
           run: ./remove-deleted-file-lines.sh
           working-directory: ./mutation-testing/scripts
 
-        - name: Mutants
+        - name: Run mutants and check the exit code of the command, fail the workflow if mutations are not caught
           run: |
-            cargo mutants --no-shuffle -j 2 -vV --in-diff git.diff || true
-          working-directory: ./mutation-testing/scripts
-
-        - name: Check the exit code of the 'mutants' command, and if the mutations are not caught, fail the workflow
-          run: |
+            cargo mutants --no-shuffle -j 2 -vV --in-diff git.diff --output ./ || true
             exit_code=$?
 
             case $exit_code in
                 0)
-                    if [ -s ./unviable.txt ]; then
+                    if [ -s ./mutants.out/unviable.txt ]; then
                         echo "-------------"
                         echo "Found unviable mutants:"
-                        cat ./unviable.txt
+                        cat ./mutants.out/unviable.txt
                         exit 1
                     fi
                     echo "All new and updated functions are caught!"
@@ -55,19 +51,19 @@ jobs:
                     exit 1
                     ;;
                 2 | 3)
-                    if [ -s ./missed.txt ]; then
+                    if [ -s ./mutants.out/missed.txt ]; then
                         echo "Found missed mutants:"
-                        cat ./missed.txt
+                        cat ./mutants.out/missed.txt
                     fi
-                    if [ -s ./timeout.txt ]; then
+                    if [ -s ./mutants.out/timeout.txt ]; then
                         echo "-------------"
                         echo "Found timeout mutants:"
-                        cat ./timeout.txt
+                        cat ./mutants.out/timeout.txt
                     fi
-                    if [ -s ./unviable.txt ]; then
+                    if [ -s ./mutants.out/unviable.txt ]; then
                         echo "-------------"
                         echo "Found unviable mutants:"
-                        cat ./unviable.txt
+                        cat ./mutants.out/unviable.txt
                     fi
                     exit 1
                     ;;
@@ -80,4 +76,4 @@ jobs:
                     exit 1
                     ;;
             esac
-          working-directory: ./mutants.out
+          working-directory: ./mutation-testing/scripts
