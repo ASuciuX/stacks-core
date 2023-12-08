@@ -33,7 +33,7 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: ./mutation-testing/packages-output
-          key: mutants-stable-develop
+          key: mutants-stable-${{ github.ref_name }}
 
       - name: Install cargo-mutants crate
         run: cargo install cargo-mutants
@@ -86,7 +86,7 @@ jobs:
         continue-on-error: true
         run: |
           gh extension install actions/gh-actions-cache
-          gh actions-cache delete "mutants-stable-develop" --confirm
+          gh actions-cache delete "mutants-stable-${{ github.ref_name }}" --confirm
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -95,7 +95,7 @@ jobs:
         uses: actions/cache/save@v3
         with:
           path: ./mutation-testing/packages-output
-          key: mutants-stable-develop
+          key: mutants-stable-${{ github.ref_name }}
 
   # cache_mutants:
   #   runs-on: ubuntu-latest
