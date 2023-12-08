@@ -33,18 +33,51 @@ jobs:
 
         - name: Mutants
           run: |
-            cargo mutants --no-shuffle -j 2 -vV --in-diff git.diff || true
+            cargo mutants --no-shuffle -j 2 -vV --in-diff git.diff
           working-directory: ./mutation-testing/scripts
 
-        - name: Check if we have missed/timeout mutants, and if so, fail the workflow
+        - name: Check the exit code of the 'mutants' command, and if the mutations are not caught, fail the workflow
           run: |
-            if [ -s ./missed.txt ] || [ -s ./timeout.txt ]; then
-              echo "Found timed out or missed mutants, aborting..."
-              echo "missed.txt:"
-              cat ./missed.txt
-              echo "------------------"
-              echo "timeout.txt:"
-              cat ./timeout.txt
-              exit 1;
-            fi
+            exit_code=$?
+
+            case $exit_code in
+                0)
+                    if [ -s ./unviable.txt ]; then
+                        echo "-------------"
+                        echo "Found unviable mutants:"
+                        cat ./unviable.txt
+                        exit 1
+                    fi
+                    echo "All new and updated functions are caught!"
+                    ;;
+                1)
+                    echo "Invalid command line arguments!"
+                    exit 1
+                    ;;
+                2 | 3)
+                    if [ -s ./missed.txt ]; then
+                        echo "Found missed mutants:"
+                        cat ./missed.txt
+                    fi
+                    if [ -s ./timeout.txt ]; then
+                        echo "-------------"
+                        echo "Found timeout mutants:"
+                        cat ./timeout.txt
+                    fi
+                    if [ -s ./unviable.txt ]; then
+                        echo "-------------"
+                        echo "Found unviable mutants:"
+                        cat ./unviable.txt
+                    fi
+                    exit 1
+                    ;;
+                4)
+                    echo "Building the packages failed without any mutations!"
+                    exit 1
+                    ;;
+                *)
+                    echo "Unknown exit code: $exit_code"
+                    exit 1
+                    ;;
+            esac
           working-directory: ./mutants.out
