@@ -33,7 +33,7 @@ jobs:
 
         - name: Run mutants and check the exit code of the command, fail the workflow if mutations are not caught
           run: |
-            cargo mutants --no-shuffle -j 2 -vV --in-diff git.diff --output ./ || true
+            cargo mutants --no-shuffle -j 2 -vV --in-diff git.diff --output ./
             exit_code=$?
 
             case $exit_code in
