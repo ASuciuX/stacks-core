@@ -21,6 +21,7 @@ jobs:
           run: |
             git branch -av
             git diff origin/${{ github.base_ref }}.. | tee git.diff
+          working-directory: ./mutation-testing/scripts
 
         - uses: Swatinem/rust-cache@v2
 
@@ -33,6 +34,7 @@ jobs:
         - name: Mutants
           run: |
             cargo mutants --no-shuffle -j 2 -vV --in-diff git.diff || true
+          working-directory: ./mutation-testing/scripts
 
         - name: Check if we have missed/timeout mutants, and if so, fail the workflow
           run: |

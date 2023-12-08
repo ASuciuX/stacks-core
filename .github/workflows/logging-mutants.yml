@@ -48,6 +48,12 @@ jobs:
       - name: Print old commit hash
         run: cat ./mutation-testing/packages-output/last_commit_hash.txt
 
+      - name: Create git.diff file
+        run: |
+          last_commit_hash=$(<../packages-output/last_commit_hash.txt)
+          git diff $last_commit_hash > git.diff
+        working-directory: ./mutation-testing/scripts
+
       - name: Remove deleted functions from output files
         run: ./remove-deleted-functions-from-output.sh
         working-directory: ./mutation-testing/scripts
@@ -58,10 +64,10 @@ jobs:
 
       - name: Run the mutation testing on the differences
         run: |
-          if [ -f ../packages-output/last_commit_hash.txt ]; then
-            ./git-diff.sh
+          if [ -f ./packages-output/last_commit_hash.txt ]; then
+            cargo mutants --no-shuffle -j 2 -vV --in-diff ./scripts/git.diff --output temp/
           fi
-        working-directory: ./mutation-testing/scripts
+        working-directory: ./mutation-testing
 
       - name: Update the content from the stable output
         run: bash append-match-package.sh
