@@ -1,10 +1,10 @@
 name: Tracking PR Mutants
 
 on:
-  pull_request:
   push:
     branches:
       - deployer/migrate-ci
+  pull_request:
 
 jobs:
   # Mutants testing: Execute on PR on packages that have functions modified, and fail the workflow if there are missed or timeout mutations
