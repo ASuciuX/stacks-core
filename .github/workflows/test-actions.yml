@@ -10,5 +10,16 @@ jobs:
   test-actions:
     runs-on: ubuntu-latest
     steps:
-      - name: Call action
+      - name: Checkout stacks repo
+        uses: actions/checkout@v3
+
+      - name: List files stacks repo
+        run: |
+          ls ./
+
+      - name: Call action stacks repo
         uses: ASuciuX/actions/mutation-testing/test-action@feat/mutation-testing
+
+      - name: List files again stacks repo
+        run: |
+          ls ./
