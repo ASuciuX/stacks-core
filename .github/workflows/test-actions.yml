@@ -2,6 +2,10 @@ name: Test actions
 
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "The tag to create (optional)"
+        required: false
   push:
     branches:
       - deployer/migrate-ci
