@@ -21,7 +21,6 @@ jobs:
         run: |
           ls ./
 
-      # test
       - name: Call action stacks repo
         uses: ASuciuX/actions/mutation-testing/test-action@feat/mutation-testing
 
