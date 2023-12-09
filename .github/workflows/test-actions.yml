@@ -8,4 +8,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Call action
-        uses: stacks-network/actions/mutation-testing/test-action@feat/mutation-testing
+        uses: ASuciuX/actions/mutation-testing/test-action@feat/mutation-testing
