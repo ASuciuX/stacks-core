@@ -1,0 +1,11 @@
+name: Test actions
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call action
+        uses: stacks-network/actions/mutation-testing/test-action@feat/mutation-testing
