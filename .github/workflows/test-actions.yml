@@ -2,6 +2,9 @@ name: Test actions
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - deployer/migrate-ci
 
 jobs:
   test-actions:
