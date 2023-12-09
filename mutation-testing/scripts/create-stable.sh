@@ -1,8 +1,7 @@
-# for specific packages creates the outpup
-
-# removes everything except .txt files
-
 #!/bin/bash
+
+# for specific packages creates the outpup
+# removes everything except .txt files
 
 # moves to mutation-testing folder
 cd ../packages-output

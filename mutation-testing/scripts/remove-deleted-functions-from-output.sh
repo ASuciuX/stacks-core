@@ -39,9 +39,9 @@ while IFS= read -r line; do
     impl_block="${line#*impl}"
     impl_block="${impl_block%%\ {*}"
     impl_block="<impl$impl_block>" # add 'impl' word, '<' and '>' characters
-    impl_block=$(echo "$impl_block" | sed -E 's/(^[^ ]*impl)[^ ]*/\1/') # remove everything after 'impl', until the next space
-    impl_block=$(echo "$impl_block" | sed 's/\(<[^<]*\)[^ ]* /\1 /') # remove everything starting with '<' and ending at the next space, from the second word
-    impl_block=$(echo "$impl_block" | awk '{sub(/ [^ ]+::/, " "); print}') # keep only the characters after the last '::' of the 2nd word (struct name without path)
+    impl_block=$(${impl_block} | sed -E 's/(^[^ ]*impl)[^ ]*/\1/') # remove everything after 'impl', until the next space
+    impl_block=$(${impl_block} | sed 's/\(<[^<]*\)[^ ]* /\1 /') # remove everything starting with '<' and ending at the next space, from the second word
+    impl_block=$(${impl_block} | awk '{sub(/ [^ ]+::/, " "); print}') # keep only the characters after the last '::' of the 2nd word (struct name without path)
   elif [[ "$line" == *'impl'*'{'* ]]; then
     impl_block="${line#*impl}"
     impl_block="${impl_block%%\ {*}"
