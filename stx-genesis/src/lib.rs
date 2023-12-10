@@ -115,6 +115,11 @@ fn fn_option_remove() -> Option<u8> {
     Some(2)
 }
 
+fn fn_option_remove_test() -> Option<u8> {
+    // comment in order to run mutants on this fn
+    Some(3)
+}
+
 fn fn_option_remove_clone() -> Option<u8> {
     Some(3)
 }
@@ -122,11 +127,6 @@ fn fn_option_remove_clone() -> Option<u8> {
 fn fn_int_remove() -> u32 {
     // comment in order to run mutants on this fn
     12
-}
-
-fn fn_int_remove_test() -> u32 {
-    // comment in order to run mutants on this fn
-    13
 }
 
 fn read_deflated_zonefiles_test_clone(
