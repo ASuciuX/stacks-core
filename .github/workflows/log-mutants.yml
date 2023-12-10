@@ -27,3 +27,5 @@ jobs:
     steps:
       - name: Run logging mutants from actions
         uses: ASuciuX/actions/mutation-testing/logger@feat/mutation-testing
+        with:
+          gh-token: ${{ secrets.GITHUB_TOKEN }}
