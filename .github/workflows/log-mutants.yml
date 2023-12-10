@@ -23,6 +23,7 @@ jobs:
   save_cache:
     runs-on: ubuntu-latest
 
+    # test
     steps:
       - name: Run logging mutants from actions
         uses: ASuciuX/actions/mutation-testing/logger@feat/mutation-testing
