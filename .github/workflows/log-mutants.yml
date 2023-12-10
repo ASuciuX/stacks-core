@@ -16,8 +16,6 @@ on:
       - master
       - develop
       - next
-      - deployer/testing-shell-script
-      - deployer/migrate-ci
 
 jobs:
   save_cache:
