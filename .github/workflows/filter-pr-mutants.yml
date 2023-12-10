@@ -1,9 +1,6 @@
 name: Tracking PR Mutants
 
 on:
-  push:
-    branches:
-      - deployer/migrate-ci
   pull_request:
 
 jobs:
