@@ -31,19 +31,23 @@ impl Default for CoverageReporter {
     }
 }
 
+#[derive(Serialize, Deserialize)]
+struct ContractFileInfoA {
+    contract: String,
+    src_file: String,
+    executable_lines: Vec<u32>,
+}
+
+#[derive(Serialize, Deserialize)]
+struct CoverageFileInfoA {
+    coverage: HashMap<String, Vec<(u32, u64)>>,
+}
+
 impl CoverageReporter {
     pub fn new() -> CoverageReporter {
         CoverageReporter {
             executed_lines: HashMap::new(),
         }
-    }
-
-    #[cfg(not(feature = "developer-mode"))]
-    pub fn report_eval(
-        &mut self,
-        _expr: &SymbolicExpression,
-        _contract: &QualifiedContractIdentifier,
-    ) {
     }
 
     #[cfg(feature = "developer-mode")]
@@ -229,15 +233,6 @@ impl CoverageReporter {
 }
 
 impl EvalHook for CoverageReporter {
-    fn will_begin_eval(
-        &mut self,
-        env: &mut crate::vm::contexts::Environment,
-        _context: &crate::vm::contexts::LocalContext,
-        expr: &SymbolicExpression,
-    ) {
-        self.report_eval(expr, &env.contract_context.contract_identifier);
-    }
-
     fn did_finish_eval(
         &mut self,
         _env: &mut crate::vm::Environment,

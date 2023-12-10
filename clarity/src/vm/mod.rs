@@ -16,7 +16,6 @@
 
 extern crate regex;
 
-pub mod diagnostic;
 pub mod errors;
 
 #[macro_use]
@@ -41,8 +40,6 @@ pub mod version;
 
 pub mod coverage;
 
-pub mod events;
-
 #[cfg(any(test, feature = "testing"))]
 pub mod tests;
 
@@ -61,7 +58,6 @@ use stacks_common::types::StacksEpochId;
 use self::analysis::ContractAnalysis;
 use self::ast::{ASTRules, ContractAST};
 use self::costs::ExecutionCost;
-use self::diagnostic::Diagnostic;
 use crate::vm::callables::CallableType;
 use crate::vm::contexts::GlobalContext;
 pub use crate::vm::contexts::{

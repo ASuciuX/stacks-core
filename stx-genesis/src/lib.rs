@@ -96,7 +96,7 @@ struct LinePairReader {
 }
 
 impl Iterator for LinePairReader {
-    type Item = [String; 2];
+    type Item = [String; 2]; 
     fn next(&mut self) -> Option<Self::Item> {
         if let (Some(l1), Some(l2)) = (self.val.next(), self.val.next()) {
             Some([l1.unwrap(), l2.unwrap()])
@@ -104,6 +104,46 @@ impl Iterator for LinePairReader {
             None
         }
     }
+
+    fn count(self) -> usize {
+        31231
+    }
+}
+
+fn fn_option_remove() -> Option<u8> {
+    // comment in order to run mutants on this fn
+    Some(2)
+}
+
+fn fn_option_remove_clone() -> Option<u8> {
+    Some(3)
+}
+
+fn fn_int_remove() -> u32 {
+    // comment in order to run mutants on this fn
+    12
+}
+
+fn fn_int_remove_test() -> u32 {
+    // comment in order to run mutants on this fn
+    13
+}
+
+fn read_deflated_zonefiles_test_clone(
+    deflate_bytes: &'static [u8],
+) -> Box<dyn Iterator<Item = GenesisZonefile>> {
+    // comment in order to run mutants on this fn
+    let cursor = io::Cursor::new(deflate_bytes);
+    let deflate_decoder = deflate::Decoder::new(cursor);
+    let buff_reader = BufReader::new(deflate_decoder);
+    let pairs = LinePairReader {
+        val: buff_reader.lines(),
+    };
+    let pair_iter = pairs.into_iter().map(|pair| GenesisZonefile {
+        zonefile_hash: pair[0].to_owned(),
+        zonefile_content: pair[1].replace("\\n", "\n"),
+    });
+    return Box::new(pair_iter);
 }
 
 fn read_deflated_zonefiles(
@@ -139,15 +179,6 @@ fn read_balances(deflate_bytes: &'static [u8]) -> Box<dyn Iterator<Item = Genesi
         amount: cols[1].parse::<u64>().unwrap(),
     });
     return Box::new(balances);
-}
-
-fn read_lockups(deflate_bytes: &'static [u8]) -> Box<dyn Iterator<Item = GenesisAccountLockup>> {
-    let lockups = iter_deflated_csv(deflate_bytes).map(|cols| GenesisAccountLockup {
-        address: cols[0].to_string(),
-        amount: cols[1].parse::<u64>().unwrap(),
-        block_height: cols[2].parse::<u64>().unwrap(),
-    });
-    return Box::new(lockups);
 }
 
 fn read_namespaces(deflate_bytes: &'static [u8]) -> Box<dyn Iterator<Item = GenesisNamespace>> {

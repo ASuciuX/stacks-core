@@ -1,0 +1,96 @@
+name: Tracking PR Mutants
+
+on:
+  pull_request:
+
+jobs:
+  # Mutants testing: Execute on PR on packages that have functions modified, and fail the workflow if there are missed or timeout mutations
+  incremental-mutants:
+    name: Incremental Mutants Testing
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run filtering pr mutants from actions
+        uses: ASuciuX/actions/mutation-testing/filter-pr@feat/mutation-testing
+# name: Tracking PR Mutants
+
+# on:
+#     pull_request:
+
+# jobs:
+#     # Mutants testing: Execute on PR on packages that have functions modified, and fail the workflow if there are missed or timeout mutations
+#     incremental-mutants:
+#         name: Incremental Mutants Testing
+
+#         runs-on: ubuntu-latest
+
+#         if: github.event_name == 'pull_request'
+
+#         steps:
+#         - uses: actions/checkout@v3
+#           with:
+#             fetch-depth: 0
+
+#         - name: Relative diff
+#           run: |
+#             git branch -av
+#             git diff origin/${{ github.base_ref }}.. | tee git.diff
+#           working-directory: ./mutation-testing/scripts
+
+#         - uses: Swatinem/rust-cache@v2
+
+#         - run: cargo install cargo-mutants
+
+#         - name: Remove deleted file lines from git.diff file
+#           run: ./remove-deleted-file-lines.sh
+#           working-directory: ./mutation-testing/scripts
+
+#         - name: Run mutants and check the exit code of the command, fail the workflow if mutations are not caught
+#           run: |
+#             set +e  # Disable immediate exit on error
+#             cargo mutants --no-shuffle -j 2 -vV --in-diff git.diff --output ./
+#             exit_code=$?
+#             set -e  # Enable immediate exit on error again
+
+#             case $exit_code in
+#                 0)
+#                     if [ -s ./mutants.out/unviable.txt ]; then
+#                         echo "-------------"
+#                         echo "Found unviable mutants:"
+#                         cat ./mutants.out/unviable.txt
+#                         exit 1
+#                     fi
+#                     echo "All new and updated functions are caught!"
+#                     ;;
+#                 1)
+#                     echo "Invalid command line arguments!"
+#                     exit 1
+#                     ;;
+#                 2 | 3)
+#                     if [ -s ./mutants.out/missed.txt ]; then
+#                         echo "Found missed mutants:"
+#                         cat ./mutants.out/missed.txt
+#                     fi
+#                     if [ -s ./mutants.out/timeout.txt ]; then
+#                         echo "-------------"
+#                         echo "Found timeout mutants:"
+#                         cat ./mutants.out/timeout.txt
+#                     fi
+#                     if [ -s ./mutants.out/unviable.txt ]; then
+#                         echo "-------------"
+#                         echo "Found unviable mutants:"
+#                         cat ./mutants.out/unviable.txt
+#                     fi
+#                     exit 1
+#                     ;;
+#                 4)
+#                     echo "Building the packages failed without any mutations!"
+#                     exit 1
+#                     ;;
+#                 *)
+#                     echo "Unknown exit code: $exit_code"
+#                     exit 1
+#                     ;;
+#             esac
+#           working-directory: ./mutation-testing/scripts
