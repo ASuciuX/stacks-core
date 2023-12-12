@@ -21,7 +21,7 @@ use std::{io, str};
 use stacks_common::util::chunked_encoding::*;
 
 use crate::error::{EventError, RPCError};
-use crate::http::{decode_http_body, decode_http_request, decode_http_response, run_http_request};
+use crate::http::{decode_http_body, decode_http_request, run_http_request};
 
 #[test]
 fn test_decode_http_request_ok() {
@@ -89,57 +89,6 @@ fn test_decode_http_request_err() {
         match (err, expected_err_type) {
             (EventError::Deserialize(..), EventError::Deserialize(..)) => {}
             (EventError::MalformedRequest(..), EventError::MalformedRequest(..)) => {}
-            (x, y) => {
-                error!("expected error mismatch: {:?} != {:?}", &y, &x);
-                panic!();
-            }
-        }
-    }
-}
-
-#[test]
-fn test_decode_http_response_ok() {
-    let tests = vec![
-        ("HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: 123\r\nX-Request-ID: 0\r\n\r\n",
-        vec![("content-type", "application/octet-stream"), ("content-length", "123"), ("x-request-id", "0")]),
-        ("HTTP/1.1 200 Ok\r\nContent-Type: application/octet-stream\r\nTransfer-encoding: chunked\r\nX-Request-ID: 0\r\n\r\n",
-        vec![("content-type", "application/octet-stream"), ("transfer-encoding", "chunked"), ("x-request-id", "0")]),
-        ("HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: 123\r\nConnection: close\r\nX-Request-ID: 0\r\n\r\n",
-        vec![("content-type", "application/octet-stream"), ("content-length", "123"), ("connection", "close"), ("x-request-id", "0")]),
-        ("HTTP/1.1 200 Ok\r\nConnection: close\r\nContent-Type: application/octet-stream\r\nTransfer-encoding: chunked\r\nX-Request-ID: 0\r\n\r\n",
-        vec![("connection", "close"), ("content-type", "application/octet-stream"), ("transfer-encoding", "chunked"), ("x-request-id", "0")])
-    ];
-
-    for (data, header_list) in tests.iter() {
-        let mut expected_headers = HashMap::new();
-        for (key, val) in header_list.iter() {
-            expected_headers.insert(key.to_string(), val.to_string());
-        }
-
-        let (headers, _) = decode_http_response(data.as_bytes()).unwrap();
-        assert_eq!(headers, expected_headers);
-    }
-}
-
-#[test]
-fn test_decode_http_response_err() {
-    let tests = vec![
-        ("HTTP/1.1 400 Bad Request\r\nContent-Type: application/json\r\nContent-Length: 456\r\nFoo: Bar\r\nX-Request-ID: 0\r\n\r\n",
-         RPCError::HttpError(400)),
-        ("HTTP/1.1 200",
-         RPCError::Deserialize("".to_string())),
-        ("HTTP/1.1 200 OK\r\nfoo: \u{2764}\r\n\r\n",
-         RPCError::MalformedResponse("".to_string())),
-        ("HTTP/1.1 200 OK\r\nfoo: bar\r\nfoo: bar\r\n\r\n",
-         RPCError::MalformedResponse("".to_string())),
-    ];
-
-    for (data, expected_err_type) in tests.iter() {
-        let err_type = decode_http_response(data.as_bytes()).unwrap_err();
-        match (err_type, expected_err_type) {
-            (RPCError::HttpError(x), RPCError::HttpError(y)) => assert_eq!(x, *y),
-            (RPCError::Deserialize(_), RPCError::Deserialize(_)) => {}
-            (RPCError::MalformedResponse(_), RPCError::MalformedResponse(_)) => {}
             (x, y) => {
                 error!("expected error mismatch: {:?} != {:?}", &y, &x);
                 panic!();

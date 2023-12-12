@@ -1,0 +1,155 @@
+diff --git a/libsigner/src/http.rs b/libsigner/src/http.rs
+index 8926a3c4e..3f26e8ca6 100644
+--- a/libsigner/src/http.rs
++++ b/libsigner/src/http.rs
+@@ -124,79 +124,6 @@ pub fn decode_http_request(payload: &[u8]) -> Result<SignerHttpRequest, EventErr
+     Ok(SignerHttpRequest::new(verb, path, headers, body_offset))
+ }
+ 
+-/// Decode the HTTP response payload into its headers and body.
+-/// Return the offset into payload where the body starts, and a table of headers.
+-///
+-/// If the payload contains a status code other than 200, then RPCERror::HttpError(..) will be
+-/// returned with the status code.
+-/// If the payload is missing necessary data, then RPCError::MalformedResponse(..) will be
+-/// returned, with a human-readable reason string.
+-/// If the payload does not contain a full HTTP header list, then RPCError::Deserialize(..) will be
+-/// returned.  This can happen if there are more than MAX_HTTP_HEADERS in the payload, for example.
+-pub fn decode_http_response(payload: &[u8]) -> Result<(HashMap<String, String>, usize), RPCError> {
+-    // realistically, there won't be more than 32 headers
+-    let mut headers_buf = [httparse::EMPTY_HEADER; MAX_HTTP_HEADERS];
+-    let mut resp = httparse::Response::new(&mut headers_buf);
+-
+-    // consume respuest
+-    let (headers, body_offset) =
+-        if let Ok(httparse::Status::Complete(body_offset)) = resp.parse(payload) {
+-            if let Some(code) = resp.code {
+-                if code != 200 {
+-                    return Err(RPCError::HttpError(code.into()));
+-                }
+-            } else {
+-                return Err(RPCError::MalformedResponse(
+-                    "No HTTP status code returned".to_string(),
+-                ));
+-            }
+-            if let Some(version) = resp.version {
+-                if version != 0 && version != 1 {
+-                    return Err(RPCError::MalformedResponse(format!(
+-                        "Unrecognized HTTP code {}",
+-                        version
+-                    )));
+-                }
+-            } else {
+-                return Err(RPCError::MalformedResponse(
+-                    "No HTTP version given".to_string(),
+-                ));
+-            }
+-            let mut headers: HashMap<String, String> = HashMap::new();
+-            for i in 0..resp.headers.len() {
+-                let value = String::from_utf8(resp.headers[i].value.to_vec()).map_err(|_e| {
+-                    RPCError::MalformedResponse("Invalid HTTP header value: not utf-8".to_string())
+-                })?;
+-                if !value.is_ascii() {
+-                    return Err(RPCError::MalformedResponse(
+-                        "Invalid HTTP response: header value is not ASCII-US".to_string(),
+-                    ));
+-                }
+-                if value.len() > MAX_HTTP_HEADER_LEN {
+-                    return Err(RPCError::MalformedResponse(
+-                        "Invalid HTTP response: header value is too big".to_string(),
+-                    ));
+-                }
+-
+-                let key = resp.headers[i].name.to_string().to_lowercase();
+-                if headers.contains_key(&key) {
+-                    return Err(RPCError::MalformedResponse(format!(
+-                        "Invalid HTTP respuest: duplicate header \"{}\"",
+-                        key
+-                    )));
+-                }
+-                headers.insert(key, value);
+-            }
+-            (headers, body_offset)
+-        } else {
+-            return Err(RPCError::Deserialize(
+-                "Failed to decode HTTP headers".to_string(),
+-            ));
+-        };
+-
+-    Ok((headers, body_offset))
+-}
+-
+ /// Decode an HTTP body, given the headers.
+ pub fn decode_http_body(headers: &HashMap<String, String>, mut buf: &[u8]) -> io::Result<Vec<u8>> {
+     let chunked = if let Some(val) = headers.get("transfer-encoding") {
+diff --git a/libsigner/src/tests/http.rs b/libsigner/src/tests/http.rs
+index eb187700e..0139446dc 100644
+--- a/libsigner/src/tests/http.rs
++++ b/libsigner/src/tests/http.rs
+@@ -21,7 +21,7 @@ use std::{io, str};
+ use stacks_common::util::chunked_encoding::*;
+ 
+ use crate::error::{EventError, RPCError};
+-use crate::http::{decode_http_body, decode_http_request, decode_http_response, run_http_request};
++use crate::http::{decode_http_body, decode_http_request, run_http_request};
+ 
+ #[test]
+ fn test_decode_http_request_ok() {
+@@ -97,57 +97,6 @@ fn test_decode_http_request_err() {
+     }
+ }
+ 
+-#[test]
+-fn test_decode_http_response_ok() {
+-    let tests = vec![
+-        ("HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: 123\r\nX-Request-ID: 0\r\n\r\n",
+-        vec![("content-type", "application/octet-stream"), ("content-length", "123"), ("x-request-id", "0")]),
+-        ("HTTP/1.1 200 Ok\r\nContent-Type: application/octet-stream\r\nTransfer-encoding: chunked\r\nX-Request-ID: 0\r\n\r\n",
+-        vec![("content-type", "application/octet-stream"), ("transfer-encoding", "chunked"), ("x-request-id", "0")]),
+-        ("HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: 123\r\nConnection: close\r\nX-Request-ID: 0\r\n\r\n",
+-        vec![("content-type", "application/octet-stream"), ("content-length", "123"), ("connection", "close"), ("x-request-id", "0")]),
+-        ("HTTP/1.1 200 Ok\r\nConnection: close\r\nContent-Type: application/octet-stream\r\nTransfer-encoding: chunked\r\nX-Request-ID: 0\r\n\r\n",
+-        vec![("connection", "close"), ("content-type", "application/octet-stream"), ("transfer-encoding", "chunked"), ("x-request-id", "0")])
+-    ];
+-
+-    for (data, header_list) in tests.iter() {
+-        let mut expected_headers = HashMap::new();
+-        for (key, val) in header_list.iter() {
+-            expected_headers.insert(key.to_string(), val.to_string());
+-        }
+-
+-        let (headers, _) = decode_http_response(data.as_bytes()).unwrap();
+-        assert_eq!(headers, expected_headers);
+-    }
+-}
+-
+-#[test]
+-fn test_decode_http_response_err() {
+-    let tests = vec![
+-        ("HTTP/1.1 400 Bad Request\r\nContent-Type: application/json\r\nContent-Length: 456\r\nFoo: Bar\r\nX-Request-ID: 0\r\n\r\n",
+-         RPCError::HttpError(400)),
+-        ("HTTP/1.1 200",
+-         RPCError::Deserialize("".to_string())),
+-        ("HTTP/1.1 200 OK\r\nfoo: \u{2764}\r\n\r\n",
+-         RPCError::MalformedResponse("".to_string())),
+-        ("HTTP/1.1 200 OK\r\nfoo: bar\r\nfoo: bar\r\n\r\n",
+-         RPCError::MalformedResponse("".to_string())),
+-    ];
+-
+-    for (data, expected_err_type) in tests.iter() {
+-        let err_type = decode_http_response(data.as_bytes()).unwrap_err();
+-        match (err_type, expected_err_type) {
+-            (RPCError::HttpError(x), RPCError::HttpError(y)) => assert_eq!(x, *y),
+-            (RPCError::Deserialize(_), RPCError::Deserialize(_)) => {}
+-            (RPCError::MalformedResponse(_), RPCError::MalformedResponse(_)) => {}
+-            (x, y) => {
+-                error!("expected error mismatch: {:?} != {:?}", &y, &x);
+-                panic!();
+-            }
+-        }
+-    }
+-}
+-
+ #[test]
+ fn test_decode_http_body() {
+     let tests = vec![
