@@ -26,8 +26,7 @@ jobs:
         run: cargo install cargo-mutants
 
       - name: Create output stable
-        shell: bash
-        run: ./create-stable-develop.sh
+        run: bash create-stable-develop.sh
         working-directory: ./mutation-testing/scripts
 
       - name: Archive mutants output
