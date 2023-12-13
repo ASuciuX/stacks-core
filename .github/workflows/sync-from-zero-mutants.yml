@@ -1,0 +1,37 @@
+## on push
+## run cargo mutants for specific packages based on that commit
+
+# save the output to artifact
+
+name: Upload Synced Output for current branch
+
+on:
+  pull_request:
+
+jobs:
+  save_cache:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Cleanup Runner
+      - name: Cleanup Runner action repo
+        id: runner_cleanup
+        uses: stacks-network/actions/cleanup/disk@main
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install cargo-mutants crate
+        shell: bash
+        run: cargo install cargo-mutants
+
+      - name: Create output stable
+        run: bash create-stable-develop.sh
+        working-directory: ./mutation-testing/scripts
+
+      - name: Archive mutants output
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: mutants-stable-develop
+          path: mutation-testing/packages-output
