@@ -19,10 +19,10 @@ RUN rustup toolchain install stable
 RUN rustup component add rustfmt --toolchain stable
 
 # Install cargo-mutants
-# RUN cargo install cargo-mutants
+RUN cargo install cargo-mutants
 
 # # Make a directory for mutants
-# RUN mkdir -p mutants
+RUN mkdir -p mutants
 
 # # Run mutants for different packages
 # RUN cargo mutants --package clarity --output mutants/clarity

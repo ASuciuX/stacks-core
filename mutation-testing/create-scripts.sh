@@ -10,14 +10,14 @@ cd ../packages-output
 ### Run mutation testing on the packages uncommented
 
 # Run mutation testing for stx-genesis package
-cargo mutants --package stx-genesis --output stx-genesis -j 4 || true
-mv stx-genesis/mutants.out/*.txt stx-genesis/ || true
-rm -rf stx-genesis/mutants.out || true
+# cargo mutants --package stx-genesis --output stx-genesis -j 4 || true
+# mv stx-genesis/mutants.out/*.txt stx-genesis/ || true
+# rm -rf stx-genesis/mutants.out || true
 
-# Run mutation testing for pox-locking package
-cargo mutants --package pox-locking --output pox-locking -j 4 || true
-mv pox-locking/mutants.out/*.txt pox-locking/ || true
-rm -rf pox-locking/mutants.out || true
+# # Run mutation testing for pox-locking package
+# cargo mutants --package pox-locking --output pox-locking -j 4 || true
+# mv pox-locking/mutants.out/*.txt pox-locking/ || true
+# rm -rf pox-locking/mutants.out || true
 
 # # Run mutation testing for libsigner package
 # cargo mutants --package libsigner --output libsigner
@@ -45,11 +45,11 @@ rm -rf pox-locking/mutants.out || true
 # rm -rf stacks-signer/mutants.out
 
 # Commented out mutation testing for stacks-node package due to test errors and long compile/testing time
-# cargo mutants --package stacks-node --output stacks-node -j 4 || true
-# mv stacks-node/mutants.out/*.txt stacks-node/ || true
-# rm -rf stacks-node/mutants.out || true
+cargo mutants --package stacks-node --output stacks-node -j 4 || true
+mv stacks-node/mutants.out/*.txt stacks-node/ || true
+rm -rf stacks-node/mutants.out || true
 
 # Commented out mutation testing for stackslib package due to long compile/testing time
-# cargo mutants --package stackslib --output stackslib -j 4 || true
-# mv stackslib/mutants.out/*.txt stackslib/ || true
-# rm -rf stackslib/mutants.out || true
+cargo mutants --package stackslib --output stackslib -j 4 || true
+mv stackslib/mutants.out/*.txt stackslib/ || true
+rm -rf stackslib/mutants.out || true
