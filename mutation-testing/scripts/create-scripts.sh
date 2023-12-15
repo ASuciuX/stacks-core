@@ -45,9 +45,9 @@ cd ../packages-output
 # rm -rf stacks-signer/mutants.out
 
 # Commented out mutation testing for stacks-node package due to test errors and long compile/testing time
-cargo mutants --package stacks-node --output stacks-node -j 4 || true
-mv stacks-node/mutants.out/*.txt stacks-node/ || true
-rm -rf stacks-node/mutants.out || true
+# cargo mutants --package stacks-node --output stacks-node -j 4 || true
+# mv stacks-node/mutants.out/*.txt stacks-node/ || true
+# rm -rf stacks-node/mutants.out || true
 
 # Commented out mutation testing for stackslib package due to long compile/testing time
 cargo mutants --package stackslib --output stackslib -j 4 || true

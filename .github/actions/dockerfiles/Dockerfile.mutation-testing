@@ -12,7 +12,8 @@ RUN rustup update \
   && apt-get install -y \
     clang \
     pkg-config \
-    build-essential
+    build-essential \
+    llvm
 
 RUN apt update && apt-get install -y netcat libclang-dev
 RUN rustup toolchain install stable
