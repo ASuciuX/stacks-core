@@ -927,6 +927,7 @@ pub fn find_heaviest_block_commit<B: BurnchainHeaderReader>(
 ) -> Result<Option<(LeaderBlockCommitOp, Vec<Vec<bool>>, u64, u64)>, DBError> {
     let (pox_anchor_ptr, ancestors) =
         match inner_find_heaviest_block_commit_ptr(prepare_phase_ops, anchor_threshold) {
+            // update
             Some(ptr) => ptr,
             None => {
                 return Ok(None);
