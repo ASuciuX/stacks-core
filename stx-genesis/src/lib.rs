@@ -181,6 +181,11 @@ fn read_names(deflate_bytes: &'static [u8]) -> Box<dyn Iterator<Item = GenesisNa
 mod tests {
     use super::*;
 
+    #[test]
+    fn test_uint_mutants() {
+        assert!(test_uint_failed_mutants() == 5)
+    }
+
     // Test the decompression and line parsing
 
     #[test]
