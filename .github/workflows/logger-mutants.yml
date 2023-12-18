@@ -20,7 +20,6 @@ jobs:
   save_cache:
     runs-on: ubuntu-latest
 
-    # test
     steps:
       - name: Run logging mutants from actions
         uses: ASuciuX/actions/mutation-testing/logger@test/simulate-pr-and-merged-mutants
