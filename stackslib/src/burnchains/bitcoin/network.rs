@@ -111,6 +111,7 @@ impl BitcoinIndexer {
         handler: Option<&mut T>,
     ) -> Result<bool, btc_error> {
         // add modification for this function to be detected having mutants and ran on ci
+        let test_variable = 0;
         if self.runtime.last_getdata_send_time > 0
             && self.runtime.last_getdata_send_time + self.runtime.timeout < get_epoch_time_secs()
         {
