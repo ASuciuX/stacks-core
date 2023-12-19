@@ -14,7 +14,7 @@ name: Logging Mutants
 on:
   push:
     branches:
-      - deployer-develop/mutants-pr-normal
+      - deployer-develop/mutants-pr-small
 
 jobs:
   save_cache:
