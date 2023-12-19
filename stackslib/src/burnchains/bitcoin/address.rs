@@ -286,6 +286,7 @@ impl SegwitBitcoinAddress {
     }
 
     pub fn to_bech32_hrp(&self, hrp: &str) -> String {
+        // test
         let bytes = self.to_bytes();
         let mut bytes_u5: Vec<u5> = vec![u5::try_from_u8(self.witness_version())
             .expect("FATAL: bad witness version does not fit into a u5")];
@@ -296,6 +297,7 @@ impl SegwitBitcoinAddress {
     }
 
     pub fn to_bech32(&self) -> String {
+        // test
         let hrp = segwit_hrp(self.is_mainnet());
         self.to_bech32_hrp(hrp)
     }
