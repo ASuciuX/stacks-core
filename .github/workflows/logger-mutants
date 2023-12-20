@@ -14,7 +14,7 @@ name: Logging Mutants
 on:
   push:
     branches:
-      - mutants-develop/1/base
+      - mutants-next/5/base
 
 jobs:
   save_cache:
