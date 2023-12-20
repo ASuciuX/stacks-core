@@ -28,19 +28,10 @@ jobs:
         id: git_checkout
         uses: actions/checkout@v3
 
-      - name: Reclaim disk space
-        id: cleanup
-        run: |
-          sudo apt-get update
-          sudo apt-get remove -y '^dotnet-.*'
-          sudo apt-get remove -y '^llvm-.*'
-          sudo apt-get remove -y 'php.*'
-          sudo apt-get remove -y '^mongodb-.*'
-          sudo apt-get remove -y '^mysql-.*'
-          sudo apt-get remove -y azure-cli google-chrome-stable firefox powershell mono-devel libgl1-mesa-dri
-          sudo apt-get autoremove -y
-          sudo apt-get clean
-          docker system prune --force
+      ## cleanup runner
+      - name: Cleanup Runner
+        id: runner_cleanup
+        uses: stacks-network/actions/cleanup/disk@main
 
       - name: Build bitcoin integration testing image
         id: build_docker_image
@@ -111,6 +102,7 @@ jobs:
           - tests::neon_integrations::test_problematic_microblocks_are_not_mined
           - tests::neon_integrations::test_problematic_microblocks_are_not_relayed_or_stored
           - tests::neon_integrations::push_boot_receipts
+          - tests::neon_integrations::test_submit_and_observe_sbtc_ops
           - tests::epoch_205::test_dynamic_db_method_costs
           - tests::epoch_205::transition_empty_blocks
           - tests::epoch_205::test_cost_limit_switch_version205
@@ -142,6 +134,7 @@ jobs:
           - tests::signer::test_stackerdb_dkg
           - tests::stackerdb::test_stackerdb_load_store
           - tests::stackerdb::test_stackerdb_event_observer
+          - tests::signer::test_stackerdb_dkg
     steps:
       - name: Checkout the latest code
         id: git_checkout
