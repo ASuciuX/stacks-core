@@ -24,4 +24,4 @@ jobs:
 
     steps:
       - name: Run filtering pr mutants from actions
-        uses: ASuciuX/actions/mutation-testing/filter-pr@test/simulate-pr-and-merged-mutants
+        uses: ASuciuX/actions/mutation-testing/filter-pr@test/shards-mutants
