@@ -118,6 +118,50 @@ jobs:
           cat ./shard-6/exit_code.txt
           cat ./shard-7/exit_code.txt
 
+      - name: Print mutants for each shard
+        run: |
+          echo "--------------"
+          cat ./shard-0/caught.txt
+          cat ./shard-0/missed.txt
+          cat ./shard-0/unviable.txt
+          cat ./shard-0/timeout.txt
+          echo "--------------"
+          cat ./shard-1/caught.txt
+          cat ./shard-1/missed.txt
+          cat ./shard-1/unviable.txt
+          cat ./shard-1/timeout.txt
+          echo "--------------"
+          cat ./shard-2/caught.txt
+          cat ./shard-2/missed.txt
+          cat ./shard-2/unviable.txt
+          cat ./shard-2/timeout.txt
+          echo "--------------"
+          cat ./shard-3/caught.txt
+          cat ./shard-3/missed.txt
+          cat ./shard-3/unviable.txt
+          cat ./shard-3/timeout.txt
+          echo "--------------"
+          cat ./shard-4/caught.txt
+          cat ./shard-4/missed.txt
+          cat ./shard-4/unviable.txt
+          cat ./shard-4/timeout.txt
+          echo "--------------"
+          cat ./shard-5/caught.txt
+          cat ./shard-5/missed.txt
+          cat ./shard-5/unviable.txt
+          cat ./shard-5/timeout.txt
+          echo "--------------"
+          cat ./shard-6/caught.txt
+          cat ./shard-6/missed.txt
+          cat ./shard-6/unviable.txt
+          cat ./shard-6/timeout.txt
+          echo "--------------"
+          cat ./shard-7/caught.txt
+          cat ./shard-7/missed.txt
+          cat ./shard-7/unviable.txt
+          cat ./shard-7/timeout.txt
+          echo "--------------"
+
     #     case $exit_code in
     #     0)
     #         if [ -s ./mutants.out/unviable.txt ]; then
