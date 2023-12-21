@@ -25,3 +25,144 @@ jobs:
     steps:
       - name: Run filtering pr mutants from actions
         uses: ASuciuX/actions/mutation-testing/filter-pr@test/shards-mutants
+
+      - name: Restore shard 0 cache
+        id: cache-restore-0
+        uses: actions/cache/restore@v3
+        with:
+          path: ./mutation-testing/packages-output
+          key: shard-0
+
+      - name: Restore shard 1 cache
+        id: cache-restore-1
+        uses: actions/cache/restore@v3
+        with:
+          path: ./mutation-testing/packages-output
+          key: shard-1
+
+      - name: Restore shard 2 cache
+        id: cache-restore-2
+        uses: actions/cache/restore@v3
+        with:
+          path: ./mutation-testing/packages-output
+          key: shard-2
+
+      - name: Restore shard 3 cache
+        id: cache-restore-3
+        uses: actions/cache/restore@v3
+        with:
+          path: ./mutation-testing/packages-output
+          key: shard-3
+
+      - name: Restore shard 4 cache
+        id: cache-restore-4
+        uses: actions/cache/restore@v3
+        with:
+          path: ./mutation-testing/packages-output
+          key: shard-4
+
+      - name: Restore shard 5 cache
+        id: cache-restore-5
+        uses: actions/cache/restore@v3
+        with:
+          path: ./mutation-testing/packages-output
+          key: shard-5
+
+      - name: Restore shard 6 cache
+        id: cache-restore-6
+        uses: actions/cache/restore@v3
+        with:
+          path: ./mutation-testing/packages-output
+          key: shard-6
+
+      - name: Restore shard 7 cache
+        id: cache-restore-7
+        uses: actions/cache/restore@v3
+        with:
+          path: ./mutation-testing/packages-output
+          key: shard-7
+
+      - name: Delete cache for shard 0
+        if: ${{ steps.cache-restore-0.outputs.cache-hit }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          gh extension install actions/gh-actions-cache
+          gh actions-cache delete "shard-0" --confirm
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete shard caches
+        continue-on-error: true
+        run: |
+          gh extension install actions/gh-actions-cache
+          gh actions-cache delete "shard-0" --confirm
+          gh actions-cache delete "shard-1" --confirm
+          gh actions-cache delete "shard-2" --confirm
+          gh actions-cache delete "shard-3" --confirm
+          gh actions-cache delete "shard-4" --confirm
+          gh actions-cache delete "shard-5" --confirm
+          gh actions-cache delete "shard-6" --confirm
+          gh actions-cache delete "shard-7" --confirm
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Print exit codes for each run
+        run: |
+          cat ./shard-0/exit_code.txt
+          cat ./shard-1/exit_code.txt
+          cat ./shard-2/exit_code.txt
+          cat ./shard-3/exit_code.txt
+          cat ./shard-4/exit_code.txt
+          cat ./shard-5/exit_code.txt
+          cat ./shard-6/exit_code.txt
+          cat ./shard-7/exit_code.txt
+
+    #     case $exit_code in
+    #     0)
+    #         if [ -s ./mutants.out/unviable.txt ]; then
+    #             echo "-------------"
+    #             echo "Found unviable mutants:"
+    #             cat ./mutants.out/unviable.txt
+    #             echo "-------------"
+    #             echo "To resolve this issue, consider one of the following options:"
+    #             echo "1. Create 'Default::default()' implementation for the specific structure."
+    #             echo "2. Add '#[mutants::skip]' or '#[cfg_attr(test, mutants::skip)]' function headers."
+    #             exit 1
+    #         fi
+    #         echo "All new and updated functions are caught!"
+    #         ;;
+    #     1)
+    #         echo "Invalid command line arguments!"
+    #         exit 1
+    #         ;;
+    #     2 | 3)
+    #         if [ -s ./mutants.out/missed.txt ]; then
+    #             echo "Found missed mutants:"
+    #             cat ./mutants.out/missed.txt
+    #         fi
+    #         if [ -s ./mutants.out/timeout.txt ]; then
+    #             echo "-------------"
+    #             echo "Found timeout mutants:"
+    #             cat ./mutants.out/timeout.txt
+    #         fi
+    #         if [ -s ./mutants.out/unviable.txt ]; then
+    #             echo "-------------"
+    #             echo "Found unviable mutants:"
+    #             cat ./mutants.out/unviable.txt
+    #             echo "-------------"
+    #             echo "To resolve this issue, consider one of the following options:"
+    #             echo "1. Create 'Default::default()' implementation for the specific structure."
+    #             echo "2. Add '#[mutants::skip]' or '#[cfg_attr(test, mutants::skip)]' function headers."
+    #         fi
+    #         exit 1
+    #         ;;
+    #     4)
+    #         echo "Building the packages failed without any mutations!"
+    #         exit 1
+    #         ;;
+    #     *)
+    #         echo "Unknown exit code: $exit_code"
+    #         exit 1
+    #         ;;
+    # esac
