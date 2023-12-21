@@ -10,6 +10,11 @@ on:
     paths:
       - "**.rs"
 
+concurrency:
+  group: filter-pr-${{ github.head_ref || github.ref || github.run_id }}
+  ## Always cancel duplicate jobs
+  cancel-in-progress: true
+
 jobs:
   # Mutants testing: Execute on PR on packages that have functions modified, and fail the workflow if there are missed or timeout mutations
   incremental-mutants:
