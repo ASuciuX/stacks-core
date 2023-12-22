@@ -12,7 +12,7 @@ on:
 
 concurrency:
   group: filter-pr-${{ github.head_ref || github.ref || github.run_id }}
-  ## Always cancel duplicate jobs
+  # Always cancel duplicate jobs
   cancel-in-progress: true
 
 jobs:
