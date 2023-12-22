@@ -48,31 +48,31 @@ jobs:
 
       - name: Append output from all shards
         run: |
-          folders=("shards-0" "shards-1" "shards-2" "shards-3" "shards-4" "shards-5" "shards-6" "shards-7")
+          folders=("mutants-shard-0" "mutants-shard-1" "mutants-shard-2" "mutants-shard-3" "mutants-shard-4" "mutants-shard-5" "mutants-shard-6" "mutants-shard-7")
           files=("missed.txt" "caught.txt" "timeout.txt" "unviable.txt")
-          mkdir -p shards
+          mkdir -p mutants-shards
 
           for file in "${files[@]}"; do
             for folder in "${folders[@]}"; do
-              cat "$folder/$file" >> "shards/$file"
+              cat "$folder/$file" >> "mutants-shards/$file"
             done
           done
 
       - name: Print mutants
         run: |
-          if [ -s ./shards/missed.txt ]; then
+          if [ -s ./mutants-shards/missed.txt ]; then
             echo "Found missed mutants:"
-            cat ./shards/missed.txt
+            cat ./mutants-shards/missed.txt
           fi
-          if [ -s ./shards/timeout.txt ]; then
+          if [ -s ./mutants-shards/timeout.txt ]; then
             echo "-------------"
             echo "Found timeout mutants:"
-            cat ./shards/timeout.txt
+            cat ./mutants-shards/timeout.txt
           fi
-          if [ -s ./shards/unviable.txt ]; then
+          if [ -s ./mutants-shards/unviable.txt ]; then
             echo "-------------"
             echo "Found unviable mutants:"
-            cat ./shards/unviable.txt
+            cat ./mutants-shards/unviable.txt
             echo "-------------"
             echo "To resolve this issue, consider one of the following options:"
             echo "1. Create 'Default::default()' implementation for the specific structure."
