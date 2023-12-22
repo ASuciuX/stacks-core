@@ -10,6 +10,11 @@ on:
     paths:
       - "**.rs"
 
+concurrency:
+  group: filter-pr-${{ github.head_ref || github.ref || github.run_id }}
+  ## Always cancel duplicate jobs
+  cancel-in-progress: true
+
 jobs:
   # Mutants testing: Execute on PR on packages that have functions modified, and fail the workflow if there are missed or timeout mutations
   incremental-mutants:
@@ -17,6 +22,116 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+
     steps:
       - name: Run filtering pr mutants from actions
-        uses: ASuciuX/actions/mutation-testing/filter-pr@test/simulate-pr-and-merged-mutants
+        uses: ASuciuX/actions/mutation-testing/filter-pr@test/shards-mutants
+        with:
+          shard: ${{ matrix.shard }}
+
+  # Output the mutants if there are missed/timeout/unviable
+  output-mutants:
+    name: Output Mutants
+
+    runs-on: ubuntu-latest
+
+    if: always()
+    needs: [incremental-mutants]
+
+    steps:
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Append output from all shards
+        run: |
+          folders=("mutants-shard-0" "mutants-shard-1" "mutants-shard-2" "mutants-shard-3" "mutants-shard-4" "mutants-shard-5" "mutants-shard-6" "mutants-shard-7")
+          files=("missed.txt" "caught.txt" "timeout.txt" "unviable.txt")
+          mkdir -p mutants-shards
+
+          for file in "${files[@]}"; do
+            for folder in "${folders[@]}"; do
+              cat "$folder/$file" >> "mutants-shards/$file"
+            done
+          done
+
+          for folder in "${folders[@]}"; do
+            exit_code=$(<"${folder}/exit_code.txt")
+            most_relevant_exit_code=0
+
+            case $exit_code in
+            4)
+                most_relevant_exit_code=4
+                ;;
+            1)
+                [ "$most_relevant_exit_code" -eq 0 ] && most_relevant_exit_code=1
+                ;;
+            2)
+                [ "$most_relevant_exit_code" -eq 0 ] && most_relevant_exit_code=2
+                ;;
+            3)
+                [ "$most_relevant_exit_code" -eq 0 ] && most_relevant_exit_code=3
+                ;;
+            0)
+                ;;
+            *)
+                echo "Unknown exit code $exit_code"
+                most_relevant_exit_code=$exit_code
+                ;;
+            esac
+          done
+
+          echo "$most_relevant_exit_code" > './mutants-shards/exit_code.txt'
+
+      - name: Print mutants and handle exit codes
+        run: |
+          if [ -s ./mutants-shards/missed.txt ]; then
+            echo "Found missed mutants:"
+            cat ./mutants-shards/missed.txt
+          fi
+          if [ -s ./mutants-shards/timeout.txt ]; then
+            echo "-------------"
+            echo "Found timeout mutants:"
+            cat ./mutants-shards/timeout.txt
+          fi
+          if [ -s ./mutants-shards/unviable.txt ]; then
+            echo "-------------"
+            echo "Found unviable mutants:"
+            cat ./mutants-shards/unviable.txt
+            echo ""
+            echo "To resolve this issue, consider one of the following options:"
+            echo "1. Create 'Default::default()' implementation for the specific structure."
+            echo "2. Add '#[mutants::skip]' or '#[cfg_attr(test, mutants::skip)]' function headers."
+            echo "-------------"
+          fi
+
+          exit_code=$(<"mutants-shards/exit_code.txt")
+
+          case $exit_code in
+            0)
+                if [ -s ./mutants-shards/unviable.txt ]; then
+                  echo "Found unviable mutants!"
+                  exit 1
+                fi
+              echo "All new and updated functions are caught!"
+              ;;
+            1)
+              echo "Invalid command line arguments!"
+              exit 1
+              ;;
+            2 | 3)
+              echo "Found missed/timeout/unviable mutants!"
+              exit 1
+              ;;
+            4)
+              echo "Building the packages failed without any mutations!"
+              exit 1
+              ;;
+            *)
+              echo "Unknown exit code: $exit_code"
+              exit 1
+            ;;
+          esac
