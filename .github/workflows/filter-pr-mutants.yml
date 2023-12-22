@@ -12,7 +12,6 @@ on:
 
 jobs:
   # Mutants testing: Execute on PR on packages that have functions modified, and fail the workflow if there are missed or timeout mutations
-  # run again
   incremental-mutants:
     name: Incremental Mutants Testing
 
