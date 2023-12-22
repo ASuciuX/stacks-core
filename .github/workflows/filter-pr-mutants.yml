@@ -32,3 +32,49 @@ jobs:
         uses: ASuciuX/actions/mutation-testing/filter-pr@test/shards-mutants
         with:
           shard: ${{ matrix.shard }}
+
+  # Output the mutants if there are missed/timeout/unviable
+  output-mutants:
+    name: Output Mutants
+
+    runs-on: ubuntu-latest
+
+    if: always()
+    needs: [incremental-mutants]
+
+    steps:
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Append output from all shards
+        run: |
+          folders=("shards-0" "shards-1" "shards-2" "shards-3" "shards-4" "shards-5" "shards-6" "shards-7")
+          files=("missed.txt" "caught.txt" "timeout.txt" "unviable.txt")
+          mkdir -p shards
+
+          for file in "${files[@]}"; do
+            for folder in "${folders[@]}"; do
+              cat "$folder/$file" >> "shards/$file"
+            done
+          done
+
+      - name: Print mutants
+        run: |
+          if [ -s ./shards/missed.txt ]; then
+            echo "Found missed mutants:"
+            cat ./shards/missed.txt
+          fi
+          if [ -s ./shards/timeout.txt ]; then
+            echo "-------------"
+            echo "Found timeout mutants:"
+            cat ./shards/timeout.txt
+          fi
+          if [ -s ./shards/unviable.txt ]; then
+            echo "-------------"
+            echo "Found unviable mutants:"
+            cat ./shards/unviable.txt
+            echo "-------------"
+            echo "To resolve this issue, consider one of the following options:"
+            echo "1. Create 'Default::default()' implementation for the specific structure."
+            echo "2. Add '#[mutants::skip]' or '#[cfg_attr(test, mutants::skip)]' function headers."
+          fi
