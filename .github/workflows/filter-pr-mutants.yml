@@ -17,6 +17,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    # run workflow again
     steps:
       - name: Run filtering pr mutants from actions
         uses: ASuciuX/actions/mutation-testing/filter-pr@test/simulate-pr-and-merged-mutants
