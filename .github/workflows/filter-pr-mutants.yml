@@ -12,12 +12,12 @@ on:
 
 jobs:
   # Mutants testing: Execute on PR on packages that have functions modified, and fail the workflow if there are missed or timeout mutations
+  # run workflow again
   incremental-mutants:
     name: Incremental Mutants Testing
 
     runs-on: ubuntu-latest
 
-    # run workflow again
     steps:
       - name: Run filtering pr mutants from actions
         uses: ASuciuX/actions/mutation-testing/filter-pr@test/simulate-pr-and-merged-mutants
