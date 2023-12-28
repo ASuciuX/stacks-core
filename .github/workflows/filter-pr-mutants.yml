@@ -103,34 +103,51 @@ jobs:
 
       - name: Print mutants and handle exit codes
         run: |
-          output_script() {
-            MSG=${1}
-            cat <<EOF >> $GITHUB_STEP_SUMMARY
-          $MSG
-          EOF
+          server_url="${{ github.server_url }}"
+          organisation="$ORGANIZATION_VAR"
+          repository="$REPOSITORY_VAR"
+          commit="${{ github.sha }}"
+            
+          write_section() {
+            local section_title=$1
+            local file_name=$2
+            
+            if [ -s "$file_name" ]; then
+              if [[ "$section_title" != "" ]]; then
+                echo "## $section_title" >> "$GITHUB_STEP_SUMMARY"
+              fi
+                    
+              if [[ "$section_title" != "" ]]; then
+                awk -F':' '{printf "- [ ] " "[" $0 "]"; file_path=$1; line=$2; $1=""; $2=""; printf "(" "'"$server_url"'/'"$organisation"'/'"$repository"'/blob/'"$commit"'/" file_path "#L" line-1 ")\n\n"}' "$file_name" >> "$GITHUB_STEP_SUMMARY"
+              else
+                awk -F':' '{printf "- [x] " "[" $0 "]"; file_path=$1; line=$2; $1=""; $2=""; printf "(" "'"$server_url"'/'"$organisation"'/'"$repository"'/blob/'"$commit"'/" file_path "#L" line-1 ")\n\n"}' "$file_name" >> "$GITHUB_STEP_SUMMARY"
+              fi
+            
+              if [[ "$section_title" == "Missed:" ]]; then
+                echo "### To resolve this issue, consider one of the following options:" >> "$GITHUB_STEP_SUMMARY"
+                echo "- Modify or add tests including this function." >> "$GITHUB_STEP_SUMMARY"
+                echo "- Add '#[mutants::skip]' or '#[cfg_attr(test, mutants::skip)]' function header in order to skip it." >> "$GITHUB_STEP_SUMMARY"
+              elif [[ "$section_title" == "Timeout:" ]]; then
+                echo "### To resolve this issue, consider one of the following options:" >> "$GITHUB_STEP_SUMMARY"
+                echo "- Modify the tests that include this funcion." >> "$GITHUB_STEP_SUMMARY"
+                echo "- Add '#[mutants::skip]' or '#[cfg_attr(test, mutants::skip)]' function header in order to skip it." >> "$GITHUB_STEP_SUMMARY"
+              elif [[ "$section_title" == "Unviable:" ]]; then
+                echo "### To resolve this issue, consider one of the following options:" >> "$GITHUB_STEP_SUMMARY"
+                echo "- Create 'Default::default()' implementation for the specific structure." >> "$GITHUB_STEP_SUMMARY"
+                echo "- Add '#[mutants::skip]' or '#[cfg_attr(test, mutants::skip)]' function header in order to skip it." >> "$GITHUB_STEP_SUMMARY"
+              fi
+                    
+              echo >> "$GITHUB_STEP_SUMMARY"
+            fi
           }
-
-          if [ -s ./mutants-shards/missed.txt ]; then
-            echo "Found missed mutants:"
-            MUTANTS=$(<"./mutants-shards/missed.txt")
-            output_script "$MUTANTS"
-          fi
-          if [ -s ./mutants-shards/timeout.txt ]; then
-            echo ""
-            echo "Found timeout mutants:"
-            MUTANTS=$(<"./mutants-shards/timeout.txt")
-            output_script "$MUTANTS"
-          fi
-          if [ -s ./mutants-shards/unviable.txt ]; then
-            echo ""
-            echo "Found unviable mutants:"
-            MUTANTS=$(<"./mutants-shards/unviable.txt")
-            output_script "$MUTANTS"
-            # echo ""
-            # echo "To resolve this issue, consider one of the following options:"
-            # echo "1. Create 'Default::default()' implementation for the specific structure."
-            # echo "2. Add '#[mutants::skip]' or '#[cfg_attr(test, mutants::skip)]' function headers."
-          fi
+            
+          echo "# Uncaught Mutants" >> "$GITHUB_STEP_SUMMARY"
+          write_section "Missed:" "../../../Downloads/mutants-shards/missed.txt"
+          write_section "Timeout:" "../../../Downloads/mutants-shards/timeout.txt"
+          write_section "Unviable:" "../../../Downloads/mutants-shards/unviable.txt"
+            
+          echo "# Caught Mutants" >> "$GITHUB_STEP_SUMMARY"
+          write_section "" "../../../Downloads/mutants-shards/caught.txt"
 
           exit_code=$(<"mutants-shards/exit_code.txt")
 
