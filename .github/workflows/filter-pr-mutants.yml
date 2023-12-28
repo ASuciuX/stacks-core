@@ -25,11 +25,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
     steps:
       - name: Run filtering pr mutants from actions
-        uses: ASuciuX/actions/mutation-testing/filter-pr@test/shards-mutants
+        uses: ASuciuX/actions/mutation-testing/filter-pr@test/16-shards-mutants
         with:
           shard: ${{ matrix.shard }}
 
@@ -48,7 +48,7 @@ jobs:
 
       - name: Append output from all shards
         run: |
-          folders=("mutants-shard-0" "mutants-shard-1" "mutants-shard-2" "mutants-shard-3" "mutants-shard-4" "mutants-shard-5" "mutants-shard-6" "mutants-shard-7")
+          folders=("mutants-shard-0" "mutants-shard-1" "mutants-shard-2" "mutants-shard-3" "mutants-shard-4" "mutants-shard-5" "mutants-shard-6" "mutants-shard-7" "mutants-shard-8" "mutants-shard-9" "mutants-shard-10" "mutants-shard-11" "mutants-shard-12" "mutants-shard-13" "mutants-shard-14" "mutants-shard-15")
           files=("missed.txt" "caught.txt" "timeout.txt" "unviable.txt")
           mkdir -p mutants-shards
 
