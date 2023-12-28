@@ -88,24 +88,33 @@ jobs:
 
       - name: Print mutants and handle exit codes
         run: |
+          output_script() {
+            MSG=${1}
+            cat <<EOF >> $GITHUB_STEP_SUMMARY
+          $MSG
+          EOF
+          }
+
           if [ -s ./mutants-shards/missed.txt ]; then
             echo "Found missed mutants:"
-            cat ./mutants-shards/missed.txt
+            MUTANTS=$(<"./mutants-shards/missed.txt")
+            output_script "$MUTANTS"
           fi
           if [ -s ./mutants-shards/timeout.txt ]; then
-            echo "-------------"
+            echo ""
             echo "Found timeout mutants:"
-            cat ./mutants-shards/timeout.txt
+            MUTANTS=$(<"./mutants-shards/timeout.txt")
+            output_script "$MUTANTS"
           fi
           if [ -s ./mutants-shards/unviable.txt ]; then
-            echo "-------------"
-            echo "Found unviable mutants:"
-            cat ./mutants-shards/unviable.txt
             echo ""
-            echo "To resolve this issue, consider one of the following options:"
-            echo "1. Create 'Default::default()' implementation for the specific structure."
-            echo "2. Add '#[mutants::skip]' or '#[cfg_attr(test, mutants::skip)]' function headers."
-            echo "-------------"
+            echo "Found unviable mutants:"
+            MUTANTS=$(<"./mutants-shards/unviable.txt")
+            output_script "$MUTANTS"
+            # echo ""
+            # echo "To resolve this issue, consider one of the following options:"
+            # echo "1. Create 'Default::default()' implementation for the specific structure."
+            # echo "2. Add '#[mutants::skip]' or '#[cfg_attr(test, mutants::skip)]' function headers."
           fi
 
           exit_code=$(<"mutants-shards/exit_code.txt")
