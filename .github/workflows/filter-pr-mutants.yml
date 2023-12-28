@@ -104,8 +104,8 @@ jobs:
       - name: Print mutants and handle exit codes
         run: |
           server_url="${{ github.server_url }}"
-          organisation="$ORGANIZATION_VAR"
-          repository="$REPOSITORY_VAR"
+          organisation="${{ github.repository_owner }}"
+          repository="${{ github.event.repository.name }}"
           commit="${{ github.sha }}"
             
           write_section() {
