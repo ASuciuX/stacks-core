@@ -142,12 +142,12 @@ jobs:
           }
             
           echo "# Uncaught Mutants" >> "$GITHUB_STEP_SUMMARY"
-          write_section "Missed:" "../../../Downloads/mutants-shards/missed.txt"
-          write_section "Timeout:" "../../../Downloads/mutants-shards/timeout.txt"
-          write_section "Unviable:" "../../../Downloads/mutants-shards/unviable.txt"
+          write_section "Missed:" "./mutants-shards/missed.txt"
+          write_section "Timeout:" "./mutants-shards/timeout.txt"
+          write_section "Unviable:" "./mutants-shards/unviable.txt"
             
           echo "# Caught Mutants" >> "$GITHUB_STEP_SUMMARY"
-          write_section "" "../../../Downloads/mutants-shards/caught.txt"
+          write_section "" "./mutants-shards/caught.txt"
 
           exit_code=$(<"mutants-shards/exit_code.txt")
 
