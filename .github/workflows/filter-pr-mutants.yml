@@ -123,7 +123,6 @@ jobs:
                 echo "<br>" >> "$GITHUB_STEP_SUMMARY"
                 echo "No test failed with this mutation applied, which seems to indicate a gap in test coverage. Or, it may be that the mutant is undistinguishable from the correct code. You may wish to add a better test, or mark that the function should be skipped." >> "$GITHUB_STEP_SUMMARY"
                 echo "</details>" >> "$GITHUB_STEP_SUMMARY"
-                echo "<br>" >> "$GITHUB_STEP_SUMMARY"
                 echo "" >> "$GITHUB_STEP_SUMMARY"
               elif [[ "$section_title" == "Timeout:" ]]; then
                 echo "<details>" >> "$GITHUB_STEP_SUMMARY"
@@ -131,7 +130,6 @@ jobs:
                 echo "<br>" >> "$GITHUB_STEP_SUMMARY"
                 echo "The mutation caused the test suite to run for a long time, until it was eventually killed. You might want to investigate the cause and potentially mark the function to be skipped." >> "$GITHUB_STEP_SUMMARY"
                 echo "</details>" >> "$GITHUB_STEP_SUMMARY"
-                echo "<br>" >> "$GITHUB_STEP_SUMMARY"
                 echo "" >> "$GITHUB_STEP_SUMMARY"
               elif [[ "$section_title" == "Unviable:" ]]; then
                 echo "<details>" >> "$GITHUB_STEP_SUMMARY"
@@ -139,7 +137,6 @@ jobs:
                 echo "<br>" >> "$GITHUB_STEP_SUMMARY"
                 echo "The attempted mutation doesn't compile. This is inconclusive about test coverage and no action is needed, unless you wish to test the specific function, in which case you may wish to add a 'Default::default()' implementation for the specific return type." >> "$GITHUB_STEP_SUMMARY"
                 echo "</details>" >> "$GITHUB_STEP_SUMMARY"
-                echo "<br>" >> "$GITHUB_STEP_SUMMARY"
                 echo "" >> "$GITHUB_STEP_SUMMARY"
               fi
 
