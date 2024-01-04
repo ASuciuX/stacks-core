@@ -16,9 +16,83 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Mutants testing: Execute on PR on packages that have functions modified, and fail the workflow if there are missed or timeout mutations
-  incremental-mutants:
+  # Check whether there are differences on `stackslib`, `stacks-node` or `clarity` packages (bigger ones)
+  check-big-packages:
+    name: Check Big Packages
+
+    runs-on: ubuntu-latest
+
+    outputs:
+      big_packages: ${{ steps.check_big_packages.outputs.output }}
+
+    steps:
+      - id: check_big_packages
+        run: |
+          git diff origin/${{ github.base_ref }}.. > git.diff
+          output=false
+          if [[ $(cargo mutants --in-diff git.diff --list | grep 'stackslib\|stacks-node\|clarity') ]]; then
+            output=true
+          fi
+          echo "$output" >> "$GITHUB_OUTPUT"
+
+  # Check whether to run the mutants using shards or not
+  check-shards-needed:
+    name: Check if Shards are Needed
+
+    runs-on: ubuntu-latest
+
+    needs: check-big-packages
+
+    outputs:
+      shards_needed: ${{ steps.check_shards_needed.outputs.output }}
+
+    steps:
+      - id: check_shards_needed
+        env:
+          BIG_PACKAGES: ${{ needs.check-big-packages.outputs.big_packages }}
+        run: |
+          git diff origin/${{ github.base_ref }}.. > git.diff
+          output=false
+          if [[ $(cargo mutants --in-diff git.diff --list | awk 'END { print NR }') > 40 && $BIG_PACKAGES == "false" ]]; then
+            output=true
+          elif [[ $(cargo mutants --in-diff git.diff --list | awk 'END { print NR }') > 8 && $BIG_PACKAGES == "true" ]]; then
+            output=true
+          fi
+          echo "$output" >> "$GITHUB_OUTPUT"
+
+  # Mutation testing - Execute on PR on packages that have functions modified (normal run, no shards)
+  filter-pr-mutants-normal:
     name: Incremental Mutants Testing
+
+    needs: [check-big-packages, check-shards-needed]
+
+    if: ${{ needs.check-shards-needed.outputs.shards_needed == 'false' }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run filtering pr mutants from actions - no shards, big packages
+        if: ${{ needs.check-big-packages.outputs == 'true' }}
+        env:
+          BITCOIND_TEST: 1
+          RUST_BACKTRACE: full
+        uses: ASuciuX/actions/mutation-testing/filter-pr@test/modular-mutants-runs
+        with:
+          contains-big-package: true
+
+      - name: Run filtering pr mutants from actions - no shards, normal packages
+        if: ${{ needs.check-big-packages.outputs == 'false' }}
+        uses: ASuciuX/actions/mutation-testing/filter-pr@test/modular-mutants-runs
+        with:
+          contains-big-package: false
+
+  # Mutation testing - Execute on PR on packages that have functions modified (run with strategy matrix shards)
+  filter-pr-mutants-shards:
+    name: Incremental Mutants Testing
+
+    needs: [check-big-packages, check-shards-needed]
+
+    if: ${{ needs.check-shards-needed.outputs.shards_needed == 'true' }}
 
     runs-on: ubuntu-latest
 
@@ -28,19 +102,31 @@ jobs:
         shard: [0, 1, 2, 3, 4, 5, 6, 7]
 
     steps:
-      - name: Run filtering pr mutants from actions
-        uses: ASuciuX/actions/mutation-testing/filter-pr@test/shards-mutants
+      - name: Run filtering pr mutants from actions - with shards, big packages
+        if: ${{ needs.check-big-packages.outputs == 'true' }}
+        env:
+          BITCOIND_TEST: 1
+          RUST_BACKTRACE: full
+        uses: ASuciuX/actions/mutation-testing/filter-pr@test/modular-mutants-runs
         with:
           shard: ${{ matrix.shard }}
+          contains-big-package: true
 
-  # Output the mutants if there are missed/timeout/unviable
+      - name: Run filtering pr mutants from actions - with shards, normal packages
+        if: ${{ needs.check-big-packages.outputs == 'false' }}
+        uses: ASuciuX/actions/mutation-testing/filter-pr@test/modular-mutants-runs
+        with:
+          shard: ${{ matrix.shard }}
+          contains-big-package: false
+
+  # Output the mutants and fail the workflow if there are missed/timeout/unviable mutants
   output-mutants:
     name: Output Mutants
 
     runs-on: ubuntu-latest
 
     if: always()
-    needs: [incremental-mutants]
+    needs: [filter-pr-mutants-normal, filter-pr-mutants-shards]
 
     steps:
       - name: Download all workflow run artifacts
@@ -51,6 +137,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: |
+            mutants-shard--1
             mutants-shard-0
             mutants-shard-1
             mutants-shard-2
@@ -63,13 +150,15 @@ jobs:
 
       - name: Append output from all shards
         run: |
-          folders=("mutants-shard-0" "mutants-shard-1" "mutants-shard-2" "mutants-shard-3" "mutants-shard-4" "mutants-shard-5" "mutants-shard-6" "mutants-shard-7")
+          folders=("mutants-shard--1" "mutants-shard-0" "mutants-shard-1" "mutants-shard-2" "mutants-shard-3" "mutants-shard-4" "mutants-shard-5" "mutants-shard-6" "mutants-shard-7")
           files=("missed.txt" "caught.txt" "timeout.txt" "unviable.txt")
           mkdir -p mutants-shards
 
           for file in "${files[@]}"; do
             for folder in "${folders[@]}"; do
-              cat "$folder/$file" >> "mutants-shards/$file"
+              if [[ -s "$folder" ]]; then
+                cat "$folder/$file" >> "mutants-shards/$file"
+              fi
             done
           done
 
