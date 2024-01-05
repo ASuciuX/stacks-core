@@ -45,9 +45,9 @@ jobs:
             echo "packages_output=false" >> "$GITHUB_OUTPUT"
           fi
 
-          if [[ $(cargo mutants --in-diff git.diff --list | awk 'END { print NR }') | tr -d '[:space:]') -gt 40 && "$big_packages_found" == "false" ]]; then
+          if [[ $(cargo mutants --in-diff git.diff --list | awk 'END { print NR }' | tr -d '[:space:]') -gt 40 && "$big_packages_found" == "false" ]]; then
             echo "shards_output=true" >> "$GITHUB_OUTPUT"
-          elif [[ $(cargo mutants --in-diff git.diff --list | awk 'END { print NR }') | tr -d '[:space:]') -gt 8 && "$big_packages_found" == "true" ]]; then
+          elif [[ $(cargo mutants --in-diff git.diff --list | awk 'END { print NR }' | tr -d '[:space:]') -gt 8 && "$big_packages_found" == "true" ]]; then
             echo "shards_output=true" >> "$GITHUB_OUTPUT"
           else
             echo "shards_output=false" >> "$GITHUB_OUTPUT"
