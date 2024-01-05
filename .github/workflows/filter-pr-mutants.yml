@@ -45,12 +45,18 @@ jobs:
             echo "packages_output=false" >> "$GITHUB_OUTPUT"
           fi
 
+          echo "$(cargo mutants --in-diff git.diff --list | awk 'END { print NR }')"
+          echo $big_packages_found
+
           if [[ $(cargo mutants --in-diff git.diff --list | awk 'END { print NR }') > 40 && $big_packages_found == "false" ]]; then
             echo "shards_output=true" >> "$GITHUB_OUTPUT"
+            echo "a"
           elif [[ $(cargo mutants --in-diff git.diff --list | awk 'END { print NR }') > 8 && $big_packages_found == "true" ]]; then
             echo "shards_output=true" >> "$GITHUB_OUTPUT"
+            echo "b"
           else
             echo "shards_output=false" >> "$GITHUB_OUTPUT"
+            echo "c"
           fi
 
   # Mutation testing - Execute on PR on packages that have functions modified (normal run, no shards)
@@ -156,29 +162,31 @@ jobs:
           done
 
           for folder in "${folders[@]}"; do
-            exit_code=$(<"${folder}/exit_code.txt")
-            most_relevant_exit_code=0
+            if [[ -s "$folder" ]]; then
+              exit_code=$(<"${folder}/exit_code.txt")
+              most_relevant_exit_code=0
 
-            case $exit_code in
-            4)
+              case $exit_code in
+              4)
                 most_relevant_exit_code=4
                 ;;
-            1)
+              1)
                 [ "$most_relevant_exit_code" -eq 0 ] && most_relevant_exit_code=1
                 ;;
-            2)
+              2)
                 [ "$most_relevant_exit_code" -eq 0 ] && most_relevant_exit_code=2
                 ;;
-            3)
+              3)
                 [ "$most_relevant_exit_code" -eq 0 ] && most_relevant_exit_code=3
                 ;;
-            0)
+              0)
                 ;;
-            *)
+              *)
                 echo "Unknown exit code $exit_code"
                 most_relevant_exit_code=$exit_code
                 ;;
-            esac
+              esac
+            fi
           done
 
           echo "$most_relevant_exit_code" > './mutants-shards/exit_code.txt'
