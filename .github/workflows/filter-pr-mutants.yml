@@ -35,11 +35,11 @@ jobs:
       - id: check_big_packages
         run: |
           git diff origin/${{ github.base_ref }}.. > git.diff
-          output="false"
           if [[ $(cargo mutants --in-diff git.diff --list | grep 'stackslib\|stacks-node\|clarity') ]]; then
-            output="true"
+            echo "output=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "output=false" >> "$GITHUB_OUTPUT"
           fi
-          echo "$output" >> "$GITHUB_OUTPUT"
 
   # Check whether to run the mutants using shards or not
   check-shards-needed:
@@ -64,13 +64,13 @@ jobs:
           BIG_PACKAGES: ${{ needs.check-big-packages.outputs.big_packages }}
         run: |
           git diff origin/${{ github.base_ref }}.. > git.diff
-          output="false"
           if [[ $(cargo mutants --in-diff git.diff --list | awk 'END { print NR }') > 40 && $BIG_PACKAGES == "false" ]]; then
-            output="true"
+            echo "output=true" >> "$GITHUB_OUTPUT"
           elif [[ $(cargo mutants --in-diff git.diff --list | awk 'END { print NR }') > 8 && $BIG_PACKAGES == "true" ]]; then
-            output="true"
+            echo "output=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "output=false" >> "$GITHUB_OUTPUT"
           fi
-          echo "$output" >> "$GITHUB_OUTPUT"
 
   # Mutation testing - Execute on PR on packages that have functions modified (normal run, no shards)
   filter-pr-mutants-normal:
