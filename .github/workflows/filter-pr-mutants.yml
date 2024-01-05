@@ -35,9 +35,9 @@ jobs:
       - id: check_big_packages
         run: |
           git diff origin/${{ github.base_ref }}.. > git.diff
-          output=false
+          output="false"
           if [[ $(cargo mutants --in-diff git.diff --list | grep 'stackslib\|stacks-node\|clarity') ]]; then
-            output=true
+            output="true"
           fi
           echo "$output" >> "$GITHUB_OUTPUT"
 
@@ -64,11 +64,11 @@ jobs:
           BIG_PACKAGES: ${{ needs.check-big-packages.outputs.big_packages }}
         run: |
           git diff origin/${{ github.base_ref }}.. > git.diff
-          output=false
+          output="false"
           if [[ $(cargo mutants --in-diff git.diff --list | awk 'END { print NR }') > 40 && $BIG_PACKAGES == "false" ]]; then
-            output=true
+            output="true"
           elif [[ $(cargo mutants --in-diff git.diff --list | awk 'END { print NR }') > 8 && $BIG_PACKAGES == "true" ]]; then
-            output=true
+            output="true"
           fi
           echo "$output" >> "$GITHUB_OUTPUT"
 
