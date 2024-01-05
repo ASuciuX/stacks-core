@@ -26,6 +26,10 @@ jobs:
       big_packages: ${{ steps.check_big_packages.outputs.output }}
 
     steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
       - id: check_big_packages
         run: |
           git diff origin/${{ github.base_ref }}.. > git.diff
@@ -47,6 +51,10 @@ jobs:
       shards_needed: ${{ steps.check_shards_needed.outputs.output }}
 
     steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
       - id: check_shards_needed
         env:
           BIG_PACKAGES: ${{ needs.check-big-packages.outputs.big_packages }}
