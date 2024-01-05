@@ -16,14 +16,15 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Check whether there are differences on `stackslib`, `stacks-node` or `clarity` packages (bigger ones)
-  check-big-packages:
+  # Check whether there are differences on `stackslib`, `stacks-node` or `clarity` packages (bigger ones) and whether to run the mutants using shards or not
+  check-big-packages-and-shards:
     name: Check Big Packages
 
     runs-on: ubuntu-latest
 
     outputs:
-      big_packages: ${{ steps.check_big_packages.outputs.output }}
+      big_packages: ${{ steps.check_big_packages.outputs.packages_output }}
+      shards_needed: ${{ steps.check_big_packages.outputs.shards_output }}
 
     steps:
       - uses: actions/checkout@v3
@@ -35,56 +36,34 @@ jobs:
       - id: check_big_packages
         run: |
           git diff origin/${{ github.base_ref }}.. > git.diff
+
           if [[ $(cargo mutants --in-diff git.diff --list | grep 'stackslib\|stacks-node\|clarity') ]]; then
-            echo "output=true" >> "$GITHUB_OUTPUT"
+            echo "packages_output=true" >> "$GITHUB_OUTPUT"
           else
-            echo "output=false" >> "$GITHUB_OUTPUT"
+            echo "packages_output=false" >> "$GITHUB_OUTPUT"
           fi
 
-  # Check whether to run the mutants using shards or not
-  check-shards-needed:
-    name: Check if Shards are Needed
-
-    runs-on: ubuntu-latest
-
-    needs: check-big-packages
-
-    outputs:
-      shards_needed: ${{ steps.check_shards_needed.outputs.output }}
-
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - run: cargo install --git https://github.com/sourcefrog/cargo-mutants cargo-mutants
-
-      - id: check_shards_needed
-        env:
-          BIG_PACKAGES: ${{ needs.check-big-packages.outputs.big_packages }}
-        run: |
-          git diff origin/${{ github.base_ref }}.. > git.diff
-          if [[ $(cargo mutants --in-diff git.diff --list | awk 'END { print NR }') > 40 && $BIG_PACKAGES == "false" ]]; then
-            echo "output=true" >> "$GITHUB_OUTPUT"
-          elif [[ $(cargo mutants --in-diff git.diff --list | awk 'END { print NR }') > 8 && $BIG_PACKAGES == "true" ]]; then
-            echo "output=true" >> "$GITHUB_OUTPUT"
+          if [[ $(cargo mutants --in-diff git.diff --list | awk 'END { print NR }') > 40 && "$packages_output" == "false" ]]; then
+            echo "shards_output=true" >> "$GITHUB_OUTPUT"
+          elif [[ $(cargo mutants --in-diff git.diff --list | awk 'END { print NR }') > 8 && "$packages_output" == "true" ]]; then
+            echo "shards_output=true" >> "$GITHUB_OUTPUT"
           else
-            echo "output=false" >> "$GITHUB_OUTPUT"
+            echo "shards_output=false" >> "$GITHUB_OUTPUT"
           fi
 
   # Mutation testing - Execute on PR on packages that have functions modified (normal run, no shards)
   filter-pr-mutants-normal:
-    name: Incremental Mutants Testing
+    name: Incremental Mutants Testing - Normal
 
-    needs: [check-big-packages, check-shards-needed]
+    needs: check-big-packages-and-shards
 
-    if: ${{ needs.check-shards-needed.outputs.shards_needed == 'false' }}
+    if: ${{ needs.check-big-packages-and-shards.outputs.shards_needed == 'false' }}
 
     runs-on: ubuntu-latest
 
     steps:
       - name: Run filtering pr mutants from actions - no shards, big packages
-        if: ${{ needs.check-big-packages.outputs == 'true' }}
+        if: ${{ needs.check-big-packages-and-shards.outputs.big_packages == 'true' }}
         env:
           BITCOIND_TEST: 1
           RUST_BACKTRACE: full
@@ -93,18 +72,18 @@ jobs:
           contains-big-package: true
 
       - name: Run filtering pr mutants from actions - no shards, normal packages
-        if: ${{ needs.check-big-packages.outputs == 'false' }}
+        if: ${{ needs.check-big-packages-and-shards.outputs.big_packages == 'false' }}
         uses: ASuciuX/actions/mutation-testing/filter-pr@test/modular-mutants-runs
         with:
           contains-big-package: false
 
   # Mutation testing - Execute on PR on packages that have functions modified (run with strategy matrix shards)
   filter-pr-mutants-shards:
-    name: Incremental Mutants Testing
+    name: Incremental Mutants Testing - Shards
 
-    needs: [check-big-packages, check-shards-needed]
+    needs: check-big-packages-and-shards
 
-    if: ${{ needs.check-shards-needed.outputs.shards_needed == 'true' }}
+    if: ${{ needs.check-big-packages-and-shards.outputs.shards_needed == 'true' }}
 
     runs-on: ubuntu-latest
 
@@ -115,7 +94,7 @@ jobs:
 
     steps:
       - name: Run filtering pr mutants from actions - with shards, big packages
-        if: ${{ needs.check-big-packages.outputs == 'true' }}
+        if: ${{ needs.check-big-packages-and-shards.outputs.big_packages == 'true' }}
         env:
           BITCOIND_TEST: 1
           RUST_BACKTRACE: full
@@ -125,7 +104,7 @@ jobs:
           contains-big-package: true
 
       - name: Run filtering pr mutants from actions - with shards, normal packages
-        if: ${{ needs.check-big-packages.outputs == 'false' }}
+        if: ${{ needs.check-big-packages-and-shards.outputs.big_packages == 'false' }}
         uses: ASuciuX/actions/mutation-testing/filter-pr@test/modular-mutants-runs
         with:
           shard: ${{ matrix.shard }}
