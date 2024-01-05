@@ -18,7 +18,7 @@ concurrency:
 jobs:
   # Check whether there are differences on `stackslib`, `stacks-node` or `clarity` packages (bigger ones) and whether to run the mutants using shards or not
   check-big-packages-and-shards:
-    name: Check Big Packages
+    name: Check Big Packages and Shards Needed
 
     runs-on: ubuntu-latest
 
@@ -36,16 +36,18 @@ jobs:
       - id: check_big_packages
         run: |
           git diff origin/${{ github.base_ref }}.. > git.diff
+          big_packages_found="false"
 
           if [[ $(cargo mutants --in-diff git.diff --list | grep 'stackslib\|stacks-node\|clarity') ]]; then
+            big_packages_found="true"
             echo "packages_output=true" >> "$GITHUB_OUTPUT"
           else
             echo "packages_output=false" >> "$GITHUB_OUTPUT"
           fi
 
-          if [[ $(cargo mutants --in-diff git.diff --list | awk 'END { print NR }') > 40 && "$packages_output" == "false" ]]; then
+          if [[ $(cargo mutants --in-diff git.diff --list | awk 'END { print NR }') > 40 && $big_packages_found == "false" ]]; then
             echo "shards_output=true" >> "$GITHUB_OUTPUT"
-          elif [[ $(cargo mutants --in-diff git.diff --list | awk 'END { print NR }') > 8 && "$packages_output" == "true" ]]; then
+          elif [[ $(cargo mutants --in-diff git.diff --list | awk 'END { print NR }') > 8 && $big_packages_found == "true" ]]; then
             echo "shards_output=true" >> "$GITHUB_OUTPUT"
           else
             echo "shards_output=false" >> "$GITHUB_OUTPUT"
