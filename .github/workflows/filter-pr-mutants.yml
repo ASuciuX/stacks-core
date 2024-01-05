@@ -38,7 +38,7 @@ jobs:
           git diff origin/${{ github.base_ref }}.. > git.diff
           big_packages_found="false"
 
-          if [[ $(cargo mutants --in-diff git.diff --list | grep 'stackslib\|stacks-node') ]]; then
+          if [[ $(cargo mutants --in-diff git.diff --list | grep 'stackslib\|stacks-node\|clarity') ]]; then
             big_packages_found="true"
             echo "packages_output=true" >> "$GITHUB_OUTPUT"
           else
