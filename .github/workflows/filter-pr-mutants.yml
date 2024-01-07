@@ -86,6 +86,9 @@ jobs:
             fi
           fi
 
+          echo $number_of_small_mutants
+          echo $small_packages_shard_limit
+
           # If small_packages file exists, count how many mutants there are
           if [[ -s mutants_by_packages/small_packages.txt ]]; then
             number_of_small_mutants=$(cat mutants_by_packages/small_packages.txt | awk 'END { print NR }' | tr -d '[:space:]')
