@@ -76,13 +76,13 @@ jobs:
         run: |
           number_of_big_mutants=0
           number_of_small_mutants=0
-          small_packages_shard_limit=79
+          small_packages_shard_limit=119
 
           # If big_packages file exists, count how many mutants there are and if there are more than 15, increase the shard limit for small packages from 80 to 120
           if [[ -s mutants_by_packages/big_packages.txt ]]; then
             number_of_big_mutants=$(cat mutants_by_packages/big_packages.txt | awk 'END { print NR }' | tr -d '[:space:]')
-            if [[ $number_of_big_mutants -gt 15 ]]; then
-              small_packages_shard_limit=119
+            if [[ $number_of_big_mutants -lt 16 ]]; then
+              small_packages_shard_limit=79
             fi
           fi
 
