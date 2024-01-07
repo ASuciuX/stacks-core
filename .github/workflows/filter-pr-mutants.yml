@@ -248,7 +248,7 @@ jobs:
 
           for file in "${files[@]}"; do
             for folder in "${folders[@]}"; do
-              if [[ -s "$folder" && -s "$file" ]]; then
+              if [[ -s "$folder/$file" ]]; then
                 cat "$folder/$file" >> "mutants-shards/$file"
               fi
             done
