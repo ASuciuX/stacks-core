@@ -611,6 +611,10 @@ pub fn read_prepare_phase_commits<B: BurnchainHeaderReader>(
     Ok(ret)
 }
 
+pub fn test_mutants_big_packages(prepare_phase_ops: LeaderBlockCommitOp) -> LeaderBlockCommitOp {
+    prepare_phase_ops
+}
+
 /// Find all referenced parent block-commits already in the burnchain DB, so we can extract their VRF seeds.
 /// If this method errors out, it's because it couldn't read the burnchain headers DB (or it's
 /// corrupted). Either way, the caller may treat this as a fatal condition.
