@@ -248,7 +248,7 @@ jobs:
 
           for file in "${files[@]}"; do
             for folder in "${folders[@]}"; do
-              if [[ -s "$folder" ]]; then
+              if [[ -s "$folder" && -s "$file" ]]; then
                 cat "$folder/$file" >> "mutants-shards/$file"
               fi
             done
@@ -357,10 +357,8 @@ jobs:
             fi
           }
 
-          if [[ -s ./mutants-shards/tested_mutants.txt ]]; then
-            echo "# Untested Mutants" >> "$GITHUB_STEP_SUMMARY"
-            write_section "Failed:" "./mutants-shards/tested_mutants.txt"
-          fi
+          echo "# Untested Mutants" >> "$GITHUB_STEP_SUMMARY"
+          write_section "Failed:" "./mutants-shards/tested_mutants.txt"
 
           echo "# Uncaught Mutants" >> "$GITHUB_STEP_SUMMARY"
           write_section "Missed:" "./mutants-shards/missed.txt"
