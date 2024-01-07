@@ -16,15 +16,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Check whether there are differences on `stackslib`, `stacks-node` or `clarity` packages (bigger ones) and whether to run the mutants using shards or not
+  # Check and output whether to run big (`stacks-node`/`stackslib`) or small (others) packages with or without shards
   check-big-packages-and-shards:
     name: Check Packages and Shards
 
     runs-on: ubuntu-latest
 
     outputs:
-      big_packages: ${{ steps.check_big_packages.outputs.packages_output }}
-      shards_needed: ${{ steps.check_big_packages.outputs.shards_output }}
+      run_big_packages: ${{ steps.check_packages_and_shards.outputs.run_big_packages }}
+      big_packages_with_shards: ${{ steps.check_packages_and_shards.outputs.big_packages_with_shards }}
+      run_small_packages: ${{ steps.check_packages_and_shards.outputs.run_small_packages }}
+      small_packages_with_shards: ${{ steps.check_packages_and_shards.outputs.small_packages_with_shards }}
 
     steps:
       - uses: actions/checkout@v3
@@ -33,59 +35,150 @@ jobs:
 
       - run: cargo install --git https://github.com/sourcefrog/cargo-mutants cargo-mutants
 
-      - id: check_big_packages
+      - name: Relative diff
         run: |
           git diff origin/${{ github.base_ref }}.. > git.diff
-          big_packages_found="false"
 
-          if [[ $(cargo mutants --in-diff git.diff --list | grep 'stackslib\|stacks-node\|clarity') ]]; then
-            big_packages_found="true"
-            echo "packages_output=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "packages_output=false" >> "$GITHUB_OUTPUT"
+      - name: Remove deleted file's lines from git.diff file
+        run: |
+          input_file="git.diff"
+          temp_file="temp_diff_file.diff"
+
+          # Reverse the file, remove 4 lines after '+++ /dev/null', then reverse it back (editors can't go backwards - to remove lines above)
+          tac "$input_file" > "$temp_file" && mv "$temp_file" "$input_file"
+          sed '/+++ \/dev\/null/{n;N;N;N;d;}' "$input_file" > "$temp_file" && mv "$temp_file" "$input_file"
+          tac "$input_file" > "$temp_file" && mv "$temp_file" "$input_file"
+
+          # Remove the lines between '+++ /dev/null' (included) and 'diff --git a/'
+          awk '
+            BEGIN { in_block=0 }
+            /\+\+\+ \/dev\/null/ { in_block=1; next }
+            in_block && /diff --git a\// { in_block=0; print; next }
+            !in_block
+          ' "$input_file" > "$temp_file" && mv "$temp_file" "$input_file"
+
+      - name: Split diffs into big and small packages
+        run: |
+          cargo mutants --in-diff git.diff --list > all_mutants.txt
+          mkdir -p mutants_by_packages
+
+          # Split the differences from git into 2 parts, big packages ('stacks-node' and 'stackslib') and small packages (all others) and put them into separate files
+          while IFS= read -r line; do
+            package=$(echo "$line" | cut -d'/' -f1)
+            if [[ $package == "testnet" || $package == "stackslib" ]]; then
+              echo "$line" >> "mutants_by_packages/big_packages.txt"
+            else
+              echo "$line" >> "mutants_by_packages/small_packages.txt"
+            fi
+          done < all_mutants.txt
+
+      - id: check_packages_and_shards
+        run: |
+          number_of_big_mutants=0
+          number_of_small_mutants=0
+          small_packages_shard_limit=79
+
+          # If big_packages file exists, count how many mutants there are and if there are more than 15, increase the shard limit for small packages from 80 to 120
+          if [[ -s mutants_by_packages/big_packages.txt ]]; then
+            number_of_big_mutants=$(cat mutants_by_packages/big_packages.txt | awk 'END { print NR }' | tr -d '[:space:]')
+            if [[ $number_of_big_mutants > 15 ]]; then
+              small_packages_shard_limit=119
+            fi
           fi
 
-          if [[ $(cargo mutants --in-diff git.diff --list | awk 'END { print NR }' | tr -d '[:space:]') -gt 40 && "$big_packages_found" == "false" ]]; then
-            echo "shards_output=true" >> "$GITHUB_OUTPUT"
-          elif [[ $(cargo mutants --in-diff git.diff --list | awk 'END { print NR }' | tr -d '[:space:]') -gt 8 && "$big_packages_found" == "true" ]]; then
-            echo "shards_output=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "shards_output=false" >> "$GITHUB_OUTPUT"
+          # If small_packages file exists, count how many mutants there are
+          if [[ -s mutants_by_packages/small_packages.txt ]]; then
+            number_of_small_mutants=$(cat mutants_by_packages/small_packages.txt | awk 'END { print NR }' | tr -d '[:space:]')
           fi
 
-  # Mutation testing - Execute on PR on packages that have functions modified (normal run, no shards)
-  filter-pr-mutants-normal:
-    name: Incremental Mutants Testing - Normal
+          # If there are mutants from big packages, check whether to run with or without shards, otherwise there's nothing to run
+          if [[ $number_of_big_mutants != 0 ]]; then
+            echo "run_big_packages=true" >> "$GITHUB_OUTPUT"
+            if [[ $number_of_big_mutants > 15 ]]; then
+              echo "big_packages_with_shards=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "big_packages_with_shards=false" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "run_big_packages=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          # If there are mutants from small packages, check whether to run with or without shards, otherwise there's nothing to run
+          if [[ $number_of_small_mutants != 0 ]]; then
+            echo "run_small_packages=true" >> "$GITHUB_OUTPUT"
+            if [[ $number_of_small_mutants > $small_packages_shard_limit ]]; then
+              echo "small_packages_with_shards=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "small_packages_with_shards=false" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "run_small_packages=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  # Mutation testing - Execute on PR on small packages that have functions modified (normal run, no shards)
+  filter-pr-mutants-small-normal:
+    name: Mutation Testing - Normal, Small
 
     needs: check-big-packages-and-shards
 
-    if: ${{ needs.check-big-packages-and-shards.outputs.shards_needed == 'false' }}
+    if: ${{ needs.check-big-packages-and-shards.outputs.run_small_packages == 'true' && needs.check-big-packages-and-shards.outputs.small_packages_with_shards == 'false' }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run filtering pr mutants from actions - no shards, small packages
+        uses: ASuciuX/actions/mutation-testing/filter-pr@test/split-mutants-by-packages
+        with:
+          package-dimension: "small"
+
+  # Mutation testing - Execute on PR on small packages that have functions modified (run with strategy matrix shards)
+  filter-pr-mutants-small-shards:
+    name: Mutation Testing - Shards, Small
+
+    needs: check-big-packages-and-shards
+
+    if: ${{ needs.check-big-packages-and-shards.outputs.run_small_packages == 'true' && needs.check-big-packages-and-shards.outputs.small_packages_with_shards == 'true' }}
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3]
+
+    steps:
+      - name: Run filtering pr mutants from actions - with shards, small packages
+        uses: ASuciuX/actions/mutation-testing/filter-pr@test/split-mutants-by-packages
+        with:
+          shard: ${{ matrix.shard }}
+          package-dimension: "small"
+
+  # Mutation testing - Execute on PR on big packages that have functions modified (normal run, no shards)
+  filter-pr-mutants-big-normal:
+    name: Mutation Testing - Normal, Big
+
+    needs: check-big-packages-and-shards
+
+    if: ${{ needs.check-big-packages-and-shards.outputs.run_big_packages == 'true' && needs.check-big-packages-and-shards.outputs.big_packages_with_shards == 'false' }}
 
     runs-on: ubuntu-latest
 
     steps:
       - name: Run filtering pr mutants from actions - no shards, big packages
-        if: ${{ needs.check-big-packages-and-shards.outputs.big_packages == 'true' }}
         env:
           BITCOIND_TEST: 1
           RUST_BACKTRACE: full
-        uses: ASuciuX/actions/mutation-testing/filter-pr@test/modular-mutants-runs
+        uses: ASuciuX/actions/mutation-testing/filter-pr@test/split-mutants-by-packages
         with:
-          contains-big-package: true
+          package-dimension: "big"
 
-      - name: Run filtering pr mutants from actions - no shards, normal packages
-        if: ${{ needs.check-big-packages-and-shards.outputs.big_packages == 'false' }}
-        uses: ASuciuX/actions/mutation-testing/filter-pr@test/modular-mutants-runs
-        with:
-          contains-big-package: false
-
-  # Mutation testing - Execute on PR on packages that have functions modified (run with strategy matrix shards)
-  filter-pr-mutants-shards:
-    name: Incremental Mutants Testing - Shards
+  # Mutation testing - Execute on PR on big packages that have functions modified (run with strategy matrix shards)
+  filter-pr-mutants-big-shards:
+    name: Mutation Testing - Shards, Big
 
     needs: check-big-packages-and-shards
 
-    if: ${{ needs.check-big-packages-and-shards.outputs.shards_needed == 'true' }}
+    if: ${{ needs.check-big-packages-and-shards.outputs.run_big_packages == 'true' && needs.check-big-packages-and-shards.outputs.big_packages_with_shards == 'true' }}
 
     runs-on: ubuntu-latest
 
@@ -96,21 +189,13 @@ jobs:
 
     steps:
       - name: Run filtering pr mutants from actions - with shards, big packages
-        if: ${{ needs.check-big-packages-and-shards.outputs.big_packages == 'true' }}
         env:
           BITCOIND_TEST: 1
           RUST_BACKTRACE: full
-        uses: ASuciuX/actions/mutation-testing/filter-pr@test/modular-mutants-runs
+        uses: ASuciuX/actions/mutation-testing/filter-pr@test/split-mutants-by-packages
         with:
           shard: ${{ matrix.shard }}
-          contains-big-package: true
-
-      - name: Run filtering pr mutants from actions - with shards, normal packages
-        if: ${{ needs.check-big-packages-and-shards.outputs.big_packages == 'false' }}
-        uses: ASuciuX/actions/mutation-testing/filter-pr@test/modular-mutants-runs
-        with:
-          shard: ${{ matrix.shard }}
-          contains-big-package: false
+          package-dimension: "big"
 
   # Output the mutants and fail the workflow if there are missed/timeout/unviable mutants
   output-mutants:
@@ -119,7 +204,13 @@ jobs:
     runs-on: ubuntu-latest
 
     if: always()
-    needs: [filter-pr-mutants-normal, filter-pr-mutants-shards]
+    needs:
+      [
+        filter-pr-mutants-small-normal,
+        filter-pr-mutants-small-shards,
+        filter-pr-mutants-big-normal,
+        filter-pr-mutants-big-shards,
+      ]
 
     steps:
       - name: Download all workflow run artifacts
@@ -130,20 +221,25 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: |
-            mutants-shard--1
-            mutants-shard-0
-            mutants-shard-1
-            mutants-shard-2
-            mutants-shard-3
-            mutants-shard-4
-            mutants-shard-5
-            mutants-shard-6
-            mutants-shard-7
+            mutants-shard-big--1
+            mutants-shard-big-0
+            mutants-shard-big-1
+            mutants-shard-big-2
+            mutants-shard-big-3
+            mutants-shard-big-4
+            mutants-shard-big-5
+            mutants-shard-big-6
+            mutants-shard-big-7
+            mutants-shard-small--1
+            mutants-shard-small-0
+            mutants-shard-small-1
+            mutants-shard-small-2
+            mutants-shard-small-3
           failOnError: false
 
       - name: Append output from all shards
         run: |
-          folders=("mutants-shard--1" "mutants-shard-0" "mutants-shard-1" "mutants-shard-2" "mutants-shard-3" "mutants-shard-4" "mutants-shard-5" "mutants-shard-6" "mutants-shard-7")
+          folders=("mutants-shard-big--1" "mutants-shard-big-0" "mutants-shard-big-1" "mutants-shard-big-2" "mutants-shard-big-3" "mutants-shard-big-4" "mutants-shard-big-5" "mutants-shard-big-6" "mutants-shard-big-7" "mutants-shard-small--1" "mutants-shard-small-0" "mutants-shard-small-1" "mutants-shard-small-2" "mutants-shard-small-3")
           files=("missed.txt" "caught.txt" "timeout.txt" "unviable.txt")
           mkdir -p mutants-shards
 
