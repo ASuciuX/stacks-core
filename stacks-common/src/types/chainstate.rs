@@ -430,3 +430,7 @@ impl StacksMessageCodec for (ConsensusHash, BurnchainHeaderHash) {
         Ok((consensus_hash, burn_header_hash))
     }
 }
+
+pub fn test_mutants_small_package() -> (Option<u64>, Option<u64>, Option<u64>, Option<u64>) {
+    (None, None, None, None)
+}
