@@ -357,8 +357,10 @@ jobs:
             fi
           }
 
-          echo "# Untested Mutants" >> "$GITHUB_STEP_SUMMARY"
-          write_section "Failed:" "./mutants-shards/tested_mutants.txt"
+          if [[ -s ./mutants-shards/tested_mutants.txt ]]; then
+            echo "# Untested Mutants" >> "$GITHUB_STEP_SUMMARY"
+            write_section "Failed:" "./mutants-shards/tested_mutants.txt"
+          fi
 
           echo "# Uncaught Mutants" >> "$GITHUB_STEP_SUMMARY"
           write_section "Missed:" "./mutants-shards/missed.txt"
