@@ -91,6 +91,10 @@ jobs:
             number_of_small_mutants=$(cat mutants_by_packages/small_packages.txt | awk 'END { print NR }' | tr -d '[:space:]')
           fi
 
+          echo $number_of_big_mutants
+          echo $number_of_small_mutants
+          echo $small_packages_shard_limit
+
           # If there are mutants from big packages, check whether to run with or without shards, otherwise there's nothing to run
           if [[ $number_of_big_mutants != 0 ]]; then
             echo "run_big_packages=true" >> "$GITHUB_OUTPUT"
