@@ -243,7 +243,7 @@ jobs:
       - name: Append output from all shards
         run: |
           folders=("mutants-shard-big--1" "mutants-shard-big-0" "mutants-shard-big-1" "mutants-shard-big-2" "mutants-shard-big-3" "mutants-shard-big-4" "mutants-shard-big-5" "mutants-shard-big-6" "mutants-shard-big-7" "mutants-shard-small--1" "mutants-shard-small-0" "mutants-shard-small-1" "mutants-shard-small-2" "mutants-shard-small-3")
-          files=("missed.txt" "caught.txt" "timeout.txt" "unviable.txt" "tested_mutants.txt")
+          files=("missed.txt" "caught.txt" "timeout.txt" "unviable.txt")
           mkdir -p mutants-shards
 
           for file in "${files[@]}"; do
@@ -300,13 +300,7 @@ jobs:
                 echo "## $section_title" >> "$GITHUB_STEP_SUMMARY"
               fi
 
-              if [[ "$section_title" == "Failed:" ]]; then
-                echo "<details>" >> "$GITHUB_STEP_SUMMARY"
-                echo "<summary>What are failed mutants?</summary>" >> "$GITHUB_STEP_SUMMARY"
-                echo "<br>" >> "$GITHUB_STEP_SUMMARY"
-                echo "The `cargo build` or `cargo test` commands failed on an unmutated tree, so no mutants were tested. Make sure the code compiles and the tests run successfully before running mutations, or re-run the workflow if this is a temporary error." >> "$GITHUB_STEP_SUMMARY"
-                echo "</details>" >> "$GITHUB_STEP_SUMMARY"
-              elif [[ "$section_title" == "Missed:" ]]; then
+              if [[ "$section_title" == "Missed:" ]]; then
                 echo "<details>" >> "$GITHUB_STEP_SUMMARY"
                 echo "<summary>What are missed mutants?</summary>" >> "$GITHUB_STEP_SUMMARY"
                 echo "<br>" >> "$GITHUB_STEP_SUMMARY"
@@ -335,11 +329,7 @@ jobs:
                 awk -F':' '{printf "- [x] " "[" $0 "]"; file_path=$1; line=$2; $1=""; $2=""; printf "(" "'"$server_url"'/'"$organisation"'/'"$repository"'/blob/'"$commit"'/" file_path "#L" line-1 ")\n\n"}' "$file_name" >> "$GITHUB_STEP_SUMMARY"
               fi
 
-              if [[ "$section_title" == "Failed:" ]]; then
-                echo "### To resolve this issue, consider one of the following options:" >> "$GITHUB_STEP_SUMMARY"
-                echo "- Modify the code such that it compiles and run tests successfully without mutations." >> "$GITHUB_STEP_SUMMARY"
-                echo "- Re-run the workflow if the problem persists after completing the above step." >> "$GITHUB_STEP_SUMMARY"
-              elif [[ "$section_title" == "Missed:" ]]; then
+              if [[ "$section_title" == "Missed:" ]]; then
                 echo "### To resolve this issue, consider one of the following options:" >> "$GITHUB_STEP_SUMMARY"
                 echo "- Modify or add tests including this function." >> "$GITHUB_STEP_SUMMARY"
                 echo "- If you are absolutely certain that this function should not undergo mutation testing, add '#[mutants::skip]' or '#[cfg_attr(test, mutants::skip)]' function header to skip it." >> "$GITHUB_STEP_SUMMARY"
@@ -356,9 +346,6 @@ jobs:
               echo >> "$GITHUB_STEP_SUMMARY"
             fi
           }
-
-          echo "# Untested Mutants" >> "$GITHUB_STEP_SUMMARY"
-          write_section "Failed:" "./mutants-shards/tested_mutants.txt"
 
           echo "# Uncaught Mutants" >> "$GITHUB_STEP_SUMMARY"
           write_section "Missed:" "./mutants-shards/missed.txt"
