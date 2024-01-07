@@ -65,7 +65,7 @@ jobs:
           # Split the differences from git into 2 parts, big packages ('stacks-node' and 'stackslib') and small packages (all others) and put them into separate files
           while IFS= read -r line; do
             package=$(echo "$line" | cut -d'/' -f1)
-            if [[ $package == "testnet" || $package == "stackslib" || $package == "clarity" ]]; then
+            if [[ $package == "testnet" || $package == "stackslib" ]]; then
               echo "$line" >> "mutants_by_packages/big_packages.txt"
             else
               echo "$line" >> "mutants_by_packages/small_packages.txt"
@@ -90,10 +90,6 @@ jobs:
           if [[ -s mutants_by_packages/small_packages.txt ]]; then
             number_of_small_mutants=$(cat mutants_by_packages/small_packages.txt | awk 'END { print NR }' | tr -d '[:space:]')
           fi
-
-          echo $number_of_big_mutants
-          echo $number_of_small_mutants
-          echo $small_packages_shard_limit
 
           # If there are mutants from big packages, check whether to run with or without shards, otherwise there's nothing to run
           if [[ $number_of_big_mutants -ne 0 ]]; then
