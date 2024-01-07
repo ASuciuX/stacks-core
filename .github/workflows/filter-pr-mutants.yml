@@ -65,7 +65,7 @@ jobs:
           # Split the differences from git into 2 parts, big packages ('stacks-node' and 'stackslib') and small packages (all others) and put them into separate files
           while IFS= read -r line; do
             package=$(echo "$line" | cut -d'/' -f1)
-            if [[ $package == "testnet" || $package == "stackslib" ]]; then
+            if [[ $package == "testnet" || $package == "stackslib" || $package == "clarity" ]]; then
               echo "$line" >> "mutants_by_packages/big_packages.txt"
             else
               echo "$line" >> "mutants_by_packages/small_packages.txt"
