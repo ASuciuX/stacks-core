@@ -123,6 +123,7 @@ jobs:
     if: always()
     needs:
       [
+        check-big-packages-and-shards,
         pr-differences-mutants-small-normal,
         pr-differences-mutants-small-shards,
         pr-differences-mutants-big-normal,
@@ -132,3 +133,8 @@ jobs:
     steps:
       - name: Output Mutants
         uses: ASuciuX/actions/mutation-testing/output-pr-mutants@test/move-shell-to-composite
+        with:
+          big_packages: ${{ needs.check-big-packages-and-shards.outputs.run_big_packages }}
+          shards_for_big_packages: ${{ needs.check-big-packages-and-shards.outputs.big_packages_with_shards }}
+          small_packages: ${{ needs.check-big-packages-and-shards.outputs.run_small_packages }}
+          shards_for_small_packages: ${{ needs.check-big-packages-and-shards.outputs.small_packages_with_shards }}
