@@ -207,6 +207,56 @@ impl<'a> Parser<'a> {
         }
     }
 
+    fn add_unviable_mutants() -> ParseResult<
+        Option<
+            Option<
+                Option<
+                    Option<
+                        Option<
+                            Option<
+                                Option<
+                                    Option<
+                                        Option<
+                                            Option<
+                                                Option<
+                                                    Option<
+                                                        Option<
+                                                            Option<
+                                                                Option<
+                                                                    Option<
+                                                                        Option<
+                                                                            Option<
+                                                                                Option<
+                                                                                    Option<
+                                                                                        Option<
+                                                                                            Option<
+                                                                                                u64,
+                                                                                            >,
+                                                                                        >,
+                                                                                    >,
+                                                                                >,
+                                                                            >,
+                                                                        >,
+                                                                    >,
+                                                                >,
+                                                            >,
+                                                        >,
+                                                    >,
+                                                >,
+                                            >,
+                                        >,
+                                    >,
+                                >,
+                            >,
+                        >,
+                    >,
+                >,
+            >,
+        >,
+    > {
+        Ok(None)
+    }
+
     /// Process a new child node for an AST expression that is open and waiting for children nodes. For example,
     ///  a list or tuple expression that is waiting for child expressions.
     ///
