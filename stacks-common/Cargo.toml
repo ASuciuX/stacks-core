@@ -19,6 +19,7 @@ path = "./src/lib.rs"
 
 [dependencies]
 rand = "0.7.3"
+bitcoin = "0.31.1"
 serde = "1"
 serde_derive = "1"
 serde_stacker = "0.1"

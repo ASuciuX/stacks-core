@@ -207,6 +207,7 @@ impl<'a> Parser<'a> {
         }
     }
 
+    // Comment for diffs
     fn add_unviable_mutants() -> ParseResult<
         Option<
             Option<
