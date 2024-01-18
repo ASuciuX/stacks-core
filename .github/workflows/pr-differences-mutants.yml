@@ -15,13 +15,14 @@ concurrency:
   # Always cancel duplicate jobs
   cancel-in-progress: true
 
+# test
 jobs:
   # Check and output whether to run big (`stacks-node`/`stackslib`) or small (others) packages with or without shards
   check-big-packages-and-shards:
     name: Check Packages and Shards
 
     runs-on: ubuntu-latest
-
+    
     outputs:
       run_big_packages: ${{ steps.check_packages_and_shards.outputs.run_big_packages }}
       big_packages_with_shards: ${{ steps.check_packages_and_shards.outputs.big_packages_with_shards }}
