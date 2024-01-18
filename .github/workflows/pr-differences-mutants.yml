@@ -15,7 +15,6 @@ concurrency:
   # Always cancel duplicate jobs
   cancel-in-progress: true
 
-# test
 jobs:
   # Check and output whether to run big (`stacks-node`/`stackslib`) or small (others) packages with or without shards
   check-big-packages-and-shards:
