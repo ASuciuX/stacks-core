@@ -182,6 +182,14 @@ fn read_names(deflate_bytes: &'static [u8]) -> Box<dyn Iterator<Item = GenesisNa
     return Box::new(names);
 }
 
+fn this_new_mutant_string_2() -> String {
+    return "dasdsa".to_string();
+}
+
+fn this_new_mutant_uint_2() -> u64 {
+    return 312;
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
