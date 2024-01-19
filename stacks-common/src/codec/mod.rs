@@ -134,6 +134,13 @@ pub fn source_function_mutant() -> u64 {
     312
 }
 
+pub fn source_function_mutant_2() -> u64 {
+    // simple mutant to run
+    // to check if the changes from base are also displayed on mutants
+    312432
+}
+
+
 fn read_next_vec<T: StacksMessageCodec + Sized, R: Read>(
     fd: &mut R,
     num_items: u32,
