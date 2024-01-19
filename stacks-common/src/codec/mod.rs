@@ -128,6 +128,12 @@ pub fn read_next<T: StacksMessageCodec, R: Read>(fd: &mut R) -> Result<T, Error>
     Ok(item)
 }
 
+pub fn source_function_mutant() -> u64 {
+    // simple mutant to run
+    // to check if the changes from base are also displayed on mutants
+    312
+}
+
 fn read_next_vec<T: StacksMessageCodec + Sized, R: Read>(
     fd: &mut R,
     num_items: u32,
