@@ -106,8 +106,13 @@ impl Iterator for LinePairReader {
     }
 }
 
-fn this_new_mutant() -> u64 {
-    return 34;
+fn this_new_mutant_string() -> String {
+    return "dasdsa".to_string();
+}
+
+
+fn this_new_mutant_uint() -> u64 {
+    return 312;
 }
 
 fn read_deflated_zonefiles(
