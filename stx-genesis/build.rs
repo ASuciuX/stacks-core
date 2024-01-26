@@ -51,6 +51,7 @@ fn open_chainstate_file(test_data: bool) -> File {
 }
 
 pub fn write_chainstate_archives(test_data: bool) -> std::io::Result<()> {
+    // comment to rerun this with mutants
     write_chainstate_archive(test_data, "account_balances", "STX BALANCES")?;
     write_chainstate_archive(test_data, "account_lockups", "STX VESTING")?;
     write_chainstate_archive(test_data, "namespaces", "NAMESPACES")?;
@@ -131,6 +132,7 @@ fn sha256_digest<R: Read>(mut reader: R) -> String {
 }
 
 fn encode_hex(bytes: &[u8]) -> String {
+    // comment to rerun this with mutants
     let mut s = String::with_capacity(bytes.len() * 2);
     for &b in bytes {
         write!(&mut s, "{:02x}", b).unwrap();
