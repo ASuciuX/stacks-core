@@ -30,6 +30,7 @@ use stacks_common::util::hash::{Sha256Sum, Sha512Trunc256Sum};
 use stacks_common::{debug, error, info, warn};
 use wsts::common::{MerkleRoot, Signature};
 use wsts::curve::ecdsa;
+use wsts::curve::point::{Compressed, Point};
 use wsts::curve::keys::PublicKey;
 use wsts::net::{Message, NonceRequest, Packet, SignatureShareRequest};
 use wsts::state_machine::coordinator::fire::Coordinator as FireCoordinator;
@@ -720,6 +721,12 @@ impl From<&Config> for RunLoop<FireCoordinator<v2::Aggregator>> {
             .iter()
             .map(|(i, ids)| (*i, ids.iter().copied().collect::<HashSet<u32>>()))
             .collect::<HashMap<u32, HashSet<u32>>>();
+        let signer_public_keys = config
+            .signer_ids_public_keys
+            .signers
+            .iter()
+            .map(|(i, ecdsa_key)| (*i, Point::try_from(&Compressed::from(ecdsa_key.to_bytes())).unwrap()))
+            .collect::<HashMap<u32, Point>>();
 
         let coordinator_config = CoordinatorConfig {
             threshold,
@@ -733,6 +740,7 @@ impl From<&Config> for RunLoop<FireCoordinator<v2::Aggregator>> {
             nonce_timeout: config.nonce_timeout,
             sign_timeout: config.sign_timeout,
             signer_key_ids,
+            signer_public_keys,
         };
         let coordinator = FireCoordinator::new(coordinator_config);
         let signing_round = Signer::new(
