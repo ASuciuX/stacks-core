@@ -30,8 +30,8 @@ use stacks_common::util::hash::{Sha256Sum, Sha512Trunc256Sum};
 use stacks_common::{debug, error, info, warn};
 use wsts::common::{MerkleRoot, Signature};
 use wsts::curve::ecdsa;
-use wsts::curve::point::{Compressed, Point};
 use wsts::curve::keys::PublicKey;
+use wsts::curve::point::{Compressed, Point};
 use wsts::net::{Message, NonceRequest, Packet, SignatureShareRequest};
 use wsts::state_machine::coordinator::fire::Coordinator as FireCoordinator;
 use wsts::state_machine::coordinator::{Config as CoordinatorConfig, Coordinator};
@@ -725,7 +725,12 @@ impl From<&Config> for RunLoop<FireCoordinator<v2::Aggregator>> {
             .signer_ids_public_keys
             .signers
             .iter()
-            .map(|(i, ecdsa_key)| (*i, Point::try_from(&Compressed::from(ecdsa_key.to_bytes())).unwrap()))
+            .map(|(i, ecdsa_key)| {
+                (
+                    *i,
+                    Point::try_from(&Compressed::from(ecdsa_key.to_bytes())).unwrap(),
+                )
+            })
             .collect::<HashMap<u32, Point>>();
 
         let coordinator_config = CoordinatorConfig {
