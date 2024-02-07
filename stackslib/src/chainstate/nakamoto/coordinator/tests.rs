@@ -56,7 +56,7 @@ use crate::util_lib::boot::boot_code_id;
 fn advance_to_nakamoto(
     peer: &mut TestPeer,
     test_signers: &TestSigners,
-    test_stackers: Vec<TestStacker>,
+    test_stackers: &[TestStacker],
 ) {
     let mut peer_nonce = 0;
     let private_key = peer.config.private_key.clone();
@@ -75,6 +75,8 @@ fn advance_to_nakamoto(
             test_stackers
                 .iter()
                 .map(|test_stacker| {
+                    let signing_key =
+                        StacksPublicKey::from_private(&test_stacker.signer_private_key);
                     make_pox_4_lockup(
                         &test_stacker.stacker_private_key,
                         0,
@@ -84,7 +86,7 @@ fn advance_to_nakamoto(
                             addr.bytes.clone(),
                         ),
                         12,
-                        StacksPublicKey::from_private(&test_stacker.signer_private_key),
+                        signing_key,
                         34,
                     )
                 })
@@ -104,7 +106,7 @@ pub fn boot_nakamoto<'a>(
     test_name: &str,
     mut initial_balances: Vec<(PrincipalData, u64)>,
     test_signers: &TestSigners,
-    test_stackers: Option<Vec<&TestStacker>>,
+    test_stackers: &[TestStacker],
     observer: Option<&'a TestEventObserver>,
 ) -> TestPeer<'a> {
     let aggregate_public_key = test_signers.aggregate_public_key.clone();
@@ -129,23 +131,6 @@ pub fn boot_nakamoto<'a>(
     peer_config.epochs = Some(StacksEpoch::unit_test_3_0_only(37));
     peer_config.initial_balances = vec![(addr.to_account_principal(), 1_000_000_000_000_000_000)];
 
-    let test_stackers: Vec<TestStacker> = if let Some(stackers) = test_stackers {
-        stackers.into_iter().cloned().collect()
-    } else {
-        // Create a list of test Stackers and their signer keys
-        (0..test_signers.num_keys)
-            .map(|index| {
-                let stacker_private_key = StacksPrivateKey::from_seed(&index.to_be_bytes());
-                let signer_private_key = StacksPrivateKey::from_seed(&index.to_be_bytes());
-                TestStacker {
-                    stacker_private_key,
-                    signer_private_key,
-                    amount: 1_000_000_000_000_000_000,
-                }
-            })
-            .collect()
-    };
-
     // Create some balances for test Stackers
     let mut stacker_balances = test_stackers
         .iter()
@@ -163,7 +148,7 @@ pub fn boot_nakamoto<'a>(
     peer_config.burnchain.pox_constants.pox_3_activation_height = 26;
     peer_config.burnchain.pox_constants.v3_unlock_height = 27;
     peer_config.burnchain.pox_constants.pox_4_activation_height = 31;
-    peer_config.test_stackers = Some(test_stackers.clone());
+    peer_config.test_stackers = Some(test_stackers.to_vec());
     let mut peer = TestPeer::new_with_observer(peer_config, observer);
 
     advance_to_nakamoto(&mut peer, &test_signers, test_stackers);
@@ -172,7 +157,7 @@ pub fn boot_nakamoto<'a>(
 }
 
 /// Make a replay peer, used for replaying the blockchain
-fn make_replay_peer<'a>(peer: &'a mut TestPeer<'a>) -> TestPeer<'a> {
+fn make_replay_peer<'a>(peer: &mut TestPeer<'a>) -> TestPeer<'a> {
     let mut replay_config = peer.config.clone();
     replay_config.test_name = format!("{}.replay", &peer.config.test_name);
     replay_config.server_port = 0;
@@ -182,7 +167,11 @@ fn make_replay_peer<'a>(peer: &'a mut TestPeer<'a>) -> TestPeer<'a> {
     let test_stackers = replay_config.test_stackers.clone().unwrap_or(vec![]);
     let mut replay_peer = TestPeer::new(replay_config);
     let observer = TestEventObserver::new();
-    advance_to_nakamoto(&mut replay_peer, &TestSigners::default(), test_stackers);
+    advance_to_nakamoto(
+        &mut replay_peer,
+        &TestSigners::default(),
+        test_stackers.as_slice(),
+    );
 
     // sanity check
     let replay_tip = {
@@ -297,7 +286,14 @@ fn replay_reward_cycle(
 #[test]
 fn test_simple_nakamoto_coordinator_bootup() {
     let mut test_signers = TestSigners::default();
-    let mut peer = boot_nakamoto(function_name!(), vec![], &test_signers, None, None);
+    let test_stackers = TestStacker::common_signing_set(&test_signers);
+    let mut peer = boot_nakamoto(
+        function_name!(),
+        vec![],
+        &test_signers,
+        &test_stackers,
+        None,
+    );
 
     let (burn_ops, mut tenure_change, miner_key) =
         peer.begin_nakamoto_tenure(TenureChangeCause::BlockFound);
@@ -353,11 +349,12 @@ fn test_simple_nakamoto_coordinator_1_tenure_10_blocks() {
     .unwrap();
 
     let mut test_signers = TestSigners::default();
+    let test_stackers = TestStacker::common_signing_set(&test_signers);
     let mut peer = boot_nakamoto(
         function_name!(),
         vec![(addr.into(), 100_000_000)],
         &test_signers,
-        None,
+        &test_stackers,
         None,
     );
 
@@ -476,11 +473,12 @@ fn test_nakamoto_chainstate_getters() {
     )
     .unwrap();
     let mut test_signers = TestSigners::default();
+    let test_stackers = TestStacker::common_signing_set(&test_signers);
     let mut peer = boot_nakamoto(
         function_name!(),
         vec![(addr.into(), 100_000_000)],
         &test_signers,
-        None,
+        &test_stackers,
         None,
     );
 
@@ -955,8 +953,7 @@ fn test_nakamoto_chainstate_getters() {
 
 /// Mine a 10 Nakamoto tenures with between 1 and 10 Nakamoto blocks each.
 /// Checks the matured mining rewards as well.
-#[test]
-fn test_simple_nakamoto_coordinator_10_tenures_10_blocks() {
+pub fn simple_nakamoto_coordinator_10_tenures_10_sortitions<'a>() -> TestPeer<'a> {
     let private_key = StacksPrivateKey::from_seed(&[2]);
     let addr = StacksAddress::from_public_keys(
         C32_ADDRESS_VERSION_TESTNET_SINGLESIG,
@@ -967,11 +964,12 @@ fn test_simple_nakamoto_coordinator_10_tenures_10_blocks() {
     .unwrap();
 
     let mut test_signers = TestSigners::default();
+    let test_stackers = TestStacker::common_signing_set(&test_signers);
     let mut peer = boot_nakamoto(
         function_name!(),
         vec![(addr.into(), 100_000_000)],
         &test_signers,
-        None,
+        &test_stackers,
         None,
     );
 
@@ -1105,7 +1103,8 @@ fn test_simple_nakamoto_coordinator_10_tenures_10_blocks() {
 
         let stx_balance = clarity_instance
             .read_only_connection(&block_id, &chainstate_tx, &sort_db_tx)
-            .with_clarity_db_readonly(|db| db.get_account_stx_balance(&miner.clone().into()));
+            .with_clarity_db_readonly(|db| db.get_account_stx_balance(&miner.clone().into()))
+            .unwrap();
 
         // only count matured rewards (last 3 blocks are not mature)
         let block_fee = if i > 3 {
@@ -1245,6 +1244,7 @@ fn test_simple_nakamoto_coordinator_10_tenures_10_blocks() {
             )
         }
     }
+
     // replay the blocks and sortitions in random order, and verify that we still reach the chain
     // tip
     let mut replay_peer = make_replay_peer(&mut peer);
@@ -1271,6 +1271,12 @@ fn test_simple_nakamoto_coordinator_10_tenures_10_blocks() {
         tip.anchored_header.as_stacks_nakamoto().unwrap(),
         &rc_blocks.last().unwrap().last().unwrap().header
     );
+    return peer;
+}
+
+#[test]
+fn test_nakamoto_coordinator_10_tenures_10_sortitions() {
+    simple_nakamoto_coordinator_10_tenures_10_sortitions();
 }
 
 /// Mine two tenures across three sortitions, using a tenure-extend to allow the first tenure to
@@ -1278,8 +1284,7 @@ fn test_simple_nakamoto_coordinator_10_tenures_10_blocks() {
 ///
 /// Use a tenure-extend to grant the miner of the first tenure the ability to mine
 /// 20 blocks in the first tenure (10 before the second sortiton, and 10 after)
-#[test]
-fn test_simple_nakamoto_coordinator_2_tenures_3_sortitions() {
+pub fn simple_nakamoto_coordinator_2_tenures_3_sortitions<'a>() -> TestPeer<'a> {
     let private_key = StacksPrivateKey::from_seed(&[2]);
     let addr = StacksAddress::from_public_keys(
         C32_ADDRESS_VERSION_TESTNET_SINGLESIG,
@@ -1289,11 +1294,12 @@ fn test_simple_nakamoto_coordinator_2_tenures_3_sortitions() {
     )
     .unwrap();
     let mut test_signers = TestSigners::default();
+    let test_stackers = TestStacker::common_signing_set(&test_signers);
     let mut peer = boot_nakamoto(
         function_name!(),
         vec![(addr.into(), 100_000_000)],
         &test_signers,
-        None,
+        &test_stackers,
         None,
     );
 
@@ -1605,11 +1611,17 @@ fn test_simple_nakamoto_coordinator_2_tenures_3_sortitions() {
         tip.anchored_header.as_stacks_nakamoto().unwrap(),
         &blocks.last().unwrap().header
     );
+
+    return peer;
+}
+
+#[test]
+fn test_nakamoto_coordinator_2_tenures_3_sortitions() {
+    simple_nakamoto_coordinator_2_tenures_3_sortitions();
 }
 
 /// Mine a 10 Nakamoto tenures with 10 Nakamoto blocks, but do a tenure-extend in each block
-#[test]
-fn test_simple_nakamoto_coordinator_10_tenures_and_extensions_10_blocks() {
+pub fn simple_nakamoto_coordinator_10_extended_tenures_10_sortitions() -> TestPeer<'static> {
     let private_key = StacksPrivateKey::from_seed(&[2]);
     let addr = StacksAddress::from_public_keys(
         C32_ADDRESS_VERSION_TESTNET_SINGLESIG,
@@ -1619,11 +1631,12 @@ fn test_simple_nakamoto_coordinator_10_tenures_and_extensions_10_blocks() {
     )
     .unwrap();
     let mut test_signers = TestSigners::default();
+    let test_stackers = TestStacker::common_signing_set(&test_signers);
     let mut peer = boot_nakamoto(
         function_name!(),
         vec![(addr.into(), 100_000_000)],
         &test_signers,
-        None,
+        &test_stackers,
         None,
     );
 
@@ -1726,7 +1739,7 @@ fn test_simple_nakamoto_coordinator_10_tenures_and_extensions_10_blocks() {
         assert!(last_block.header.consensus_hash == sort_tip.consensus_hash);
         assert_eq!(highest_tenure.coinbase_height, 12 + i);
         assert_eq!(highest_tenure.cause, TenureChangeCause::Extended);
-        assert_eq!(highest_tenure.tenure_index, 8 * (i + 1));
+        assert_eq!(highest_tenure.tenure_index, 10 * (i + 1));
         assert_eq!(
             highest_tenure.num_blocks_confirmed,
             (blocks.len() as u32) - 1
@@ -1788,7 +1801,8 @@ fn test_simple_nakamoto_coordinator_10_tenures_and_extensions_10_blocks() {
 
         let stx_balance = clarity_instance
             .read_only_connection(&block_id, &chainstate_tx, &sort_db_tx)
-            .with_clarity_db_readonly(|db| db.get_account_stx_balance(&miner.clone().into()));
+            .with_clarity_db_readonly(|db| db.get_account_stx_balance(&miner.clone().into()))
+            .unwrap();
 
         // it's 1 * 10 because it's 1 uSTX per token-transfer, and 10 per tenure
         let expected_total_tx_fees = 1 * 10 * (i as u128).saturating_sub(3);
@@ -1863,4 +1877,11 @@ fn test_simple_nakamoto_coordinator_10_tenures_and_extensions_10_blocks() {
         tip.anchored_header.as_stacks_nakamoto().unwrap(),
         &rc_blocks.last().unwrap().last().unwrap().header
     );
+
+    return peer;
+}
+
+#[test]
+fn test_nakamoto_coordinator_10_tenures_and_extensions_10_blocks() {
+    simple_nakamoto_coordinator_10_extended_tenures_10_sortitions();
 }

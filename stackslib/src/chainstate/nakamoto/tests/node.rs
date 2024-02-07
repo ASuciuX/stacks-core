@@ -74,6 +74,7 @@ pub struct TestStacker {
 }
 
 impl TestStacker {
+    pub const DEFAULT_STACKER_AMOUNT: u128 = 1_000_000_000_000_000_000;
     pub fn from_seed(seed: &[u8]) -> TestStacker {
         let stacker_private_key = StacksPrivateKey::from_seed(seed);
         let mut signer_seed = seed.to_vec();
@@ -88,6 +89,21 @@ impl TestStacker {
 
     pub fn signer_public_key(&self) -> StacksPublicKey {
         StacksPublicKey::from_private(&self.signer_private_key)
+    }
+
+    /// make a set of stackers who will share a single signing key and stack with
+    /// `Self::DEFAULT_STACKER_AMOUNT`
+    pub fn common_signing_set(test_signers: &TestSigners) -> Vec<TestStacker> {
+        let mut signing_key_seed = test_signers.num_keys.to_be_bytes().to_vec();
+        signing_key_seed.extend_from_slice(&[1, 1, 1, 1]);
+        let signing_key = StacksPrivateKey::from_seed(signing_key_seed.as_slice());
+        (0..test_signers.num_keys)
+            .map(|index| TestStacker {
+                signer_private_key: signing_key.clone(),
+                stacker_private_key: StacksPrivateKey::from_seed(&index.to_be_bytes()),
+                amount: Self::DEFAULT_STACKER_AMOUNT,
+            })
+            .collect()
     }
 }
 
@@ -244,7 +260,6 @@ impl TestMiner {
         tx_tenure_change.anchor_mode = TransactionAnchorMode::OnChainOnly;
         tx_tenure_change.auth.set_origin_nonce(self.nonce);
 
-        // TODO: This needs to be changed to an aggregate signature from the stackers
         let mut tx_signer = StacksTransactionSigner::new(&tx_tenure_change);
         self.sign_as_origin(&mut tx_signer);
         let tx_tenure_change_signed = tx_signer.get_tx().unwrap();
@@ -289,9 +304,22 @@ impl TestStacksNode {
             None => None,
             Some(block_commit_op) => {
                 let last_tenure_id = block_commit_op.last_tenure_id();
+                debug!(
+                    "Last block commit was for {}: {:?}",
+                    &last_tenure_id, &block_commit_op
+                );
                 match self.nakamoto_commit_ops.get(&last_tenure_id) {
-                    None => None,
-                    Some(idx) => self.nakamoto_blocks.get(*idx).cloned(),
+                    None => {
+                        debug!("No Nakamoto index for {}", &last_tenure_id);
+                        None
+                    }
+                    Some(idx) => match self.nakamoto_blocks.get(*idx) {
+                        Some(nakamoto_blocks) => Some(nakamoto_blocks.clone()),
+                        None => {
+                            debug!("Nakamoto block index {} does not correspond to list of mined nakamoto tenures (len {})", idx, self.nakamoto_blocks.len());
+                            None
+                        }
+                    },
                 }
             }
         }
@@ -319,6 +347,7 @@ impl TestStacksNode {
         burn_amount: u64,
         miner_key: &LeaderKeyRegisterOp,
         parent_block_snapshot_opt: Option<&BlockSnapshot>,
+        expect_success: bool,
     ) -> LeaderBlockCommitOp {
         test_debug!(
             "Miner {}: Commit to Nakamoto tenure starting at {}",
@@ -357,18 +386,25 @@ impl TestStacksNode {
         );
 
         test_debug!(
-            "Miner {}: Nakamoto tenure commit transaction builds on {},{} (parent snapshot is {:?})",
+            "Miner {}: Nakamoto tenure commit transaction builds on {},{} (parent snapshot is {:?}). Expect success? {}",
             miner.id,
             block_commit_op.parent_block_ptr,
             block_commit_op.parent_vtxindex,
-            &parent_block_snapshot_opt
+            &parent_block_snapshot_opt,
+            expect_success
         );
 
-        // NOTE: self.nakamoto_commit_ops[block_header_hash] now contains an index into
-        // self.nakamoto_blocks that doesn't exist.  The caller needs to follow this call with a
-        // call to self.add_nakamoto_tenure_blocks()
-        self.nakamoto_commit_ops
-            .insert(last_tenure_id.clone(), self.nakamoto_blocks.len());
+        if expect_success {
+            // NOTE: self.nakamoto_commit_ops[block_header_hash] now contains an index into
+            // self.nakamoto_blocks that doesn't exist.  The caller needs to follow this call with a
+            // call to self.add_nakamoto_tenure_blocks()
+            self.nakamoto_commit_ops
+                .insert(last_tenure_id.clone(), self.nakamoto_blocks.len());
+        } else {
+            // this extends the last tenure
+            self.nakamoto_commit_ops
+                .insert(last_tenure_id.clone(), self.nakamoto_blocks.len() - 1);
+        }
         block_commit_op
     }
 
@@ -480,6 +516,7 @@ impl TestStacksNode {
                     &hdr.consensus_hash,
                 )
                 .unwrap();
+                debug!("Tenure length of {} is {}", &hdr.consensus_hash, tenure_len);
                 (hdr.index_block_hash(), hdr.consensus_hash, tenure_len)
             } else {
                 // building atop epoch2
@@ -509,6 +546,7 @@ impl TestStacksNode {
             burn_amount,
             miner_key,
             Some(&parent_block_snapshot),
+            tenure_change_cause == TenureChangeCause::BlockFound,
         );
 
         (block_commit_op, tenure_change_payload)
@@ -544,10 +582,6 @@ impl TestStacksNode {
             &[(NakamotoBlock, u64, ExecutionCost)],
         ) -> Vec<StacksTransaction>,
     {
-        let miner_addr = miner.origin_address().unwrap();
-        let miner_account = get_account(chainstate, sortdb, &miner_addr);
-        miner.set_nonce(miner_account.nonce);
-
         let mut blocks = vec![];
         let mut block_count = 0;
         loop {
@@ -731,7 +765,7 @@ impl TestStacksNode {
         }
         let block = builder.mine_nakamoto_block(&mut tenure_tx);
         let size = builder.bytes_so_far;
-        let cost = builder.tenure_finish(tenure_tx);
+        let cost = builder.tenure_finish(tenure_tx).unwrap();
         Ok((block, size, cost))
     }
 }
@@ -752,25 +786,38 @@ impl<'a> TestPeer<'a> {
     ) {
         let tip = SortitionDB::get_canonical_burn_chain_tip(sortdb.conn()).unwrap();
         if let Some(parent_blocks) = stacks_node.get_last_nakamoto_tenure(miner) {
+            debug!("Parent will be a Nakamoto block");
+
             // parent is an epoch 3 nakamoto block
             let first_parent = parent_blocks.first().unwrap();
-            let parent_tenure_id = StacksBlockId::new(
+            debug!("First parent is {:?}", first_parent);
+
+            let first_parent_sn = SortitionDB::get_block_snapshot_consensus(
+                sortdb.conn(),
                 &first_parent.header.consensus_hash,
-                &first_parent.header.block_hash(),
-            );
-            let ic = sortdb.index_conn();
-            let parent_sortition_opt = SortitionDB::get_block_snapshot_for_winning_nakamoto_tenure(
-                &ic,
-                &tip.sortition_id,
-                &parent_tenure_id,
             )
+            .unwrap()
             .unwrap();
-            if parent_sortition_opt.is_none() {
-                warn!(
-                    "No parent sortition: tip.sortition_id = {}, parent_tenure_id = {}",
-                    &tip.sortition_id, &parent_tenure_id
-                );
-            }
+
+            assert!(first_parent_sn.sortition);
+
+            let parent_sortition_id = SortitionDB::get_block_commit_parent_sortition_id(
+                sortdb.conn(),
+                &first_parent_sn.winning_block_txid,
+                &first_parent_sn.sortition_id,
+            )
+            .unwrap()
+            .unwrap();
+            let parent_sortition =
+                SortitionDB::get_block_snapshot(sortdb.conn(), &parent_sortition_id)
+                    .unwrap()
+                    .unwrap();
+
+            debug!(
+                "First parent Nakamoto block sortition: {:?}",
+                &parent_sortition
+            );
+            let parent_sortition_opt = Some(parent_sortition);
 
             let last_tenure_id = StacksBlockId::new(
                 &first_parent.header.consensus_hash,
@@ -787,6 +834,7 @@ impl<'a> TestPeer<'a> {
             let (parent_opt, parent_sortition_opt) = if let Some(parent_block) =
                 stacks_node.get_last_anchored_block(miner)
             {
+                debug!("Parent will be a Stacks 2.x block");
                 let ic = sortdb.index_conn();
                 let sort_opt = SortitionDB::get_block_snapshot_for_winning_stacks_block(
                     &ic,

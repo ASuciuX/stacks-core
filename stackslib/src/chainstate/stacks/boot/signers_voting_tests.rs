@@ -76,7 +76,8 @@ use crate::chainstate::stacks::events::{StacksTransactionReceipt, TransactionOri
 use crate::chainstate::stacks::index::marf::MarfConnection;
 use crate::chainstate::stacks::index::MarfTrieId;
 use crate::chainstate::stacks::tests::make_coinbase;
-use crate::chainstate::{self, stacks::*};
+use crate::chainstate::stacks::*;
+use crate::chainstate::{self};
 use crate::clarity_vm::clarity::{ClarityBlockConnection, Error as ClarityError};
 use crate::clarity_vm::database::marf::{MarfedKV, WritableMarfStore};
 use crate::clarity_vm::database::HeadersDBConn;
@@ -149,7 +150,7 @@ fn vote_for_aggregate_public_key_in_first_block() {
     let (mut peer, mut test_signers, latest_block_id, current_reward_cycle) = prepare_signers_test(
         function_name!(),
         vec![(signer, 1000)],
-        Some(vec![&stacker_1, &stacker_2]),
+        &[stacker_1.clone(), stacker_2.clone()],
         Some(&observer),
     );
 
@@ -236,7 +237,7 @@ fn vote_for_aggregate_public_key_in_last_block() {
     let (mut peer, mut test_signers, latest_block_id, current_reward_cycle) = prepare_signers_test(
         function_name!(),
         vec![(signer_1, 1000), (signer_2, 1000)],
-        Some(vec![&stacker_1, &stacker_2]),
+        &[stacker_1.clone(), stacker_2.clone()],
         Some(&observer),
     );
 
