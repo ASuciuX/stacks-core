@@ -1014,15 +1014,15 @@ simulating a miner.
             process::exit(1);
         }
         let stacks_path = &argv[2];
-        let index_block_hash_prefix = &argv[3];
+        let number_of_blocks = &argv[3];
         let staging_blocks_db_path = format!("{}/mainnet/chainstate/vm/index.sqlite", stacks_path);
         let conn =
             Connection::open_with_flags(&staging_blocks_db_path, OpenFlags::SQLITE_OPEN_READ_ONLY)
                 .unwrap();
         let mut stmt = conn
             .prepare(&format!(
-                "SELECT index_block_hash FROM staging_blocks WHERE index_block_hash LIKE \"{}%\"",
-                index_block_hash_prefix
+                "SELECT index_block_hash FROM staging_blocks ORDER BY height DESC LIMIT {}",
+                number_of_blocks
             ))
             .unwrap();
         let mut hashes_set = stmt.query(rusqlite::NO_PARAMS).unwrap();
