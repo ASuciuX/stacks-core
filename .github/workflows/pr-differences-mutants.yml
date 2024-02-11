@@ -27,10 +27,11 @@ jobs:
       big_packages_with_shards: ${{ steps.check_packages_and_shards.outputs.big_packages_with_shards }}
       run_small_packages: ${{ steps.check_packages_and_shards.outputs.run_small_packages }}
       small_packages_with_shards: ${{ steps.check_packages_and_shards.outputs.small_packages_with_shards }}
+      run_stacks_signer: ${{ steps.check_packages_and_shards.outputs.run_stacks_signer }}
 
     steps:
       - id: check_packages_and_shards
-        uses: stacks-network/actions/stacks-core/mutation-testing/check-packages-and-shards@main
+        uses: stacks-network/actions/stacks-core/mutation-testing/check-packages-and-shards@feat/mutation-testing
 
   # Mutation testing - Execute on PR on small packages that have functions modified (normal run, no shards)
   pr-differences-mutants-small-normal:
@@ -44,7 +45,7 @@ jobs:
 
     steps:
       - name: Run mutants on diffs
-        uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@main
+        uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@feat/mutation-testing
         with:
           package-dimension: "small"
 
@@ -65,7 +66,7 @@ jobs:
 
     steps:
       - name: Run mutants on diffs
-        uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@main
+        uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@feat/mutation-testing
         with:
           shard: ${{ matrix.shard }}
           package-dimension: "small"
@@ -85,7 +86,7 @@ jobs:
         env:
           BITCOIND_TEST: 1
           RUST_BACKTRACE: full
-        uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@main
+        uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@feat/mutation-testing
         with:
           package-dimension: "big"
 
@@ -109,10 +110,26 @@ jobs:
         env:
           BITCOIND_TEST: 1
           RUST_BACKTRACE: full
-        uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@main
+        uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@feat/mutation-testing
         with:
           shard: ${{ matrix.shard }}
           package-dimension: "big"
+
+  # Mutation testing - Execute on PR on stacks-signer package if it has functions modified (normal run, no shards)
+  pr-differences-mutants-stacks-signer:
+    name: Mutation Testing - Normal, Signer
+
+    needs: check-big-packages-and-shards
+
+    if: ${{ needs.check-big-packages-and-shards.outputs.run_stacks_signer == 'true' }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run mutants on diffs
+        uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@feat/mutation-testing
+        with:
+          package-dimension: "stacks-signer"
 
   # Output the mutants and fail the workflow if there are missed/timeout/unviable mutants
   output-mutants:
@@ -127,13 +144,15 @@ jobs:
         pr-differences-mutants-small-shards,
         pr-differences-mutants-big-normal,
         pr-differences-mutants-big-shards,
+        pr-differences-mutants-stacks-signer,
       ]
 
     steps:
       - name: Output Mutants
-        uses: stacks-network/actions/stacks-core/mutation-testing/output-pr-mutants@main
+        uses: stacks-network/actions/stacks-core/mutation-testing/output-pr-mutants@feat/mutation-testing
         with:
           big_packages: ${{ needs.check-big-packages-and-shards.outputs.run_big_packages }}
           shards_for_big_packages: ${{ needs.check-big-packages-and-shards.outputs.big_packages_with_shards }}
           small_packages: ${{ needs.check-big-packages-and-shards.outputs.run_small_packages }}
           shards_for_small_packages: ${{ needs.check-big-packages-and-shards.outputs.small_packages_with_shards }}
+          stacks_signer: ${{ needs.check-big-packages-and-shards.outputs.run_stacks_signer }}
