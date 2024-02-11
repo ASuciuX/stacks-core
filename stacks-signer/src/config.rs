@@ -224,6 +224,7 @@ impl TryFrom<RawConfigFile> for Config {
     /// Attempt to decode the raw config file's primitive types into our types.
     /// NOTE: network access is required for this to work
     fn try_from(raw_data: RawConfigFile) -> Result<Self, Self::Error> {
+        // run mutants here
         let node_host = raw_data
             .node_host
             .clone()

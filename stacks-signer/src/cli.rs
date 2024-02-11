@@ -239,11 +239,13 @@ pub struct GenerateStackingSignatureArgs {
 
 /// Parse the contract ID
 fn parse_contract(contract: &str) -> Result<QualifiedContractIdentifier, String> {
+    // run mutants here
     QualifiedContractIdentifier::parse(contract).map_err(|e| format!("Invalid contract: {}", e))
 }
 
 /// Parse a BTC address argument and return a `PoxAddress`
 pub fn parse_pox_addr(pox_address_literal: &str) -> Result<PoxAddress, String> {
+    // run mutants here
     if let Some(pox_address) = PoxAddress::from_b58(pox_address_literal) {
         Ok(pox_address)
     } else {
@@ -253,11 +255,13 @@ pub fn parse_pox_addr(pox_address_literal: &str) -> Result<PoxAddress, String> {
 
 /// Parse the hexadecimal Stacks private key
 fn parse_private_key(private_key: &str) -> Result<StacksPrivateKey, String> {
+    // run mutants here
     StacksPrivateKey::from_hex(private_key).map_err(|e| format!("Invalid private key: {}", e))
 }
 
 /// Parse the input data
 fn parse_data(data: &str) -> Result<Vec<u8>, String> {
+    // run mutants here
     let encoded_data = if data == "-" {
         // Parse the data from stdin
         let mut data = String::new();

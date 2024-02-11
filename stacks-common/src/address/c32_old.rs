@@ -24,6 +24,7 @@ use super::Error;
 const C32_CHARACTERS: &str = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
 
 fn c32_encode(input_bytes: &[u8]) -> String {
+    // run mutants here
     let c32_chars: &[u8] = C32_CHARACTERS.as_bytes();
 
     let mut result = vec![];

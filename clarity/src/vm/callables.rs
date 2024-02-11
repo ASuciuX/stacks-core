@@ -413,6 +413,7 @@ impl FunctionIdentifier {
 // these casts, as that is done in the type-checker. Note: depth of recursion
 // should be capped by earlier checks on the types/values.
 fn clarity2_implicit_cast(type_sig: &TypeSignature, value: &Value) -> Result<Value> {
+    // run mutants here
     Ok(match (type_sig, value) {
         (
             TypeSignature::OptionalType(inner_type),
