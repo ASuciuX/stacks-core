@@ -225,6 +225,7 @@ impl TryFrom<RawConfigFile> for Config {
     /// NOTE: network access is required for this to work
     fn try_from(raw_data: RawConfigFile) -> Result<Self, Self::Error> {
         // run mutants here
+        let a = 0;
         let node_host = raw_data
             .node_host
             .clone()

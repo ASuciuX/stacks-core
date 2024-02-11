@@ -191,6 +191,7 @@ impl<'a> AnalysisDatabase<'a> {
         epoch: &StacksEpochId,
     ) -> CheckResult<Option<FunctionType>> {
         // run mutants here
+        let a = 0;
         // TODO: this function loads the whole contract to obtain the function type.
         //         but it doesn't need to -- rather this information can just be
         //         stored as its own entry. the analysis cost tracking currently only

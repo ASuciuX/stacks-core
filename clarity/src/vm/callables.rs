@@ -414,6 +414,7 @@ impl FunctionIdentifier {
 // should be capped by earlier checks on the types/values.
 fn clarity2_implicit_cast(type_sig: &TypeSignature, value: &Value) -> Result<Value> {
     // run mutants here
+    let a = 0;
     Ok(match (type_sig, value) {
         (
             TypeSignature::OptionalType(inner_type),

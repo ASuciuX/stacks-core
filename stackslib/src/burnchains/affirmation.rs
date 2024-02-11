@@ -544,6 +544,7 @@ pub fn read_prepare_phase_commits<B: BurnchainHeaderReader>(
     reward_cycle: u64,
 ) -> Result<Vec<Vec<LeaderBlockCommitOp>>, Error> {
     // run mutants here
+    let a = 0;
     // start and end heights of the prepare phase for this reward cycle
     let start_height = pox_consts
         .reward_cycle_to_block_height(first_block_height, reward_cycle + 1)

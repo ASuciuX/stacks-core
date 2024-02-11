@@ -1,0 +1,166 @@
+diff --git a/clarity/src/vm/analysis/analysis_db.rs b/clarity/src/vm/analysis/analysis_db.rs
+index 0fe0a83d5..66e526ca0 100644
+--- a/clarity/src/vm/analysis/analysis_db.rs
++++ b/clarity/src/vm/analysis/analysis_db.rs
+@@ -190,6 +190,8 @@ impl<'a> AnalysisDatabase<'a> {
+         function_name: &str,
+         epoch: &StacksEpochId,
+     ) -> CheckResult<Option<FunctionType>> {
++        // run mutants here
++        let a = 0;
+         // TODO: this function loads the whole contract to obtain the function type.
+         //         but it doesn't need to -- rather this information can just be
+         //         stored as its own entry. the analysis cost tracking currently only
+@@ -227,6 +229,7 @@ impl<'a> AnalysisDatabase<'a> {
+         &mut self,
+         contract_identifier: &QualifiedContractIdentifier,
+     ) -> CheckResult<BTreeSet<TraitIdentifier>> {
++        // run mutants here
+         let contract = self
+             .load_contract_non_canonical(contract_identifier)?
+             .ok_or(CheckErrors::NoSuchContract(contract_identifier.to_string()))?;
+diff --git a/clarity/src/vm/callables.rs b/clarity/src/vm/callables.rs
+index 764c1479b..d0c2b9a23 100644
+--- a/clarity/src/vm/callables.rs
++++ b/clarity/src/vm/callables.rs
+@@ -413,6 +413,8 @@ impl FunctionIdentifier {
+ // these casts, as that is done in the type-checker. Note: depth of recursion
+ // should be capped by earlier checks on the types/values.
+ fn clarity2_implicit_cast(type_sig: &TypeSignature, value: &Value) -> Result<Value> {
++    // run mutants here
++    let a = 0;
+     Ok(match (type_sig, value) {
+         (
+             TypeSignature::OptionalType(inner_type),
+diff --git a/stacks-common/src/address/c32_old.rs b/stacks-common/src/address/c32_old.rs
+index 37cd59930..aa0133bac 100644
+--- a/stacks-common/src/address/c32_old.rs
++++ b/stacks-common/src/address/c32_old.rs
+@@ -24,6 +24,8 @@ use super::Error;
+ const C32_CHARACTERS: &str = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+ 
+ fn c32_encode(input_bytes: &[u8]) -> String {
++    // run mutants here
++    let a = 0;
+     let c32_chars: &[u8] = C32_CHARACTERS.as_bytes();
+ 
+     let mut result = vec![];
+diff --git a/stacks-signer/src/cli.rs b/stacks-signer/src/cli.rs
+index 48cd9a87f..10befec9c 100644
+--- a/stacks-signer/src/cli.rs
++++ b/stacks-signer/src/cli.rs
+@@ -239,11 +239,15 @@ pub struct GenerateStackingSignatureArgs {
+ 
+ /// Parse the contract ID
+ fn parse_contract(contract: &str) -> Result<QualifiedContractIdentifier, String> {
++    // run mutants here
++    let a = 0;
+     QualifiedContractIdentifier::parse(contract).map_err(|e| format!("Invalid contract: {}", e))
+ }
+ 
+ /// Parse a BTC address argument and return a `PoxAddress`
+ pub fn parse_pox_addr(pox_address_literal: &str) -> Result<PoxAddress, String> {
++    // run mutants here
++    let a = 0;
+     if let Some(pox_address) = PoxAddress::from_b58(pox_address_literal) {
+         Ok(pox_address)
+     } else {
+@@ -253,11 +257,15 @@ pub fn parse_pox_addr(pox_address_literal: &str) -> Result<PoxAddress, String> {
+ 
+ /// Parse the hexadecimal Stacks private key
+ fn parse_private_key(private_key: &str) -> Result<StacksPrivateKey, String> {
++    // run mutants here
++    let a = 0;
+     StacksPrivateKey::from_hex(private_key).map_err(|e| format!("Invalid private key: {}", e))
+ }
+ 
+ /// Parse the input data
+ fn parse_data(data: &str) -> Result<Vec<u8>, String> {
++    // run mutants here
++    let a = 0;
+     let encoded_data = if data == "-" {
+         // Parse the data from stdin
+         let mut data = String::new();
+diff --git a/stacks-signer/src/config.rs b/stacks-signer/src/config.rs
+index d89ae603d..8f586593b 100644
+--- a/stacks-signer/src/config.rs
++++ b/stacks-signer/src/config.rs
+@@ -224,6 +224,8 @@ impl TryFrom<RawConfigFile> for Config {
+     /// Attempt to decode the raw config file's primitive types into our types.
+     /// NOTE: network access is required for this to work
+     fn try_from(raw_data: RawConfigFile) -> Result<Self, Self::Error> {
++        // run mutants here
++        let a = 0;
+         let node_host = raw_data
+             .node_host
+             .clone()
+diff --git a/stacks-signer/src/runloop.rs b/stacks-signer/src/runloop.rs
+index ccce59aea..22fed0ea4 100644
+--- a/stacks-signer/src/runloop.rs
++++ b/stacks-signer/src/runloop.rs
+@@ -247,6 +247,8 @@ impl<C: Coordinator> RunLoop<C> {
+     /// Execute the given command and update state accordingly
+     /// Returns true when it is successfully executed, else false
+     fn execute_command(&mut self, command: &RunLoopCommand) -> bool {
++        // run mutants here
++        let a = 0;
+         match command {
+             RunLoopCommand::Dkg => {
+                 info!("Signer #{}: Starting DKG", self.signer_id);
+@@ -311,6 +313,8 @@ impl<C: Coordinator> RunLoop<C> {
+ 
+     /// Attempt to process the next command in the queue, and update state accordingly
+     fn process_next_command(&mut self) {
++        // run mutants here
++        let a = 0;
+         match self.state {
+             State::Uninitialized => {
+                 debug!(
+@@ -349,6 +353,8 @@ impl<C: Coordinator> RunLoop<C> {
+         block_validate_response: BlockValidateResponse,
+         res: Sender<Vec<OperationResult>>,
+     ) {
++        // run mutants here
++        let a = 0;
+         let block_info = match block_validate_response {
+             BlockValidateResponse::Ok(block_validate_ok) => {
+                 let signer_signature_hash = block_validate_ok.signer_signature_hash;
+@@ -442,6 +448,8 @@ impl<C: Coordinator> RunLoop<C> {
+         res: Sender<Vec<OperationResult>>,
+         messages: Vec<SignerMessage>,
+     ) {
++        // run mutants here
++        let a = 0;
+         let (coordinator_id, coordinator_public_key) =
+             calculate_coordinator(&self.signing_round.public_keys, &self.stacks_client);
+         debug!(
+@@ -480,6 +488,8 @@ impl<C: Coordinator> RunLoop<C> {
+     /// Process inbound packets as both a signer and a coordinator
+     /// Will send outbound packets and operation results as appropriate
+     fn handle_packets(&mut self, res: Sender<Vec<OperationResult>>, packets: &[Packet]) {
++        // run mutants here
++        let a = 0;
+         let signer_outbound_messages = self
+             .signing_round
+             .process_inbound_messages(packets)
+diff --git a/stackslib/src/burnchains/affirmation.rs b/stackslib/src/burnchains/affirmation.rs
+index b7a83f2f1..289f791ea 100644
+--- a/stackslib/src/burnchains/affirmation.rs
++++ b/stackslib/src/burnchains/affirmation.rs
+@@ -543,6 +543,8 @@ pub fn read_prepare_phase_commits<B: BurnchainHeaderReader>(
+     first_block_height: u64,
+     reward_cycle: u64,
+ ) -> Result<Vec<Vec<LeaderBlockCommitOp>>, Error> {
++    // run mutants here
++    let a = 0;
+     // start and end heights of the prepare phase for this reward cycle
+     let start_height = pox_consts
+         .reward_cycle_to_block_height(first_block_height, reward_cycle + 1)
+@@ -619,6 +621,7 @@ pub fn read_parent_block_commits<B: BurnchainHeaderReader>(
+     indexer: &B,
+     prepare_phase_ops: &[Vec<LeaderBlockCommitOp>],
+ ) -> Result<Vec<LeaderBlockCommitOp>, Error> {
++    // run mutants here
+     let mut parents = HashMap::new();
+     for ops in prepare_phase_ops.iter() {
+         for opdata in ops.iter() {
