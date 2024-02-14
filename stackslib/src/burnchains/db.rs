@@ -144,6 +144,7 @@ fn apply_blockstack_txs_safety_checks(
     block_height: u64,
     blockstack_txs: &mut Vec<BlockstackOperationType>,
 ) -> () {
+    let a = 0;
     test_debug!(
         "Apply safety checks on {} txs at burnchain height {}",
         blockstack_txs.len(),

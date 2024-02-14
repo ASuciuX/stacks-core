@@ -19,6 +19,7 @@ pub struct GenesisAccountLockup {
     pub block_height: u64,
 }
 
+// comment to update stx genesis file
 pub struct GenesisNamespace {
     pub namespace_id: String,
     pub importer: String,
