@@ -137,6 +137,11 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3]
+
     steps:
       - name: Run Run mutants on diffs
         env:
