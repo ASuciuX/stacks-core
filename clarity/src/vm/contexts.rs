@@ -65,12 +65,12 @@ pub const MAX_CONTEXT_DEPTH: u16 = 256;
 ///   these different contexts can be mixed and matched (i.e., in a contract-call, you change
 ///   contract context), a single "invocation" will end up creating multiple environment
 ///   objects as context changes occur.
-pub struct Environment<'a, 'b, 'hooks> {
+pub struct Environment<'a, 'b, 'hooks, 'c> {
     pub global_context: &'a mut GlobalContext<'b, 'hooks>,
     pub contract_context: &'a ContractContext,
     pub call_stack: &'a mut CallStack,
-    pub sender: Option<PrincipalData>,
-    pub caller: Option<PrincipalData>,
+    pub sender: Option<&'c PrincipalData>,
+    pub caller: Option<&'c PrincipalData>,
     pub sponsor: Option<PrincipalData>,
 }
 
@@ -608,17 +608,17 @@ impl<'a, 'hooks> OwnedEnvironment<'a, 'hooks> {
         }
     }
 
-    pub fn get_exec_environment<'b>(
+    pub fn get_exec_environment<'b, 'c>(
         &'b mut self,
-        sender: Option<PrincipalData>,
+        sender: Option<&'c PrincipalData>,
         sponsor: Option<PrincipalData>,
         context: &'b ContractContext,
-    ) -> Environment<'b, 'a, 'hooks> {
+    ) -> Environment<'b, 'a, 'hooks, 'c> {
         Environment::new(
             &mut self.context,
             context,
             &mut self.call_stack,
-            sender.clone(),
+            sender,
             sender,
             sponsor,
         )
@@ -644,7 +644,7 @@ impl<'a, 'hooks> OwnedEnvironment<'a, 'hooks> {
                 ClarityVersion::Clarity1,
             ));
             let mut exec_env =
-                self.get_exec_environment(Some(sender), sponsor, &mut initial_context);
+                self.get_exec_environment(Some(&sender), sponsor, &mut initial_context);
             f(&mut exec_env)
         };
 
@@ -849,7 +849,7 @@ impl<'a, 'hooks> OwnedEnvironment<'a, 'hooks> {
     }
 }
 
-impl CostTracker for Environment<'_, '_, '_> {
+impl CostTracker for Environment<'_, '_, '_, '_> {
     fn compute_cost(
         &mut self,
         cost_function: ClarityCostFunction,
@@ -915,7 +915,7 @@ impl CostTracker for GlobalContext<'_, '_> {
     }
 }
 
-impl<'a, 'b, 'hooks> Environment<'a, 'b, 'hooks> {
+impl<'a, 'b, 'hooks, 'c> Environment<'a, 'b, 'hooks, 'c> {
     /// Returns an Environment value & checks the types of the contract sender, caller, and sponsor
     ///
     /// # Panics
@@ -925,10 +925,10 @@ impl<'a, 'b, 'hooks> Environment<'a, 'b, 'hooks> {
         global_context: &'a mut GlobalContext<'b, 'hooks>,
         contract_context: &'a ContractContext,
         call_stack: &'a mut CallStack,
-        sender: Option<PrincipalData>,
-        caller: Option<PrincipalData>,
+        sender: Option<&'c PrincipalData>,
+        caller: Option<&'c PrincipalData>,
         sponsor: Option<PrincipalData>,
-    ) -> Environment<'a, 'b, 'hooks> {
+    ) -> Environment<'a, 'b, 'hooks, 'c> {
         Environment {
             global_context,
             contract_context,
@@ -940,30 +940,30 @@ impl<'a, 'b, 'hooks> Environment<'a, 'b, 'hooks> {
     }
 
     /// Leaving sponsor value as is for this new context (as opposed to setting it to None)
-    pub fn nest_as_principal<'c>(
-        &'c mut self,
+    pub fn nest_as_principal<'d>(
+        &'d mut self,
         sender: PrincipalData,
-    ) -> Environment<'c, 'b, 'hooks> {
+    ) -> Environment<'d, 'b, 'hooks, 'c> {
         Environment::new(
             self.global_context,
             self.contract_context,
             self.call_stack,
-            Some(sender.clone()),
-            Some(sender),
+            Some(&sender),
+            Some(&sender),
             self.sponsor.clone(),
         )
     }
 
-    pub fn nest_with_caller<'c>(
-        &'c mut self,
+    pub fn nest_with_caller<'d>(
+        &'d mut self,
         caller: PrincipalData,
-    ) -> Environment<'c, 'b, 'hooks> {
+    ) -> Environment<'d, 'b, 'hooks, 'c> {
         Environment::new(
             self.global_context,
             self.contract_context,
             self.call_stack,
-            self.sender.clone(),
-            Some(caller),
+            self.sender,
+            Some(&caller),
             self.sponsor.clone(),
         )
     }
@@ -1173,7 +1173,7 @@ impl<'a, 'b, 'hooks> Environment<'a, 'b, 'hooks> {
                     if let Some(handler) = self.global_context.database.get_cc_special_cases_handler() {
                         handler(
                             &mut self.global_context,
-                            self.sender.as_ref(),
+                            self.sender,
                             self.sponsor.as_ref(),
                             contract_identifier,
                             tx_name,
@@ -1667,8 +1667,8 @@ impl<'a, 'hooks> GlobalContext<'a, 'hooks> {
                 self,
                 &contract_context,
                 &mut callstack,
-                Some(sender.clone()),
-                Some(sender),
+                Some(&sender),
+                Some(&sender),
                 sponsor,
             );
             f(&mut exec_env)

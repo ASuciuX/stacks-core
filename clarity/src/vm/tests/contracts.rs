@@ -197,7 +197,7 @@ fn test_contract_caller(epoch: StacksEpochId, mut env_factory: MemoryEnvironment
             QualifiedContractIdentifier::local("contract-b").unwrap(),
         ));
         let mut env = owned_env.get_exec_environment(
-            Some(p1.clone().expect_principal().unwrap()),
+            Some(&p1.clone().expect_principal().unwrap()),
             None,
             &mut placeholder_context,
         );
@@ -324,7 +324,7 @@ fn test_tx_sponsor(epoch: StacksEpochId, mut env_factory: MemoryEnvironmentGener
 
     {
         let mut env = owned_env.get_exec_environment(
-            Some(p1.clone()),
+            Some(&p1.clone()),
             sponsor.clone(),
             &mut placeholder_context,
         );
@@ -345,7 +345,7 @@ fn test_tx_sponsor(epoch: StacksEpochId, mut env_factory: MemoryEnvironmentGener
     // Sponsor is equal to some(principal) in this code block.
     {
         let mut env = owned_env.get_exec_environment(
-            Some(p1.clone()),
+            Some(&p1.clone()),
             sponsor.clone(),
             &mut placeholder_context,
         );
@@ -356,7 +356,7 @@ fn test_tx_sponsor(epoch: StacksEpochId, mut env_factory: MemoryEnvironmentGener
     {
         let sponsor = None;
         let mut env =
-            owned_env.get_exec_environment(Some(p1), sponsor.clone(), &mut placeholder_context);
+            owned_env.get_exec_environment(Some(&p1), sponsor.clone(), &mut placeholder_context);
         tx_sponsor_contract_asserts(&mut env, sponsor);
     }
 }
@@ -406,7 +406,7 @@ fn test_fully_qualified_contract_call(
             QualifiedContractIdentifier::local("contract-b").unwrap(),
         ));
         let mut env = owned_env.get_exec_environment(
-            Some(p1.clone().expect_principal().unwrap()),
+            Some(&p1.clone().expect_principal().unwrap()),
             None,
             &mut placeholder_context,
         );
@@ -538,7 +538,7 @@ fn test_simple_naming_system(epoch: StacksEpochId, mut env_factory: MemoryEnviro
 
     {
         let mut env = owned_env.get_exec_environment(
-            Some(p2.clone().expect_principal().unwrap()),
+            Some(&p2.clone().expect_principal().unwrap()),
             None,
             &mut placeholder_context,
         );
@@ -557,7 +557,7 @@ fn test_simple_naming_system(epoch: StacksEpochId, mut env_factory: MemoryEnviro
 
     {
         let mut env = owned_env.get_exec_environment(
-            Some(p1.clone().expect_principal().unwrap()),
+            Some(&p1.clone().expect_principal().unwrap()),
             None,
             &mut placeholder_context,
         );
@@ -585,7 +585,7 @@ fn test_simple_naming_system(epoch: StacksEpochId, mut env_factory: MemoryEnviro
     {
         // shouldn't be able to register a name you didn't preorder!
         let mut env = owned_env.get_exec_environment(
-            Some(p2.clone().expect_principal().unwrap()),
+            Some(&p2.clone().expect_principal().unwrap()),
             None,
             &mut placeholder_context,
         );
@@ -604,7 +604,7 @@ fn test_simple_naming_system(epoch: StacksEpochId, mut env_factory: MemoryEnviro
     {
         // should work!
         let mut env = owned_env.get_exec_environment(
-            Some(p1.expect_principal().unwrap()),
+            Some(&p1.expect_principal().unwrap()),
             None,
             &mut placeholder_context,
         );
@@ -622,7 +622,7 @@ fn test_simple_naming_system(epoch: StacksEpochId, mut env_factory: MemoryEnviro
     {
         // try to underpay!
         let mut env = owned_env.get_exec_environment(
-            Some(p2.clone().expect_principal().unwrap()),
+            Some(&p2.clone().expect_principal().unwrap()),
             None,
             &mut placeholder_context,
         );
@@ -695,7 +695,7 @@ fn test_simple_contract_call(epoch: StacksEpochId, mut env_factory: MemoryEnviro
     );
 
     let mut env = owned_env.get_exec_environment(
-        Some(get_principal().expect_principal().unwrap()),
+        Some(&get_principal().expect_principal().unwrap()),
         None,
         &mut placeholder_context,
     );
@@ -790,7 +790,7 @@ fn test_aborts(epoch: StacksEpochId, mut env_factory: MemoryEnvironmentGenerator
     env.initialize_contract(contract_identifier, contract_2, ASTRules::PrecheckSize)
         .unwrap();
 
-    env.sender = Some(get_principal_as_principal_data());
+    env.sender = Some(&get_principal_as_principal_data());
 
     assert_eq!(
         env.execute_contract(
@@ -933,7 +933,7 @@ fn test_factorial_contract(epoch: StacksEpochId, mut env_factory: MemoryEnvironm
         Value::Int(120),
     ];
 
-    env.sender = Some(get_principal_as_principal_data());
+    env.sender = Some(&get_principal_as_principal_data());
 
     for (arguments, expectation) in arguments_to_test.iter().zip(expected.iter()) {
         env.execute_contract(
