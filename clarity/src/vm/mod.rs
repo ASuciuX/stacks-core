@@ -49,6 +49,7 @@ pub mod test_util;
 
 pub mod clarity;
 
+use std::borrow::Cow;
 use std::collections::BTreeMap;
 use std::convert::{TryFrom, TryInto};
 
@@ -380,14 +381,15 @@ pub fn eval_all(
     let context = LocalContext::new();
     let mut total_memory_use = 0;
 
-    let publisher: PrincipalData = contract_context.contract_identifier.issuer.clone().into();
+    let publisher = contract_context.contract_identifier.issuer.clone().into();
+    let publisher: Cow<PrincipalData> = Cow::Borrowed(&publisher);
 
     finally_drop_memory!(global_context, total_memory_use; {
         for exp in expressions {
             let try_define = global_context.execute(|context| {
                 let mut call_stack = CallStack::new();
                 let mut env = Environment::new(
-                    context, contract_context, &mut call_stack, Some(publisher.clone()), Some(publisher.clone()), sponsor.clone());
+                    context, contract_context, &mut call_stack, Some(publisher.clone().into_owned()), Some(publisher.clone().into_owned()), sponsor.clone());
                 functions::define::evaluate_define(exp, &mut env)
             })?;
             match try_define {
@@ -467,7 +469,7 @@ pub fn eval_all(
                     global_context.execute(|global_context| {
                         let mut call_stack = CallStack::new();
                         let mut env = Environment::new(
-                            global_context, contract_context, &mut call_stack, Some(publisher.clone()), Some(publisher.clone()), sponsor.clone());
+                            global_context, contract_context, &mut call_stack, Some(publisher.clone().into_owned()), Some(publisher.clone().into_owned()), sponsor.clone());
 
                         let result = eval(exp, &mut env, &context)?;
                         last_executed = Some(result);
