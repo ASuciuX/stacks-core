@@ -8,7 +8,7 @@ on:
       - synchronize
       - ready_for_review
     paths:
-      - "**.rs"
+      - '**.rs'
 
 concurrency:
   group: pr-differences-${{ github.head_ref || github.ref || github.run_id }}
@@ -49,7 +49,7 @@ jobs:
       - name: Run mutants on diffs
         uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@feat/mutation-testing
         with:
-          package: "small"
+          package: 'small'
 
   # Mutation testing - Execute on PR on small packages that have functions modified (run with strategy matrix shards)
   pr-differences-mutants-small-shards:
@@ -71,7 +71,7 @@ jobs:
         uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@feat/mutation-testing
         with:
           shard: ${{ matrix.shard }}
-          package: "small"
+          package: 'small'
 
   # Mutation testing - Execute on PR on stackslib package (normal run, no shards)
   pr-differences-mutants-stackslib-normal:
@@ -90,7 +90,7 @@ jobs:
           RUST_BACKTRACE: full
         uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@feat/mutation-testing
         with:
-          package: "stackslib"
+          package: 'stackslib'
 
   # Mutation testing - Execute on PR on stackslib package (run with strategy matrix shards)
   pr-differences-mutants-stackslib-shards:
@@ -115,7 +115,7 @@ jobs:
         uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@feat/mutation-testing
         with:
           shard: ${{ matrix.shard }}
-          package: "stackslib"
+          package: 'stackslib'
 
   # Mutation testing - Execute on PR on stacks-node package (normal run, no shards)
   pr-differences-mutants-stacks-node-normal:
@@ -134,7 +134,7 @@ jobs:
           RUST_BACKTRACE: full
         uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@feat/mutation-testing
         with:
-          package: "stacks-node"
+          package: 'stacks-node'
 
   # Mutation testing - Execute on PR on stacks-node package (run with strategy matrix shards)
   pr-differences-mutants-stacks-node-shards:
@@ -159,7 +159,7 @@ jobs:
         uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@feat/mutation-testing
         with:
           shard: ${{ matrix.shard }}
-          package: "stacks-node"
+          package: 'stacks-node'
 
   # Mutation testing - Execute on PR on stacks-signer package (normal run, no shards)
   pr-differences-mutants-stacks-signer-normal:
@@ -175,7 +175,7 @@ jobs:
       - name: Run Run mutants on diffs
         uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@feat/mutation-testing
         with:
-          package: "stacks-signer"
+          package: 'stacks-signer'
 
   # Output the mutants and fail the workflow if there are missed/timeout/unviable mutants
   output-mutants:
