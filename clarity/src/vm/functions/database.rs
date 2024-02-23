@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+use std::borrow::Cow;
 use std::cmp;
 use std::convert::{TryFrom, TryInto};
 
@@ -78,9 +79,9 @@ pub fn special_contract_call(
     let mut rest_args = vec![];
     let mut rest_args_sizes = vec![];
     for arg in args[2..].iter() {
-        let evaluated_arg = eval(arg, env, context)?;
+        let evaluated_arg: Value = eval(arg, env, context)?;
         rest_args_sizes.push(evaluated_arg.size()? as u64);
-        rest_args.push(SymbolicExpression::atom_value(evaluated_arg));
+        rest_args.push(SymbolicExpression::atom_value(Cow::Owned(evaluated_arg)));
     }
 
     let (contract_identifier, type_returns_constraint) = match &args[0].expr {

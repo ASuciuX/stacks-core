@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+use std::borrow::Cow;
 use std::cmp;
 use std::convert::{TryFrom, TryInto};
 
@@ -102,7 +103,7 @@ pub fn special_fold(
             .try_fold(initial, |acc, x| {
                 apply(
                     &function,
-                    &[x, SymbolicExpression::atom_value(acc)],
+                    &[x, SymbolicExpression::atom_value(Cow::Owned(acc))],
                     env,
                     context,
                 )

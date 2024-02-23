@@ -22,6 +22,7 @@ pub mod signatures;
 use std::collections::BTreeMap;
 use std::convert::{TryFrom, TryInto};
 use std::{char, cmp, fmt, str};
+use std::borrow::Cow;
 
 use regex::Regex;
 use stacks_common::address::c32;
@@ -430,7 +431,7 @@ impl SequenceData {
                 let mut i = 0;
                 while i != $data.data.len() {
                     let atom_value =
-                        SymbolicExpression::atom_value($seq_type::to_value(&$data.data[i])?);
+                        SymbolicExpression::atom_value(Cow::Owned($seq_type::to_value(&$data.data[i])?));
                     match filter(atom_value) {
                         Ok(res) if res == false => {
                             $data.data.remove(i);
@@ -607,7 +608,7 @@ pub trait SequencedValue<T> {
     fn atom_values(&mut self) -> Result<Vec<SymbolicExpression>> {
         self.drained_items()
             .iter()
-            .map(|item| Ok(SymbolicExpression::atom_value(Self::to_value(&item)?)))
+            .map(|item| Ok(SymbolicExpression::atom_value(Cow::Owned(Self::to_value(&item)?))))
             .collect()
     }
 }

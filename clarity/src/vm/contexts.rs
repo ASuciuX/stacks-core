@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+use std::borrow::Cow;
 use std::collections::{BTreeMap, BTreeSet};
 use std::convert::TryInto;
 use std::fmt;
@@ -626,8 +627,8 @@ impl<'a, 'hooks> OwnedEnvironment<'a, 'hooks> {
 
     pub fn execute_in_env<F, A, E>(
         &mut self,
-        sender: PrincipalData,
-        sponsor: Option<PrincipalData>,
+        sender: Cow<PrincipalData>,
+        sponsor: Option<Cow<PrincipalData>>,
         initial_context: Option<ContractContext>,
         f: F,
     ) -> std::result::Result<(A, AssetMap, Vec<StacksTransactionEvent>), E>
@@ -643,8 +644,11 @@ impl<'a, 'hooks> OwnedEnvironment<'a, 'hooks> {
                 QualifiedContractIdentifier::transient(),
                 ClarityVersion::Clarity1,
             ));
-            let mut exec_env =
-                self.get_exec_environment(Some(sender), sponsor, &mut initial_context);
+            let mut exec_env = self.get_exec_environment(
+                Some(sender.into_owned()),
+                sponsor.map(|s| s.into_owned()),
+                &mut initial_context,
+            );
             f(&mut exec_env)
         };
 
@@ -665,9 +669,9 @@ impl<'a, 'hooks> OwnedEnvironment<'a, 'hooks> {
     #[cfg(any(test, feature = "testing"))]
     pub fn initialize_contract(
         &mut self,
-        contract_identifier: QualifiedContractIdentifier,
+        contract_identifier: Cow<QualifiedContractIdentifier>,
         contract_content: &str,
-        sponsor: Option<PrincipalData>,
+        sponsor: Option<Cow<PrincipalData>>,
         ast_rules: ASTRules,
     ) -> Result<((), AssetMap, Vec<StacksTransactionEvent>)> {
         self.execute_in_env(
@@ -729,9 +733,9 @@ impl<'a, 'hooks> OwnedEnvironment<'a, 'hooks> {
 
     pub fn execute_transaction(
         &mut self,
-        sender: PrincipalData,
+        sender: Cow<PrincipalData>,
         sponsor: Option<PrincipalData>,
-        contract_identifier: QualifiedContractIdentifier,
+        contract_identifier: Cow<QualifiedContractIdentifier>,
         tx_name: &str,
         args: &[SymbolicExpression],
     ) -> Result<(Value, AssetMap, Vec<StacksTransactionEvent>)> {
@@ -1257,7 +1261,7 @@ impl<'a, 'b, 'hooks> Environment<'a, 'b, 'hooks> {
 
     pub fn initialize_contract(
         &mut self,
-        contract_identifier: QualifiedContractIdentifier,
+        contract_identifier: Cow<QualifiedContractIdentifier>,
         contract_content: &str,
         ast_rules: ASTRules,
     ) -> Result<()> {
@@ -1281,7 +1285,7 @@ impl<'a, 'b, 'hooks> Environment<'a, 'b, 'hooks> {
 
     pub fn initialize_contract_from_ast(
         &mut self,
-        contract_identifier: QualifiedContractIdentifier,
+        contract_identifier: Cow<QualifiedContractIdentifier>,
         contract_version: ClarityVersion,
         contract_content: &ContractAST,
         contract_string: &str,
@@ -1786,11 +1790,11 @@ impl<'a, 'hooks> GlobalContext<'a, 'hooks> {
 
 impl ContractContext {
     pub fn new(
-        contract_identifier: QualifiedContractIdentifier,
+        contract_identifier: Cow<QualifiedContractIdentifier>,
         clarity_version: ClarityVersion,
     ) -> Self {
         Self {
-            contract_identifier,
+            contract_identifier: contract_identifier.into_owned(),
             variables: HashMap::new(),
             functions: HashMap::new(),
             defined_traits: HashMap::new(),

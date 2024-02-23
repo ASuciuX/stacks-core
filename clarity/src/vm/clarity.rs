@@ -1,6 +1,7 @@
 use std::fmt;
 
 use stacks_common::types::StacksEpochId;
+use std::borrow::Cow;
 
 use crate::vm::analysis::{AnalysisDatabase, CheckError, CheckErrors, ContractAnalysis};
 use crate::vm::ast::errors::{ParseError, ParseErrors};
@@ -293,16 +294,16 @@ pub trait TransactionConnection: ClarityConnection {
     {
         let expr_args: Vec<_> = args
             .iter()
-            .map(|x| SymbolicExpression::atom_value(x.clone()))
+            .map(|x: &Value| SymbolicExpression::atom_value(Cow::Borrowed(x)))
             .collect();
 
         self.with_abort_callback(
             |vm_env| {
                 vm_env
                     .execute_transaction(
-                        sender.clone(),
+                        Cow::Borrowed(sender),
                         sponsor.cloned(),
-                        contract.clone(),
+                        Cow::Borrowed(contract),
                         public_function,
                         &expr_args,
                     )

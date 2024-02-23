@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+use std::borrow::Cow;
 use std::convert::TryInto;
 
 use stacks_common::types::StacksEpochId;
@@ -36,7 +37,7 @@ pub struct Contract {
 //          will probably be removed soon.
 impl Contract {
     pub fn initialize_from_ast(
-        contract_identifier: QualifiedContractIdentifier,
+        contract_identifier: Cow<QualifiedContractIdentifier>,
         contract: &ContractAST,
         sponsor: Option<PrincipalData>,
         global_context: &mut GlobalContext,

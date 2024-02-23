@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-use std::borrow::Borrow;
+use std::borrow::{Borrow, Cow};
 use std::cmp::Ordering;
 use std::convert::TryFrom;
 use std::fmt;
@@ -524,9 +524,9 @@ impl SymbolicExpression {
         &Span::ZERO
     }
 
-    pub fn atom_value(val: Value) -> SymbolicExpression {
+    pub fn atom_value(val: Cow<Value>) -> SymbolicExpression {
         SymbolicExpression {
-            expr: SymbolicExpressionType::AtomValue(val),
+            expr: SymbolicExpressionType::AtomValue(val.into_owned()),
             ..SymbolicExpression::cons()
         }
     }

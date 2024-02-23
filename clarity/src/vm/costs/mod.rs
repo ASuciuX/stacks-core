@@ -17,6 +17,7 @@
 use std::collections::BTreeMap;
 use std::convert::{TryFrom, TryInto};
 use std::{cmp, fmt};
+use std::borrow::Cow;
 
 use hashbrown::HashMap;
 use lazy_static::lazy_static;
@@ -985,9 +986,9 @@ fn compute_cost(
     )];
 
     for input_size in input_sizes.iter() {
-        program.push(SymbolicExpression::atom_value(Value::UInt(
+        program.push(SymbolicExpression::atom_value(Cow::Owned(Value::UInt(
             *input_size as u128,
-        )));
+        ))));
     }
 
     let function_invocation = [SymbolicExpression::list(program.into_boxed_slice())];
