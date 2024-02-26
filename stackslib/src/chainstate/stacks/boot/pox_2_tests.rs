@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+use std::borrow::Cow;
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::convert::{TryFrom, TryInto};
 
@@ -125,9 +126,9 @@ pub fn get_stacking_state_pox(
     pox_contract: &str,
 ) -> Option<Value> {
     with_clarity_db_ro(peer, tip, |db| {
-        let lookup_tuple = Value::Tuple(
+        let lookup_tuple = Value::Tuple(Cow::Owned(
             TupleData::from_data(vec![("stacker".into(), account.clone().into())]).unwrap(),
-        );
+        ));
         let epoch = db.get_clarity_epoch_version().unwrap();
         db.fetch_entry_unknown_descriptor(
             &boot_code_id(pox_contract, false),
@@ -197,7 +198,7 @@ pub fn generate_pox_clarity_value(str_hash: &str) -> Value {
     ])
     .unwrap();
 
-    Value::Tuple(pox_addr_tuple)
+    Value::Tuple(Cow::Owned(pox_addr_tuple))
 }
 
 pub struct PoxPrintFields {
@@ -359,7 +360,7 @@ pub fn check_stacking_state_invariants(
     let pox_addr = stacking_state_entry.get("pox-addr").unwrap();
     let pox_addr = PoxAddress::try_from_pox_tuple(false, pox_addr).unwrap();
 
-    let reward_indexes: Vec<u128> = stacking_state_entry
+    let reward_indexes: Vec<u128> = stacking_state_entry.into_owned()
         .get_owned("reward-set-indexes")
         .unwrap()
         .expect_list()
@@ -427,7 +428,7 @@ pub fn check_stacking_state_invariants(
                 "Invariant violated: reward-set-index points to different stacker's entry"
             );
 
-            let entry_pox_addr = entry_value.get_owned("pox-addr").unwrap();
+            let entry_pox_addr = entry_value.into_owned().get_owned("pox-addr").unwrap();
             let entry_pox_addr = PoxAddress::try_from_pox_tuple(false, &entry_pox_addr).unwrap();
 
             assert_eq!(
@@ -609,6 +610,7 @@ pub fn get_reward_cycle_total(peer: &mut TestPeer, tip: &StacksBlockId, cycle_nu
                 .map(|v| {
                     v.expect_tuple()
                         .unwrap()
+                        .into_owned()
                         .get_owned("total-ustx")
                         .expect("Malformed tuple returned by PoX contract")
                         .expect_u128()
@@ -654,6 +656,7 @@ pub fn get_partial_stacked(
         .unwrap()
         .expect_tuple()
         .unwrap()
+        .into_owned()
         .get_owned("stacked-amount")
         .expect("Malformed tuple returned by PoX contract")
         .expect_u128()
@@ -3593,7 +3596,7 @@ fn test_pox_2_getters() {
     ));
 
     eprintln!("{}", &result);
-    let data = result.expect_tuple().unwrap().data_map;
+    let data = result.expect_tuple().unwrap().into_owned().data_map;
 
     let alice_delegation_info = data
         .get("get-delegation-info-alice")
@@ -3612,6 +3615,7 @@ fn test_pox_2_getters() {
         .unwrap()
         .expect_tuple()
         .unwrap()
+        .into_owned()
         .data_map;
     let bob_delegation_addr = bob_delegation_info
         .get("delegated-to")
@@ -4368,7 +4372,7 @@ fn test_pox_2_delegate_stx_addr_validation() {
         ],
     );
 
-    let bob_bad_pox_addr = Value::Tuple(
+    let bob_bad_pox_addr = Value::Tuple(Cow::Owned(
         TupleData::from_data(vec![
             (
                 ClarityName::try_from("version".to_owned()).unwrap(),
@@ -4382,7 +4386,7 @@ fn test_pox_2_delegate_stx_addr_validation() {
             ),
         ])
         .unwrap(),
-    );
+    ));
 
     // bob delegates to charlie in v2 with an invalid address
     let bob_delegation = make_pox_2_contract_call(
@@ -4415,7 +4419,7 @@ fn test_pox_2_delegate_stx_addr_validation() {
     );
 
     eprintln!("{}", &result);
-    let data = result.expect_tuple().unwrap().data_map;
+    let data = result.expect_tuple().unwrap().into_owned().data_map;
 
     // bob had an invalid PoX address
     let bob_delegation_info = data
@@ -4436,6 +4440,7 @@ fn test_pox_2_delegate_stx_addr_validation() {
         .unwrap()
         .expect_tuple()
         .unwrap()
+        .into_owned()
         .data_map;
     let alice_delegation_addr = alice_delegation_info
         .get("delegated-to")

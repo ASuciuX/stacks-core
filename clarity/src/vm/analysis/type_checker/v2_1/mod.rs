@@ -17,6 +17,7 @@
 pub mod contexts;
 pub mod natives;
 
+use std::borrow::Cow;
 use std::collections::BTreeMap;
 use std::convert::TryInto;
 
@@ -387,10 +388,10 @@ impl FunctionType {
                     data.len() as u32,
                 )?))
             }
-            Value::Tuple(TupleData {
+            Value::Tuple(Cow::Owned(TupleData {
                 type_signature: _,
                 data_map,
-            }) => {
+            })) => {
                 let mut type_map = BTreeMap::new();
                 for (name, field_value) in data_map {
                     type_map.insert(

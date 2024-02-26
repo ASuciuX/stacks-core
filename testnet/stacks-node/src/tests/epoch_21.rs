@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::collections::{HashMap, HashSet};
 use std::{env, thread};
 
@@ -1339,7 +1340,7 @@ fn transition_adds_get_pox_addr_recipients() {
 
     for addr in found_pox_addrs
         .into_iter()
-        .map(|addr| Value::Tuple(addr.as_clarity_tuple().unwrap()))
+        .map(|addr| Value::Tuple(Cow::Owned(addr.as_clarity_tuple().unwrap())))
     {
         eprintln!("Contains: {:?}", &addr);
         assert!(expected_pox_addrs.contains(&addr.to_string()));
@@ -5156,6 +5157,7 @@ fn test_v1_unlock_height_with_current_stackers() {
             .unwrap()
             .expect_tuple()
             .unwrap()
+            .into_owned()
             .get_owned("addrs")
             .unwrap()
             .expect_list()
@@ -5436,6 +5438,7 @@ fn test_v1_unlock_height_with_delay_and_current_stackers() {
             .unwrap()
             .expect_tuple()
             .unwrap()
+            .into_owned()
             .get_owned("addrs")
             .unwrap()
             .expect_list()

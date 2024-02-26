@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+use std::borrow::Cow;
 /// This test module is concerned with verifying that the system can build blocks out of
 /// transactions from the mempool under various circumstances.  The tests here focus on testing
 /// block construction from various types of transactions and block availabilities, based on data
@@ -4386,12 +4387,12 @@ fn mempool_incorporate_pox_unlocks() {
                          "stack-stx",
                          vec![
                              Value::UInt(total_balance as u128 - 10_000),
-                             Value::Tuple(
+                             Value::Tuple(Cow::Owned(
                                  TupleData::from_data(vec![
                                      ("version".into(), Value::buff_from(vec![0x00]).unwrap()),
                                      ("hashbytes".into(), Value::buff_from(vec![0; 20]).unwrap()),
                                  ]).unwrap(),
-                             ),
+                             )),
                              Value::UInt(my_height as u128),
                              Value::UInt(10)
                          ],

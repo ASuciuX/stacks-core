@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+use std::borrow::Cow;
 use std::collections::BTreeMap;
 use std::convert::TryInto;
 use std::fmt;
@@ -461,10 +462,10 @@ fn clarity2_implicit_cast(type_sig: &TypeSignature, value: &Value) -> Result<Val
         }
         (
             TypeSignature::TupleType(tuple_type),
-            Value::Tuple(TupleData {
+            Value::Tuple(Cow::Owned(TupleData {
                 type_signature: _,
                 data_map,
-            }),
+            })),
         ) => {
             let mut cast_data_map = BTreeMap::new();
             for (name, field_value) in data_map {
@@ -479,10 +480,10 @@ fn clarity2_implicit_cast(type_sig: &TypeSignature, value: &Value) -> Result<Val
                 };
                 cast_data_map.insert(name.clone(), clarity2_implicit_cast(to_type, field_value)?);
             }
-            Value::Tuple(TupleData {
+            Value::Tuple(Cow::Owned(TupleData {
                 type_signature: tuple_type.clone(),
                 data_map: cast_data_map,
-            })
+            }))
         }
         (
             TypeSignature::CallableType(CallableSubtype::Trait(trait_identifier)),
@@ -607,14 +608,14 @@ mod test {
         );
         let mut data_map = BTreeMap::new();
         data_map.insert(a_name.clone(), contract.clone());
-        let tuple_contract = Value::Tuple(TupleData {
+        let tuple_contract = Value::Tuple(Cow::Owned(TupleData {
             type_signature: TupleTypeSignature::try_from(vec![(
                 a_name.clone(),
                 TypeSignature::PrincipalType,
             )])
             .unwrap(),
             data_map,
-        });
+        }));
         let cast_tuple = clarity2_implicit_cast(&tuple_ty, &tuple_contract).unwrap();
         let cast_trait = cast_tuple
             .expect_tuple()

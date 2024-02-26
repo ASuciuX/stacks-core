@@ -336,6 +336,7 @@ impl StacksChainState {
         user_stacking_state
             .expect_tuple()
             .expect("FATAL: unexpected PoX structure")
+            .into_owned()
     }
 
     /// Synthesize the handle-unlock print event.  This is done here, instead of pox-2, so we can
@@ -1208,7 +1209,7 @@ impl StacksChainState {
                 })
                 .expect_tuple()?;
 
-            let entry = RawRewardSetEntry::from_pox_4_tuple(self.mainnet, tuple)?;
+            let entry = RawRewardSetEntry::from_pox_4_tuple(self.mainnet, tuple.into_owned())?;
             ret.push(entry)
         }
 
@@ -1325,6 +1326,7 @@ pub mod signers_voting_tests;
 
 #[cfg(test)]
 pub mod test {
+    use std::borrow::Cow;
     use std::collections::{HashMap, HashSet};
     use std::convert::From;
     use std::fs;
@@ -1365,7 +1367,7 @@ pub mod test {
     /// Extract a PoX address from its tuple representation.
     /// Doesn't work on segwit addresses
     fn tuple_to_pox_addr(tuple_data: TupleData) -> PoxAddress {
-        PoxAddress::try_from_pox_tuple(false, &Value::Tuple(tuple_data)).unwrap()
+        PoxAddress::try_from_pox_tuple(false, &Value::Tuple(Cow::Owned(tuple_data))).unwrap()
     }
 
     #[test]
@@ -1722,7 +1724,8 @@ pub mod test {
                 .unwrap()
                 .to_owned()
                 .expect_tuple()
-                .unwrap(),
+                .unwrap()
+                .into_owned(),
         );
         let lock_period = data
             .get("lock-period")
@@ -1778,7 +1781,7 @@ pub mod test {
     }
 
     pub fn make_pox_addr(addr_version: AddressHashMode, addr_bytes: Hash160) -> Value {
-        Value::Tuple(
+        Value::Tuple(Cow::Owned(
             TupleData::from_data(vec![
                 (
                     ClarityName::try_from("version".to_owned()).unwrap(),
@@ -1792,7 +1795,7 @@ pub mod test {
                 ),
             ])
             .unwrap(),
-        )
+        ))
     }
 
     pub fn make_pox_lockup(
@@ -1849,7 +1852,7 @@ pub mod test {
         burn_ht: u64,
         signature_opt: Option<Vec<u8>>,
     ) -> StacksTransaction {
-        let addr_tuple = Value::Tuple(addr.as_clarity_tuple().unwrap());
+        let addr_tuple = Value::Tuple(Cow::Owned(addr.as_clarity_tuple().unwrap()));
         let signature = match signature_opt {
             Some(sig) => Value::some(Value::buff_from(sig).unwrap()).unwrap(),
             None => Value::none(),
@@ -1885,7 +1888,7 @@ pub mod test {
         //                           (pox-addr (tuple (version (buff 1)) (hashbytes (buff 32))))
         //                           (burn-height uint)
         //                           (lock-period uint))
-        let addr_tuple = Value::Tuple(addr.as_clarity_tuple().unwrap());
+        let addr_tuple = Value::Tuple(Cow::Owned(addr.as_clarity_tuple().unwrap()));
         let payload = TransactionPayload::new_contract_call(
             boot_code_test_addr(),
             contract_name,
@@ -1971,7 +1974,7 @@ pub mod test {
         addr: PoxAddress,
         lock_period: u128,
     ) -> StacksTransaction {
-        let addr_tuple = Value::Tuple(addr.as_clarity_tuple().unwrap());
+        let addr_tuple = Value::Tuple(Cow::Owned(addr.as_clarity_tuple().unwrap()));
         let payload = TransactionPayload::new_contract_call(
             boot_code_test_addr(),
             "pox-2",
@@ -1989,7 +1992,7 @@ pub mod test {
         addr: PoxAddress,
         lock_period: u128,
     ) -> StacksTransaction {
-        let addr_tuple = Value::Tuple(addr.as_clarity_tuple().unwrap());
+        let addr_tuple = Value::Tuple(Cow::Owned(addr.as_clarity_tuple().unwrap()));
         let payload = TransactionPayload::new_contract_call(
             boot_code_test_addr(),
             POX_3_NAME,
@@ -2009,7 +2012,7 @@ pub mod test {
         signer_key: StacksPublicKey,
         signature_opt: Option<Vec<u8>>,
     ) -> StacksTransaction {
-        let addr_tuple = Value::Tuple(addr.as_clarity_tuple().unwrap());
+        let addr_tuple = Value::Tuple(Cow::Owned(addr.as_clarity_tuple().unwrap()));
         let signature = match signature_opt {
             Some(sig) => Value::some(Value::buff_from(sig).unwrap()).unwrap(),
             None => Value::none(),
@@ -2051,7 +2054,7 @@ pub mod test {
                 },
                 match pox_addr {
                     Some(addr) => {
-                        Value::some(Value::Tuple(addr.as_clarity_tuple().unwrap())).unwrap()
+                        Value::some(Value::Tuple(Cow::Owned(addr.as_clarity_tuple().unwrap()))).unwrap()
                     }
                     None => Value::none(),
                 },
@@ -2078,7 +2081,7 @@ pub mod test {
             vec![
                 Value::Principal(stacker.clone()),
                 Value::UInt(amount),
-                Value::Tuple(pox_addr.as_clarity_tuple().unwrap()),
+                Value::Tuple(Cow::Owned(pox_addr.as_clarity_tuple().unwrap())),
                 Value::UInt(start_burn_height),
                 Value::UInt(lock_period),
             ],
@@ -2101,7 +2104,7 @@ pub mod test {
             "delegate-stack-extend",
             vec![
                 Value::Principal(stacker.clone()),
-                Value::Tuple(pox_addr.as_clarity_tuple().unwrap()),
+                Value::Tuple(Cow::Owned(pox_addr.as_clarity_tuple().unwrap())),
                 Value::UInt(extend_count),
             ],
         )
@@ -2118,7 +2121,7 @@ pub mod test {
         signature_opt: Option<Vec<u8>>,
         signer_key: &Secp256k1PublicKey,
     ) -> StacksTransaction {
-        let addr_tuple = Value::Tuple(pox_addr.as_clarity_tuple().unwrap());
+        let addr_tuple = Value::Tuple(Cow::Owned(pox_addr.as_clarity_tuple().unwrap()));
         let signature = match signature_opt {
             Some(sig) => Value::some(Value::buff_from(sig).unwrap()).unwrap(),
             None => Value::none(),
@@ -2168,7 +2171,7 @@ pub mod test {
             "delegate-stack-increase",
             vec![
                 Value::Principal(stacker.clone()),
-                Value::Tuple(pox_addr.as_clarity_tuple().unwrap()),
+                Value::Tuple(Cow::Owned(pox_addr.as_clarity_tuple().unwrap())),
                 Value::UInt(amount),
             ],
         )
@@ -2225,7 +2228,7 @@ pub mod test {
             POX_4_NAME,
             "set-signer-key-authorization",
             vec![
-                Value::Tuple(pox_addr.as_clarity_tuple().unwrap()),
+                Value::Tuple(Cow::Owned(pox_addr.as_clarity_tuple().unwrap())),
                 Value::UInt(period),
                 Value::UInt(reward_cycle),
                 Value::string_ascii_from_bytes(topic.get_name_str().into()).unwrap(),
@@ -2335,7 +2338,7 @@ pub mod test {
         let lock_period = 1;
         let addr_bytes = Hash160([0u8; 20]);
 
-        let bad_pox_addr_version = Value::Tuple(
+        let bad_pox_addr_version = Value::Tuple(Cow::Owned(
             TupleData::from_data(vec![
                 (
                     ClarityName::try_from("version".to_owned()).unwrap(),
@@ -2349,7 +2352,7 @@ pub mod test {
                 ),
             ])
             .unwrap(),
-        );
+        ));
 
         let generator = |amount, pox_addr, lock_period, nonce| {
             make_pox_contract_call(

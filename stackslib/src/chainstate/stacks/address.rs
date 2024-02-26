@@ -543,6 +543,8 @@ impl StacksAddressExtensions for StacksAddress {
 
 #[cfg(test)]
 mod test {
+    use std::borrow::Cow;
+
     use clarity::vm::types::BuffData;
     use stacks_common::util::hash::*;
     use stacks_common::util::secp256k1::Secp256k1PublicKey as PubKey;
@@ -701,7 +703,7 @@ mod test {
     }
 
     fn make_pox_addr_raw(version: u8, bytes: Vec<u8>) -> Value {
-        Value::Tuple(
+        Value::Tuple(Cow::Owned(
             TupleData::from_data(vec![
                 (
                     ClarityName::try_from("version".to_owned()).unwrap(),
@@ -713,7 +715,7 @@ mod test {
                 ),
             ])
             .unwrap(),
-        )
+        ))
     }
 
     #[test]
@@ -858,7 +860,7 @@ mod test {
         // bad tuple
         assert!(PoxAddress::try_from_pox_tuple(
             true,
-            &Value::Tuple(
+            &Value::Tuple(Cow::Owned(
                 TupleData::from_data(vec![
                     (
                         ClarityName::try_from("version".to_owned()).unwrap(),
@@ -874,13 +876,13 @@ mod test {
                     ),
                 ])
                 .unwrap()
-            )
+            ))
         )
         .is_none());
         // bad tuple
         assert!(PoxAddress::try_from_pox_tuple(
             true,
-            &Value::Tuple(
+            &Value::Tuple(Cow::Owned(
                 TupleData::from_data(vec![
                     (
                         ClarityName::try_from("version".to_owned()).unwrap(),
@@ -894,13 +896,13 @@ mod test {
                     ),
                 ])
                 .unwrap()
-            )
+            ))
         )
         .is_none());
         // bad tuple
         assert!(PoxAddress::try_from_pox_tuple(
             true,
-            &Value::Tuple(
+            &Value::Tuple(Cow::Owned(
                 TupleData::from_data(vec![
                     (
                         ClarityName::try_from("version-nope".to_owned()).unwrap(),
@@ -914,13 +916,13 @@ mod test {
                     ),
                 ])
                 .unwrap()
-            )
+            ))
         )
         .is_none());
         // bad tuple
         assert!(PoxAddress::try_from_pox_tuple(
             true,
-            &Value::Tuple(
+            &Value::Tuple(Cow::Owned(
                 TupleData::from_data(vec![
                     (
                         ClarityName::try_from("version".to_owned()).unwrap(),
@@ -934,7 +936,7 @@ mod test {
                     ),
                 ])
                 .unwrap()
-            )
+            ))
         )
         .is_none());
     }
@@ -954,6 +956,7 @@ mod test {
             make_pox_addr_raw(0x00, vec![0x01; 20])
                 .expect_tuple()
                 .unwrap()
+                .into_owned()
         );
         assert_eq!(
             PoxAddress::Standard(
@@ -968,6 +971,7 @@ mod test {
             make_pox_addr_raw(0x00, vec![0x02; 20])
                 .expect_tuple()
                 .unwrap()
+                .into_owned()
         );
         assert!(PoxAddress::Standard(
             StacksAddress {
@@ -1001,6 +1005,7 @@ mod test {
             make_pox_addr_raw(0x01, vec![0x01; 20])
                 .expect_tuple()
                 .unwrap()
+                .into_owned()
         );
         assert_eq!(
             PoxAddress::Standard(
@@ -1015,6 +1020,7 @@ mod test {
             make_pox_addr_raw(0x01, vec![0x02; 20])
                 .expect_tuple()
                 .unwrap()
+                .into_owned()
         );
         assert!(PoxAddress::Standard(
             StacksAddress {
@@ -1048,6 +1054,7 @@ mod test {
             make_pox_addr_raw(0x02, vec![0x01; 20])
                 .expect_tuple()
                 .unwrap()
+                .into_owned()
         );
         assert_eq!(
             PoxAddress::Standard(
@@ -1062,6 +1069,7 @@ mod test {
             make_pox_addr_raw(0x02, vec![0x02; 20])
                 .expect_tuple()
                 .unwrap()
+                .into_owned()
         );
         assert!(PoxAddress::Standard(
             StacksAddress {
@@ -1095,6 +1103,7 @@ mod test {
             make_pox_addr_raw(0x03, vec![0x01; 20])
                 .expect_tuple()
                 .unwrap()
+                .into_owned()
         );
         assert_eq!(
             PoxAddress::Standard(
@@ -1109,6 +1118,7 @@ mod test {
             make_pox_addr_raw(0x03, vec![0x02; 20])
                 .expect_tuple()
                 .unwrap()
+                .into_owned()
         );
         assert!(PoxAddress::Standard(
             StacksAddress {
@@ -1136,6 +1146,7 @@ mod test {
             make_pox_addr_raw(0x04, vec![0x09; 20])
                 .expect_tuple()
                 .unwrap()
+                .into_owned()
         );
         assert_eq!(
             PoxAddress::Addr20(false, PoxAddressType20::P2WPKH, [0x09; 20])
@@ -1144,6 +1155,7 @@ mod test {
             make_pox_addr_raw(0x04, vec![0x09; 20])
                 .expect_tuple()
                 .unwrap()
+                .into_owned()
         );
 
         assert_eq!(
@@ -1153,6 +1165,7 @@ mod test {
             make_pox_addr_raw(0x05, vec![0x09; 32])
                 .expect_tuple()
                 .unwrap()
+                .into_owned()
         );
         assert_eq!(
             PoxAddress::Addr32(false, PoxAddressType32::P2WSH, [0x09; 32])
@@ -1161,6 +1174,7 @@ mod test {
             make_pox_addr_raw(0x05, vec![0x09; 32])
                 .expect_tuple()
                 .unwrap()
+                .into_owned()
         );
 
         assert_eq!(
@@ -1170,6 +1184,7 @@ mod test {
             make_pox_addr_raw(0x06, vec![0x09; 32])
                 .expect_tuple()
                 .unwrap()
+                .into_owned()
         );
         assert_eq!(
             PoxAddress::Addr32(false, PoxAddressType32::P2TR, [0x09; 32])
@@ -1178,6 +1193,7 @@ mod test {
             make_pox_addr_raw(0x06, vec![0x09; 32])
                 .expect_tuple()
                 .unwrap()
+                .into_owned()
         );
     }
 

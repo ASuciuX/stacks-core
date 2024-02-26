@@ -1184,6 +1184,7 @@ pub fn calculate_coordinator(
 
 #[cfg(test)]
 mod tests {
+    use std::borrow::Cow;
     use std::fmt::Write;
     use std::net::TcpListener;
     use std::thread::{sleep, spawn};
@@ -1336,9 +1337,9 @@ mod tests {
                     ClarityValue::UInt(SIGNER_SLOTS_PER_USER as u128),
                 ),
             ];
-            let tuple = ClarityValue::Tuple(
+            let tuple = ClarityValue::Tuple(Cow::Owned(
                 TupleData::from_data(tuple_data).expect("Failed to create tuple data"),
-            );
+            ));
             list_data.push(tuple);
         }
 

@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+use std::borrow::Cow;
+
 use clarity::vm::clarity::ClarityConnection;
 use clarity::vm::contexts::OwnedEnvironment;
 use clarity::vm::costs::LimitedCostTracker;
@@ -181,7 +183,7 @@ fn signers_get_config() {
             STACKERDB_CONFIG_FUNCTION.into(),
             vec![],
         ),
-        Value::okay(Value::Tuple(
+        Value::okay(Value::Tuple(Cow::Owned(
             TupleData::from_data(vec![
                 ("chunk-size".into(), Value::UInt(2 * 1024 * 1024)),
                 ("write-freq".into(), Value::UInt(0)),
@@ -193,7 +195,7 @@ fn signers_get_config() {
                 )
             ])
             .unwrap()
-        ))
+        )))
         .unwrap()
     );
 
@@ -209,7 +211,7 @@ fn signers_get_config() {
             );
             assert_eq!(
                 config,
-                Value::okay(Value::Tuple(
+                Value::okay(Value::Tuple(Cow::Owned(
                     TupleData::from_data(vec![
                         ("chunk-size".into(), Value::UInt(2 * 1024 * 1024)),
                         ("write-freq".into(), Value::UInt(0)),
@@ -221,7 +223,7 @@ fn signers_get_config() {
                         )
                     ])
                     .unwrap()
-                ))
+                )))
                 .unwrap()
             )
         }

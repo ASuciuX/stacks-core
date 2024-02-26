@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::collections::{HashMap, VecDeque};
 use std::convert::{TryFrom, TryInto};
 
@@ -1698,7 +1699,7 @@ fn max_stackerdb_list() {
                 version: 0,
                 bytes: Hash160::from_data(&signer_ix.to_be_bytes()),
             };
-            Value::Tuple(
+            Value::Tuple(Cow::Owned(
                 TupleData::from_data(vec![
                     (
                         "signer".into(),
@@ -1707,7 +1708,7 @@ fn max_stackerdb_list() {
                     ("num-slots".into(), Value::UInt(1)),
                 ])
                 .expect("BUG: Failed to construct `{ signer: principal, num-slots: u64 }` tuple"),
-            )
+            ))
         })
         .collect();
 

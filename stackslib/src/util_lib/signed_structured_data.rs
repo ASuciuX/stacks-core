@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+use std::borrow::Cow;
+
 use clarity::vm::types::TupleData;
 use clarity::vm::Value;
 use stacks_common::codec::StacksMessageCodec;
@@ -59,7 +61,7 @@ pub fn sign_structured_data(
 
 // Helper function to generate domain for structured data hash
 pub fn make_structured_data_domain(name: &str, version: &str, chain_id: u32) -> Value {
-    Value::Tuple(
+    Value::Tuple(Cow::Owned(
         TupleData::from_data(vec![
             (
                 "name".into(),
@@ -72,10 +74,12 @@ pub fn make_structured_data_domain(name: &str, version: &str, chain_id: u32) -> 
             ("chain-id".into(), Value::UInt(chain_id.into())),
         ])
         .unwrap(),
-    )
+    ))
 }
 
 pub mod pox4 {
+    use std::borrow::Cow;
+
     use super::{
         make_structured_data_domain, structured_data_message_hash, MessageSignature, PoxAddress,
         PrivateKey, Sha256Sum, StacksPrivateKey, TupleData, Value,
@@ -98,7 +102,7 @@ pub mod pox4 {
         period: u128,
     ) -> Sha256Sum {
         let domain_tuple = make_pox_4_signed_data_domain(chain_id);
-        let data_tuple = Value::Tuple(
+        let data_tuple = Value::Tuple(Cow::Owned(
             TupleData::from_data(vec![
                 (
                     "pox-addr".into(),
@@ -112,7 +116,7 @@ pub mod pox4 {
                 ),
             ])
             .unwrap(),
-        );
+        ));
         structured_data_message_hash(data_tuple, domain_tuple)
     }
 
@@ -179,7 +183,7 @@ pub mod pox4 {
                     |env| {
                         let program = format!(
                             "(get-signer-key-message-hash {} u{} \"{}\" u{})",
-                            Value::Tuple(pox_addr.clone().as_clarity_tuple().unwrap()), //p
+                            Value::Tuple(Cow::Owned(pox_addr.clone().as_clarity_tuple().unwrap())), //p
                             reward_cycle,
                             topic.get_name_str(),
                             lock_period
@@ -338,6 +342,8 @@ pub mod pox4 {
 
 #[cfg(test)]
 mod test {
+    use std::borrow::Cow;
+
     use clarity::vm::types::{TupleData, Value};
     use stacks_common::consts::CHAIN_ID_MAINNET;
     use stacks_common::util::hash::to_hex;
@@ -358,7 +364,7 @@ mod test {
     /// [SIP18 test vectors](https://github.com/stacksgov/sips/blob/main/sips/sip-018/sip-018-signed-structured-data.md)
     #[test]
     fn test_sip18_ref_message_hashing() {
-        let domain = Value::Tuple(
+        let domain = Value::Tuple(Cow::Owned(
             TupleData::from_data(vec![
                 (
                     "name".into(),
@@ -371,7 +377,7 @@ mod test {
                 ("chain-id".into(), Value::UInt(CHAIN_ID_MAINNET.into())),
             ])
             .unwrap(),
-        );
+        ));
         let data = Value::string_ascii_from_bytes("Hello World".into()).unwrap();
 
         let msg_hash = structured_data_message_hash(data, domain);
@@ -389,7 +395,7 @@ mod test {
             "753b7cc01a1a2e86221266a154af739463fce51219d97e4f856cd7200c3bd2a601",
         )
         .unwrap();
-        let domain = Value::Tuple(
+        let domain = Value::Tuple(Cow::Owned(
             TupleData::from_data(vec![
                 (
                     "name".into(),
@@ -402,7 +408,7 @@ mod test {
                 ("chain-id".into(), Value::UInt(CHAIN_ID_MAINNET.into())),
             ])
             .unwrap(),
-        );
+        ));
         let data = Value::string_ascii_from_bytes("Hello World".into()).unwrap();
         let signature =
             sign_structured_data(data, domain, &key).expect("Failed to sign structured data");

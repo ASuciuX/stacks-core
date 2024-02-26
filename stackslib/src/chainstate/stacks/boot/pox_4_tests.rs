@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+use std::borrow::Cow;
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::convert::{TryFrom, TryInto};
 
@@ -1471,7 +1472,7 @@ fn verify_signer_key_sig(
                         |env| {
                             let program = format!(
                                 "(verify-signer-key-sig {} u{} \"{}\" u{} (some 0x{}) 0x{})",
-                                Value::Tuple(pox_addr.clone().as_clarity_tuple().unwrap()),
+                                Value::Tuple(Cow::Owned(pox_addr.clone().as_clarity_tuple().unwrap())),
                                 reward_cycle,
                                 topic.get_name_str(),
                                 period,
@@ -2250,7 +2251,7 @@ fn stack_stx_signer_key() {
     //                       (lock-period uint)
     //                       (signer-key (buff 33)))
     let pox_addr = pox_addr_from(&stacker_key);
-    let pox_addr_val = Value::Tuple(pox_addr.clone().as_clarity_tuple().unwrap());
+    let pox_addr_val = Value::Tuple(Cow::Owned(pox_addr.clone().as_clarity_tuple().unwrap()));
     let signature = make_signer_key_signature(
         &pox_addr,
         &signer_key,
@@ -2332,7 +2333,7 @@ fn stack_stx_signer_auth() {
     let reward_cycle = get_current_reward_cycle(&peer, &burnchain);
 
     let pox_addr = pox_addr_from(&stacker_key);
-    let pox_addr_val = Value::Tuple(pox_addr.clone().as_clarity_tuple().unwrap());
+    let pox_addr_val = Value::Tuple(Cow::Owned(pox_addr.clone().as_clarity_tuple().unwrap()));
     let lock_period = 6;
 
     let topic = Pox4SignatureTopic::StackStx;
@@ -2763,7 +2764,7 @@ fn stack_extend_signer_key() {
     let min_ustx = get_stacking_minimum(&mut peer, &latest_block) * 2;
 
     let pox_addr = pox_addr_from(&stacker_key);
-    let pox_addr_val = Value::Tuple(pox_addr.clone().as_clarity_tuple().unwrap());
+    let pox_addr_val = Value::Tuple(Cow::Owned(pox_addr.clone().as_clarity_tuple().unwrap()));
 
     let signer_sk = Secp256k1PrivateKey::from_seed(&[0]);
     let signer_extend_sk = Secp256k1PrivateKey::from_seed(&[1]);
@@ -2883,7 +2884,7 @@ fn delegate_stack_stx_signer_key() {
     //                          (until-burn-ht (optional uint))
     //                          (pox-addr (optional { version: (buff 1), hashbytes: (buff 32) })))
     let pox_addr = pox_addr_from(&stacker_key);
-    let pox_addr_val = Value::Tuple(pox_addr.clone().as_clarity_tuple().unwrap());
+    let pox_addr_val = Value::Tuple(Cow::Owned(pox_addr.clone().as_clarity_tuple().unwrap()));
     let signer_sk = Secp256k1PrivateKey::from_seed(&[1, 1, 1]);
     let signer_key = Secp256k1PublicKey::from_private(&signer_sk);
     let signer_key_val = Value::buff_from(signer_key.to_bytes_compressed()).unwrap();
@@ -3222,7 +3223,7 @@ fn stack_increase() {
 
     let actual_result = stacker_transactions.first().cloned().unwrap().result;
 
-    let expected_result = Value::okay(Value::Tuple(
+    let expected_result = Value::okay(Value::Tuple(Cow::Owned(
         TupleData::from_data(vec![
             (
                 "stacker".into(),
@@ -3231,7 +3232,7 @@ fn stack_increase() {
             ("total-locked".into(), Value::UInt(min_ustx * 2)),
         ])
         .unwrap(),
-    ))
+    )))
     .unwrap();
 
     // Testing stack_increase response is equal to expected response
@@ -3349,7 +3350,7 @@ fn delegate_stack_increase() {
 
     let actual_result = delegate_transactions.first().cloned().unwrap().result;
 
-    let expected_result = Value::okay(Value::Tuple(
+    let expected_result = Value::okay(Value::Tuple(Cow::Owned(
         TupleData::from_data(vec![
             (
                 "stacker".into(),
@@ -3358,7 +3359,7 @@ fn delegate_stack_increase() {
             ("total-locked".into(), Value::UInt(min_ustx * 2)),
         ])
         .unwrap(),
-    ))
+    )))
     .unwrap();
 
     // Testing stack_increase response is equal to expected response
@@ -3381,9 +3382,9 @@ pub fn get_stacking_state_pox_4(
     account: &PrincipalData,
 ) -> Option<Value> {
     with_clarity_db_ro(peer, tip, |db| {
-        let lookup_tuple = Value::Tuple(
+        let lookup_tuple = Value::Tuple(Cow::Owned(
             TupleData::from_data(vec![("stacker".into(), account.clone().into())]).unwrap(),
-        );
+        ));
         let epoch = db.get_clarity_epoch_version().unwrap();
         db.fetch_entry_unknown_descriptor(
             &boot_code_id(boot::POX_4_NAME, false),
@@ -3474,6 +3475,7 @@ pub fn get_partially_stacked_state_pox_4(
         .map(|v| {
             v.expect_tuple()
                 .unwrap()
+                .into_owned()
                 .get_owned("stacked-amount")
                 .unwrap()
                 .expect_u128()
@@ -3488,9 +3490,9 @@ pub fn get_delegation_state_pox_4(
     account: &PrincipalData,
 ) -> Option<Value> {
     with_clarity_db_ro(peer, tip, |db| {
-        let lookup_tuple = Value::Tuple(
+        let lookup_tuple = Value::Tuple(Cow::Owned(
             TupleData::from_data(vec![("stacker".into(), account.clone().into())]).unwrap(),
-        );
+        ));
         let epoch = db.get_clarity_epoch_version().unwrap();
         db.fetch_entry_unknown_descriptor(
             &boot_code_id(boot::POX_4_NAME, false),

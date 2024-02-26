@@ -949,7 +949,7 @@ impl StacksChainState {
         ])
         .expect("BUG: valid tuple representation");
 
-        Ok(Value::Tuple(tuple_data))
+        Ok(Value::Tuple(Cow::Owned(tuple_data)))
     }
 
     /// Process the transaction's payload, and run the post-conditions against the resulting state.

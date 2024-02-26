@@ -19,6 +19,7 @@ pub mod serialization;
 #[allow(clippy::result_large_err)]
 pub mod signatures;
 
+use std::borrow::Cow;
 use std::collections::BTreeMap;
 use std::convert::{TryFrom, TryInto};
 use std::{char, cmp, fmt, str};
@@ -228,7 +229,7 @@ pub enum Value {
     Bool(bool),
     Sequence(SequenceData),
     Principal(PrincipalData),
-    Tuple(TupleData),
+    Tuple(Cow<'static, TupleData>),
     Optional(OptionalData),
     Response(ResponseData),
     CallableContract(CallableData),
@@ -1122,7 +1123,7 @@ impl Value {
         }
     }
 
-    pub fn expect_tuple(self) -> Result<TupleData> {
+    pub fn expect_tuple(self) -> Result<Cow<'static, TupleData>> {
         if let Value::Tuple(data) = self {
             Ok(data)
         } else {
@@ -1480,7 +1481,7 @@ impl From<QualifiedContractIdentifier> for PrincipalData {
 
 impl From<TupleData> for Value {
     fn from(t: TupleData) -> Self {
-        Value::Tuple(t)
+        Value::Tuple(Cow::Owned(t))
     }
 }
 

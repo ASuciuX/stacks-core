@@ -4608,7 +4608,7 @@ impl StacksChainState {
                 let mut total_minted = 0;
                 let mut events = vec![];
                 for entry in entries.into_iter() {
-                    let schedule: TupleData = entry.expect_tuple()?;
+                    let schedule: TupleData = entry.expect_tuple()?.into_owned();
                     let amount = schedule
                         .get("amount")
                         .expect("Lockup malformed")
@@ -11090,6 +11090,7 @@ pub mod test {
                 .unwrap()
                 .expect_tuple()
                 .unwrap()
+                .into_owned()
                 .data_map;
             let delegation_amt = data
                 .get("amount-ustx")
@@ -11798,6 +11799,7 @@ pub mod test {
                 .unwrap()
                 .expect_tuple()
                 .unwrap()
+                .into_owned()
                 .data_map;
             let delegation_amt = data
                 .get("amount-ustx")

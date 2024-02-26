@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+use std::borrow::Cow;
+
 use clarity::vm::ast::ASTRules;
 use clarity::vm::contexts::GlobalContext;
 use clarity::vm::errors::Error as ClarityError;
@@ -418,12 +420,12 @@ pub fn synthesize_pox_2_or_3_event_info(
                     .expect_tuple()
                     .expect("FATAL: unexpected clarity value");
                 let event_tuple =
-                    TupleData::shallow_merge(base_event_tuple, data_tuple).map_err(|e| {
+                    TupleData::shallow_merge(base_event_tuple.into_owned(), data_tuple.into_owned()).map_err(|e| {
                         error!("Failed to merge data-info and event-info: {:?}", &e);
                         e
                     })?;
 
-                Ok(Value::Tuple(event_tuple))
+                Ok(Value::Tuple(Cow::Owned(event_tuple)))
             },
         )
         .map_err(|e: ClarityError| {

@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+use std::borrow::Cow;
 use std::convert::{TryFrom, TryInto};
 
 use stacks_common::types::StacksEpochId;
@@ -261,7 +262,7 @@ pub fn special_stx_account(
             ))),
         ),
     ])
-    .map(Value::Tuple)
+    .map(|tuple_data| Value::Tuple(Cow::Owned(tuple_data)))
 }
 
 pub fn special_stx_burn(

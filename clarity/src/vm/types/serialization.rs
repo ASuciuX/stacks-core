@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-use std::borrow::Borrow;
+use std::borrow::{Borrow, Cow};
 use std::convert::{TryFrom, TryInto};
 use std::io::{Read, Write};
 use std::{cmp, error, fmt, str};
@@ -1268,7 +1268,7 @@ impl Value {
                 };
                 let mut sanitized_tuple_entries = vec![];
                 let original_tuple_len = tuple_data.len();
-                let mut tuple_data_map = tuple_data.data_map;
+                let mut tuple_data_map = tuple_data.into_owned().data_map;
                 let mut did_sanitize_children = false;
                 for (key, expect_key_type) in tt.get_type_map().iter() {
                     let field_data = tuple_data_map.remove(key)?;
@@ -1285,7 +1285,7 @@ impl Value {
                 }
                 let did_sanitize_tuple = did_sanitize_children || (tt.len() != original_tuple_len);
                 (
-                    Value::Tuple(TupleData::from_data(sanitized_tuple_entries).ok()?),
+                    Value::Tuple(Cow::Owned(TupleData::from_data(sanitized_tuple_entries).ok()?)),
                     did_sanitize_tuple,
                 )
             }

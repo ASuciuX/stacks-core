@@ -391,6 +391,8 @@ fn main() {
 
 #[cfg(test)]
 pub mod tests {
+    use std::borrow::Cow;
+
     use blockstack_lib::chainstate::stacks::address::PoxAddress;
     use blockstack_lib::chainstate::stacks::boot::POX_4_CODE;
     use blockstack_lib::util_lib::signed_structured_data::pox4::{
@@ -419,7 +421,7 @@ pub mod tests {
             (verify-signer-key-sig {} u{} "{}" u{} (some 0x{}) 0x{})
         "#,
             &*POX_4_CODE,                                               //s
-            Value::Tuple(pox_addr.clone().as_clarity_tuple().unwrap()), //p
+            Value::Tuple(Cow::Owned(pox_addr.clone().as_clarity_tuple().unwrap())), //p
             reward_cycle,
             topic.get_name_str(),
             lock_period,

@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+use std::borrow::Cow;
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::ops::DerefMut;
 
@@ -203,7 +204,7 @@ impl NakamotoSigners {
                 })
                 .expect_tuple()?;
 
-            let entry = RawRewardSetEntry::from_pox_4_tuple(is_mainnet, tuple)?;
+            let entry = RawRewardSetEntry::from_pox_4_tuple(is_mainnet, tuple.into_owned())?;
 
             slots.push(entry)
         }
@@ -243,7 +244,7 @@ impl NakamotoSigners {
                 .map(|signer| {
                     let signer_hash = Hash160::from_data(&signer.signing_key);
                     let signing_address = StacksAddress::p2pkh_from_hash(is_mainnet, signer_hash);
-                    Value::Tuple(
+                    Value::Tuple(Cow::Owned(
                         TupleData::from_data(vec![
                             (
                                 "signer".into(),
@@ -254,7 +255,7 @@ impl NakamotoSigners {
                             .expect(
                                 "BUG: Failed to construct `{ signer: principal, num-slots: u64 }` tuple",
                             ),
-                    )
+                    ))
                 })
                 .collect()
         };
@@ -270,7 +271,7 @@ impl NakamotoSigners {
                 .map(|signer| {
                     let signer_hash = Hash160::from_data(&signer.signing_key);
                     let signing_address = StacksAddress::p2pkh_from_hash(is_mainnet, signer_hash);
-                    Value::Tuple(
+                    Value::Tuple(Cow::Owned(
                         TupleData::from_data(vec![
                             (
                                 "signer".into(),
@@ -281,7 +282,7 @@ impl NakamotoSigners {
                         .expect(
                             "BUG: Failed to construct `{ signer: principal, weight: uint }` tuple",
                         ),
-                    )
+                    ))
                 })
                 .collect()
         };

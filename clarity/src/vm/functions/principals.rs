@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::convert::TryFrom;
 
 use stacks_common::address::{
@@ -86,7 +87,7 @@ fn create_principal_destruct_tuple(
     hash_bytes: &[u8; 20],
     name_opt: Option<ContractName>,
 ) -> Result<Value> {
-    Ok(Value::Tuple(
+    Ok(Value::Tuple(Cow::Owned(
         TupleData::from_data(vec![
             (
                 "version".into(),
@@ -108,7 +109,7 @@ fn create_principal_destruct_tuple(
             ),
         ])
         .map_err(|_| InterpreterError::Expect("FAIL: Failed to initialize tuple.".into()))?,
-    ))
+    )))
 }
 
 /// Creates Response return type, to wrap an *actual error* result of a `principal-construct`.
@@ -116,13 +117,13 @@ fn create_principal_destruct_tuple(
 /// The response is an error Response, where the `err` value is a tuple `{error_code, parse_tuple}`.
 /// `error_int` is of type `UInt`, `parse_tuple` is None.
 fn create_principal_true_error_response(error_int: PrincipalConstructErrorCode) -> Result<Value> {
-    Value::error(Value::Tuple(
+    Value::error(Value::Tuple(Cow::Owned(
         TupleData::from_data(vec![
             ("error_code".into(), Value::UInt(error_int as u128)),
             ("value".into(), Value::none()),
         ])
         .map_err(|_| InterpreterError::Expect("FAIL: Failed to initialize tuple.".into()))?,
-    ))
+    )))
     .map_err(|_| {
         InterpreterError::Expect("FAIL: Failed to initialize (err ..) response".into()).into()
     })
@@ -137,7 +138,7 @@ fn create_principal_value_error_response(
     error_int: PrincipalConstructErrorCode,
     value: Value,
 ) -> Result<Value> {
-    Value::error(Value::Tuple(
+    Value::error(Value::Tuple(Cow::Owned(
         TupleData::from_data(vec![
             ("error_code".into(), Value::UInt(error_int as u128)),
             (
@@ -148,7 +149,7 @@ fn create_principal_value_error_response(
             ),
         ])
         .map_err(|_| InterpreterError::Expect("FAIL: Failed to initialize tuple.".into()))?,
-    ))
+    )))
     .map_err(|_| {
         InterpreterError::Expect("FAIL: Failed to initialize (err ..) response".into()).into()
     })

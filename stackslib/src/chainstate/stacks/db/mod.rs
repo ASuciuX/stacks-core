@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+use std::borrow::Cow;
 use std::collections::btree_map::Entry;
 use std::collections::{BTreeMap, HashSet};
 use std::io::prelude::*;
@@ -1336,13 +1337,13 @@ impl StacksChainState {
                     for schedule in initial_lockups {
                         let stx_address =
                             StacksChainState::parse_genesis_address(&schedule.address, mainnet);
-                        let value = Value::Tuple(
+                        let value = Value::Tuple(Cow::Owned(
                             TupleData::from_data(vec![
                                 ("recipient".into(), Value::Principal(stx_address)),
                                 ("amount".into(), Value::UInt(schedule.amount.into())),
                             ])
                             .unwrap(),
-                        );
+                        ));
                         match lockups_per_block.entry(schedule.block_height) {
                             Entry::Occupied(schedules) => {
                                 schedules.into_mut().push(value);
@@ -1429,17 +1430,17 @@ impl StacksChainState {
                                     .unwrap()
                                 };
 
-                                let namespace_props = Value::Tuple(
+                                let namespace_props = Value::Tuple(Cow::Owned(
                                     TupleData::from_data(vec![
                                         ("revealed-at".into(), revealed_at),
                                         ("launched-at".into(), Value::some(launched_at).unwrap()),
                                         ("lifetime".into(), lifetime),
                                         ("namespace-import".into(), importer),
                                         ("can-update-price-function".into(), Value::Bool(true)),
-                                        ("price-function".into(), Value::Tuple(price_function)),
+                                        ("price-function".into(), Value::Tuple(Cow::Owned(price_function))),
                                     ])
                                     .unwrap(),
-                                );
+                                ));
 
                                 db.insert_entry_unknown_descriptor(
                                     &bns_contract_id,
@@ -1484,13 +1485,13 @@ impl StacksChainState {
                                     Value::buff_from(buffer.to_vec()).expect("Invalid name")
                                 };
 
-                                let fqn = Value::Tuple(
+                                let fqn = Value::Tuple(Cow::Owned(
                                     TupleData::from_data(vec![
                                         ("namespace".into(), namespace),
                                         ("name".into(), name),
                                     ])
                                     .unwrap(),
-                                );
+                                ));
 
                                 let owner_address =
                                     StacksChainState::parse_genesis_address(&entry.owner, mainnet);
@@ -1517,7 +1518,7 @@ impl StacksChainState {
                                 )?;
 
                                 let registered_at = Value::UInt(0);
-                                let name_props = Value::Tuple(
+                                let name_props = Value::Tuple(Cow::Owned(
                                     TupleData::from_data(vec![
                                         (
                                             "registered-at".into(),
@@ -1528,7 +1529,7 @@ impl StacksChainState {
                                         ("zonefile-hash".into(), zonefile_hash),
                                     ])
                                     .unwrap(),
-                                );
+                                ));
 
                                 db.insert_entry_unknown_descriptor(
                                     &bns_contract_id,

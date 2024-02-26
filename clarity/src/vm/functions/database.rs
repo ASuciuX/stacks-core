@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+use std::borrow::Cow;
 use std::cmp;
 use std::convert::{TryFrom, TryInto};
 
@@ -895,12 +896,12 @@ pub fn special_get_burn_block_info(
                 .get_pox_payout_addrs_for_burnchain_height(height_value)?;
 
             match pox_addrs_and_payout {
-                Some((addrs, payout)) => Ok(Value::some(Value::Tuple(
+                Some((addrs, payout)) => Ok(Value::some(Value::Tuple(Cow::Owned(
                     TupleData::from_data(vec![
                         (
                             "addrs".into(),
                             Value::cons_list(
-                                addrs.into_iter().map(Value::Tuple).collect(),
+                                addrs.into_iter().map(|tuple_data| Value::Tuple(Cow::Owned(tuple_data))).collect(),
                                 env.epoch(),
                             )
                             .map_err(|_| {
@@ -916,7 +917,7 @@ pub fn special_get_burn_block_info(
                             "FATAL: failed to build pox addrs and payout tuple".into(),
                         )
                     })?,
-                ))
+                )))
                 .map_err(|_| InterpreterError::Expect("FATAL: could not build Some(..)".into()))?),
                 None => Ok(Value::none()),
             }

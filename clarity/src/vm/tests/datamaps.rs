@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+use std::borrow::Cow;
 use std::convert::{From, TryFrom};
 
 use crate::vm::errors::{CheckErrors, Error, ShortReturnType};
@@ -253,27 +254,27 @@ fn test_set_tuple_variable() {
     let mut contract_src = contract_src.to_string();
     contract_src.push_str("(list (get-keys) (set-keys (tuple (k1 2) (v1 0))) (get-keys))");
     let expected = Value::list_from(vec![
-        Value::Tuple(
+        Value::Tuple(Cow::Owned(
             TupleData::from_data(vec![
                 ("k1".into(), Value::Int(1)),
                 ("v1".into(), Value::Int(1)),
             ])
             .unwrap(),
-        ),
-        Value::Tuple(
+        )),
+        Value::Tuple(Cow::Owned(
             TupleData::from_data(vec![
                 ("k1".into(), Value::Int(2)),
                 ("v1".into(), Value::Int(0)),
             ])
             .unwrap(),
-        ),
-        Value::Tuple(
+        )),
+        Value::Tuple(Cow::Owned(
             TupleData::from_data(vec![
                 ("k1".into(), Value::Int(2)),
                 ("v1".into(), Value::Int(0)),
             ])
             .unwrap(),
-        ),
+        )),
     ]);
     assert_executes(expected, &contract_src);
 }
@@ -687,7 +688,7 @@ fn bad_tuples() {
 }
 
 fn make_tuple(entries: Vec<(ClarityName, Value)>) -> Value {
-    Value::Tuple(TupleData::from_data(entries).unwrap())
+    Value::Tuple(Cow::Owned(TupleData::from_data(entries).unwrap()))
 }
 
 #[test]

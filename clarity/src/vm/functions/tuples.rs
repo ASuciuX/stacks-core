@@ -13,6 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+use std::borrow::Cow;
+
 use crate::vm::costs::cost_functions::ClarityCostFunction;
 use crate::vm::costs::{cost_functions, runtime_cost};
 use crate::vm::errors::{
@@ -60,7 +62,7 @@ pub fn tuple_get(
                 Some(data) => {
                     if let Value::Tuple(tuple_data) = *data {
                         runtime_cost(ClarityCostFunction::TupleGet, env, tuple_data.len())?;
-                        Ok(Value::some(tuple_data.get_owned(arg_name)?).map_err(|_| {
+                        Ok(Value::some(tuple_data.into_owned().get_owned(arg_name)?).map_err(|_| {
                             InterpreterError::Expect(
                                 "Tuple contents should *always* fit in a some wrapper".into(),
                             )
@@ -74,7 +76,7 @@ pub fn tuple_get(
         }
         Value::Tuple(tuple_data) => {
             runtime_cost(ClarityCostFunction::TupleGet, env, tuple_data.len())?;
-            tuple_data.get_owned(arg_name)
+            tuple_data.into_owned().get_owned(arg_name)
         }
         _ => Err(CheckErrors::ExpectedTuple(TypeSignature::type_of(&value)?).into()),
     }
@@ -91,6 +93,6 @@ pub fn tuple_merge(base: Value, update: Value) -> Result<Value> {
         _ => Err(CheckErrors::ExpectedTuple(TypeSignature::type_of(&update)?)),
     }?;
 
-    let combined = TupleData::shallow_merge(initial_values, new_values)?;
-    Ok(Value::Tuple(combined))
+    let combined = TupleData::shallow_merge(initial_values.into_owned(), new_values.into_owned())?;
+    Ok(Value::Tuple(Cow::Owned(combined)))
 }

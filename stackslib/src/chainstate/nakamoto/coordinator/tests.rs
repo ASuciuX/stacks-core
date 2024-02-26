@@ -173,7 +173,7 @@ pub fn make_all_signers_vote_for_aggregate_key(
     let mut signers_to_index = HashMap::new();
     for (index, value) in signer_vec.into_iter().enumerate() {
         let tuple = value.expect_tuple().unwrap();
-        let signer = tuple
+        let signer = tuple.into_owned()
             .get_owned("signer")
             .unwrap()
             .expect_principal()

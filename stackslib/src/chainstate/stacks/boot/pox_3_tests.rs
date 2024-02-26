@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+use std::borrow::Cow;
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::convert::{TryFrom, TryInto};
 
@@ -3229,7 +3230,7 @@ fn pox_3_getters() {
     ));
 
     eprintln!("{}", &result);
-    let data = result.expect_tuple().unwrap().data_map;
+    let data = result.expect_tuple().unwrap().into_owned().data_map;
 
     let alice_delegation_info = data
         .get("get-delegation-info-alice")
@@ -3248,6 +3249,7 @@ fn pox_3_getters() {
         .unwrap()
         .expect_tuple()
         .unwrap()
+        .into_owned()
         .data_map;
     let bob_delegation_addr = bob_delegation_info
         .get("delegated-to")
@@ -4319,7 +4321,7 @@ fn pox_3_delegate_stx_addr_validation() {
         ],
     );
 
-    let bob_bad_pox_addr = Value::Tuple(
+    let bob_bad_pox_addr = Value::Tuple(Cow::Owned(
         TupleData::from_data(vec![
             (
                 ClarityName::try_from("version".to_owned()).unwrap(),
@@ -4333,7 +4335,7 @@ fn pox_3_delegate_stx_addr_validation() {
             ),
         ])
         .unwrap(),
-    );
+    ));
 
     // bob delegates to charlie in v3 with an invalid address
     let bob_delegation = make_pox_3_contract_call(
@@ -4366,7 +4368,7 @@ fn pox_3_delegate_stx_addr_validation() {
     );
 
     eprintln!("{}", &result);
-    let data = result.expect_tuple().unwrap().data_map;
+    let data = result.expect_tuple().unwrap().into_owned().data_map;
 
     // bob had an invalid PoX address
     let bob_delegation_info = data
@@ -4387,6 +4389,7 @@ fn pox_3_delegate_stx_addr_validation() {
         .unwrap()
         .expect_tuple()
         .unwrap()
+        .into_owned()
         .data_map;
     let alice_delegation_addr = alice_delegation_info
         .get("delegated-to")

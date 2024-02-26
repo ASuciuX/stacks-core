@@ -532,7 +532,7 @@ fn load_cost_functions(
         };
 
         let cost_function = match ClarityName::try_from(
-            entry
+            entry.into_owned()
                 .get_owned("cost-function-name")
                 .map_err(|_| CostErrors::Expect("BUG: malformed cost proposal tuple".into()))?
                 .expect_ascii()

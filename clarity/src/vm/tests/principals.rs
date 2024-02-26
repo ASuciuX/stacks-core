@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use hashbrown::HashMap;
 use stacks_common::types::StacksEpochId;
 use stacks_common::util::hash::hex_bytes;
@@ -305,7 +307,7 @@ fn create_principal_destruct_tuple_from_strings(
     hash_bytes: &str,
     name: Option<&str>,
 ) -> Value {
-    Value::Tuple(
+    Value::Tuple(Cow::Owned(
         TupleData::from_data(vec![
             (
                 "version".into(),
@@ -333,7 +335,7 @@ fn create_principal_destruct_tuple_from_strings(
             ),
         ])
         .expect("FAIL: Failed to initialize tuple."),
-    )
+    ))
 }
 
 #[test]
@@ -875,7 +877,7 @@ fn test_principal_construct_version_byte_future() {
     assert_eq!(
         Value::Response(ResponseData {
             committed: false,
-            data: Box::new(Value::Tuple(
+            data: Box::new(Value::Tuple(Cow::Owned(
                 TupleData::from_data(vec![
                     (
                         "error_code".into(),
@@ -892,7 +894,7 @@ fn test_principal_construct_version_byte_future() {
                     ),
                 ])
                 .expect("FAIL: Failed to initialize tuple."),
-            )),
+            ))),
         }),
         execute_with_parameters(
             input,
@@ -911,7 +913,7 @@ fn test_principal_construct_version_byte_future() {
     assert_eq!(
         Value::Response(ResponseData {
             committed: false,
-            data: Box::new(Value::Tuple(
+            data: Box::new(Value::Tuple(Cow::Owned(
                 TupleData::from_data(vec![
                     (
                         "error_code".into(),
@@ -928,7 +930,7 @@ fn test_principal_construct_version_byte_future() {
                     ),
                 ])
                 .expect("FAIL: Failed to initialize tuple."),
-            )),
+            ))),
         }),
         execute_with_parameters(
             input,
@@ -1041,7 +1043,7 @@ fn test_principal_construct_response_errors() {
         .unwrap(),
         Value::Response(ResponseData {
             committed: false,
-            data: Box::new(Value::Tuple(
+            data: Box::new(Value::Tuple(Cow::Owned(
                 TupleData::from_data(vec![
                     (
                         "error_code".into(),
@@ -1050,7 +1052,7 @@ fn test_principal_construct_response_errors() {
                     ("value".into(), Value::none()),
                 ])
                 .expect("FAIL: Failed to initialize tuple."),
-            )),
+            ))),
         }),
     );
 
@@ -1069,7 +1071,7 @@ fn test_principal_construct_response_errors() {
         .unwrap(),
         Value::Response(ResponseData {
             committed: false,
-            data: Box::new(Value::Tuple(
+            data: Box::new(Value::Tuple(Cow::Owned(
                 TupleData::from_data(vec![
                     (
                         "error_code".into(),
@@ -1078,7 +1080,7 @@ fn test_principal_construct_response_errors() {
                     ("value".into(), Value::none()),
                 ])
                 .expect("FAIL: Failed to initialize tuple."),
-            )),
+            ))),
         }),
     );
 
@@ -1087,7 +1089,7 @@ fn test_principal_construct_response_errors() {
     assert_eq!(
         Value::Response(ResponseData {
             committed: false,
-            data: Box::new(Value::Tuple(
+            data: Box::new(Value::Tuple(Cow::Owned(
                 TupleData::from_data(vec![
                     (
                         "error_code".into(),
@@ -1096,7 +1098,7 @@ fn test_principal_construct_response_errors() {
                     ("value".into(), Value::none()),
                 ])
                 .expect("FAIL: Failed to initialize tuple."),
-            )),
+            ))),
         }),
         execute_with_parameters(
             input,
@@ -1114,7 +1116,7 @@ fn test_principal_construct_response_errors() {
     assert_eq!(
         Value::Response(ResponseData {
             committed: false,
-            data: Box::new(Value::Tuple(
+            data: Box::new(Value::Tuple(Cow::Owned(
                 TupleData::from_data(vec![
                     (
                         "error_code".into(),
@@ -1123,7 +1125,7 @@ fn test_principal_construct_response_errors() {
                     ("value".into(), Value::none()),
                 ])
                 .expect("FAIL: Failed to initialize tuple."),
-            )),
+            ))),
         }),
         execute_with_parameters(
             input,
@@ -1141,7 +1143,7 @@ fn test_principal_construct_response_errors() {
     assert_eq!(
         Value::Response(ResponseData {
             committed: false,
-            data: Box::new(Value::Tuple(
+            data: Box::new(Value::Tuple(Cow::Owned(
                 TupleData::from_data(vec![
                     (
                         "error_code".into(),
@@ -1150,7 +1152,7 @@ fn test_principal_construct_response_errors() {
                     ("value".into(), Value::none()),
                 ])
                 .expect("FAIL: Failed to initialize tuple."),
-            )),
+            ))),
         }),
         execute_with_parameters(
             input,

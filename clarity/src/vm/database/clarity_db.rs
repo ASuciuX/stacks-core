@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+use std::borrow::Cow;
 use std::convert::{TryFrom, TryInto};
 
 use serde_json;
@@ -1174,7 +1175,7 @@ impl<'a> ClarityDatabase<'a> {
         seq: u16,
     ) -> Result<()> {
         let key = ClarityDatabase::make_microblock_poison_key(height);
-        let value = Value::Tuple(
+        let value = Value::Tuple(Cow::Owned(
             TupleData::from_data(vec![
                 (
                     ClarityName::try_from("reporter").map_err(|_| {
@@ -1190,7 +1191,7 @@ impl<'a> ClarityDatabase<'a> {
                 ),
             ])
             .map_err(|_| InterpreterError::Expect("BUG: valid tuple representation".into()))?,
-        );
+        ));
         let mut value_bytes = vec![];
         value.serialize_write(&mut value_bytes).map_err(|_| {
             InterpreterError::Expect("BUG: valid tuple representation did not serialize".into())

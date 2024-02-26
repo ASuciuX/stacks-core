@@ -3400,7 +3400,7 @@ fn get_delegation_info_pox_2(
     match result {
         None => None,
         Some(tuple) => {
-            let data = tuple.expect_tuple().unwrap().data_map;
+            let data = tuple.expect_tuple().unwrap().into_owned().data_map;
             let delegated_amt = data
                 .get("amount-ustx")
                 .cloned()
