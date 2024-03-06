@@ -2055,8 +2055,8 @@ impl PeerNetwork {
     /// Process any newly-connecting sockets
     fn process_connecting_sockets(&mut self, poll_state: &mut NetworkPollState) {
         for event_id in poll_state.ready.iter() {
-            if let Entry::Occupied(_) = self.connecting.entry(*event_id) {
-                let (socket, outbound, _) = self.connecting.remove(event_id).unwrap();
+            if let Entry::Occupied(e) = self.connecting.entry(*event_id) {
+                let (socket, outbound, _) = e.remove();
                 let sock_str = format!("{:?}", &socket);
                 if let Err(_e) = self.register_peer(*event_id, socket, outbound) {
                     debug!(
@@ -3247,9 +3247,8 @@ impl PeerNetwork {
 
                                     local_blocks.push(BlocksDatum(consensus_hash, block));
 
-                                    if let Entry::Vacant(_) = lowest_reward_cycle_with_missing_block.entry(nk) {
-                                        lowest_reward_cycle_with_missing_block
-                                            .insert(nk, reward_cycle);
+                                    if let Entry::Vacant(e) = lowest_reward_cycle_with_missing_block.entry(nk) {
+                                        e.insert(reward_cycle);
                                     }
 
                                     total_blocks_to_broadcast += 1;
@@ -3308,9 +3307,8 @@ impl PeerNetwork {
 
                                     local_microblocks.push((index_block_hash, microblocks));
 
-                                    if let Entry::Vacant(_) = lowest_reward_cycle_with_missing_block.entry(nk) {
-                                        lowest_reward_cycle_with_missing_block
-                                            .insert(nk, reward_cycle);
+                                    if let Entry::Vacant(e) = lowest_reward_cycle_with_missing_block.entry(nk) {
+                                        e.insert(reward_cycle);
                                     }
 
                                     total_microblocks_to_broadcast += 1;

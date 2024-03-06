@@ -292,22 +292,20 @@ impl DNSClient {
         let mut num_recved = 0;
         loop {
             match self.requests_rx.try_recv() {
-                Ok(resp) => {
-                    if let Entry::Occupied(_) = self.requests.entry(resp.request.to_owned()) {
+                Ok(resp) => match self.requests.entry(resp.request.to_owned()) {
+                    Entry::Occupied(mut e) => {
                         if !resp.request.is_timed_out() {
-                            self.requests.insert(resp.request.clone(), Some(resp));
+                            e.insert(Some(resp));
                             num_recved += 1;
                         } else {
-                            self.requests.insert(
-                                resp.request.clone(),
-                                Some(DNSResponse::error(
-                                    resp.request,
-                                    "DNS lookup timed out".to_string(),
-                                )),
-                            );
+                            e.insert(Some(DNSResponse::error(
+                                resp.request,
+                                "DNS lookup timed out".to_string(),
+                            )));
                         }
                     }
-                }
+                    Entry::Vacant(_) => {}
+                },
                 Err(TryRecvError::Empty) => {
                     break;
                 }
@@ -325,30 +323,26 @@ impl DNSClient {
 
     pub fn poll_lookup(&mut self, host: &str, port: u16) -> Result<Option<DNSResponse>, net_error> {
         let req = DNSRequest::new(host.to_string(), port, 0);
-        if let Entry::Vacant(_) = self.requests.entry(req.to_owned()) {
-            return Err(net_error::LookupError(format!(
-                "No such pending lookup: {}:{}",
-                host, port
-            )));
+        match self.requests.entry(req.to_owned()) {
+            Entry::Occupied(e) => {
+                let _ = match e.get() {
+                    None => {
+                        return Ok(None);
+                    }
+                    Some(resp) => resp,
+                };
+
+                let resp = e.remove().expect("BUG: had response but then didn't");
+
+                Ok(Some(resp))
+            }
+            Entry::Vacant(_) => {
+                return Err(net_error::LookupError(format!(
+                    "No such pending lookup: {}:{}",
+                    host, port
+                )));
+            }
         }
-
-        let _ = match self.requests.get(&req) {
-            Some(None) => {
-                return Ok(None);
-            }
-            Some(Some(resp)) => resp,
-            None => {
-                unreachable!();
-            }
-        };
-
-        let resp = self
-            .requests
-            .remove(&req)
-            .expect("BUG: had key but then didn't")
-            .expect("BUG: had response but then didn't");
-
-        Ok(Some(resp))
     }
 
     pub fn clear_all_requests(&mut self) -> () {

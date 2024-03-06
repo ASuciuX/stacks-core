@@ -2585,27 +2585,36 @@ fn dump_peer_histograms(peers: &Vec<TestPeer>) -> () {
             }
         }
         for inbound in inbound_neighbor_index.iter() {
-            if let Entry::Occupied(_) = inbound_hist.entry(*inbound) {
-                let c = inbound_hist.get(inbound).unwrap().to_owned();
-                inbound_hist.insert(*inbound, c + 1);
-            } else {
-                inbound_hist.insert(*inbound, 1);
+            match inbound_hist.entry(*inbound) {
+                Entry::Occupied(mut e) => {
+                    let c = e.get().to_owned();
+                    e.insert(c + 1);
+                }
+                Entry::Vacant(e) => {
+                    e.insert(1);
+                }
             }
         }
         for outbound in outbound_neighbor_index.iter() {
-            if let Entry::Occupied(_) = outbound_hist.entry(*outbound) {
-                let c = outbound_hist.get(outbound).unwrap().to_owned();
-                outbound_hist.insert(*outbound, c + 1);
-            } else {
-                outbound_hist.insert(*outbound, 1);
+            match outbound_hist.entry(*outbound) {
+                Entry::Occupied(mut e) => {
+                    let c = e.get().to_owned();
+                    e.insert(c + 1);
+                }
+                Entry::Vacant(e) => {
+                    e.insert(1);
+                }
             }
         }
         for n in neighbor_index.iter() {
-            if let Entry::Occupied(_) = all_hist.entry(*n) {
-                let c = all_hist.get(n).unwrap().to_owned();
-                all_hist.insert(*n, c + 1);
-            } else {
-                all_hist.insert(*n, 1);
+            match all_hist.entry(*n) {
+                Entry::Occupied(mut e) => {
+                    let c = e.get().to_owned();
+                    e.insert(c + 1);
+                }
+                Entry::Vacant(e) => {
+                    e.insert(1);
+                }
             }
         }
     }
@@ -2650,8 +2659,8 @@ where
         for j in 0..peers[i].config.initial_neighbors.len() {
             let initial = &peers[i].config.initial_neighbors[j];
             if initial.allowed < 0 {
-                if let Entry::Vacant(_) = initial_allowed.entry(nk.to_owned()) {
-                    initial_allowed.insert(nk.clone(), vec![]);
+                if let Entry::Vacant(e) = initial_allowed.entry(nk.to_owned()) {
+                    e.insert(vec![]);
                 }
                 initial_allowed
                     .get_mut(&nk)
@@ -2659,8 +2668,8 @@ where
                     .push(initial.addr.clone());
             }
             if initial.denied < 0 {
-                if let Entry::Vacant(_) = initial_denied.entry(nk.to_owned()) {
-                    initial_denied.insert(nk.clone(), vec![]);
+                if let Entry::Vacant(e) = initial_denied.entry(nk.to_owned()) {
+                    e.insert(vec![]);
                 }
                 initial_denied
                     .get_mut(&nk)
