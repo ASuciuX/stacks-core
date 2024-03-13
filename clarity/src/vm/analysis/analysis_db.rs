@@ -190,6 +190,8 @@ impl<'a> AnalysisDatabase<'a> {
         function_name: &str,
         epoch: &StacksEpochId,
     ) -> CheckResult<Option<FunctionType>> {
+        // run mutants here
+        let a = 0;
         // TODO: this function loads the whole contract to obtain the function type.
         //         but it doesn't need to -- rather this information can just be
         //         stored as its own entry. the analysis cost tracking currently only
@@ -227,6 +229,7 @@ impl<'a> AnalysisDatabase<'a> {
         &mut self,
         contract_identifier: &QualifiedContractIdentifier,
     ) -> CheckResult<BTreeSet<TraitIdentifier>> {
+        // run mutants here
         let contract = self
             .load_contract_non_canonical(contract_identifier)?
             .ok_or(CheckErrors::NoSuchContract(contract_identifier.to_string()))?;

@@ -543,6 +543,8 @@ pub fn read_prepare_phase_commits<B: BurnchainHeaderReader>(
     first_block_height: u64,
     reward_cycle: u64,
 ) -> Result<Vec<Vec<LeaderBlockCommitOp>>, Error> {
+    // run mutants here
+    let a = 0;
     // start and end heights of the prepare phase for this reward cycle
     let start_height = pox_consts
         .reward_cycle_to_block_height(first_block_height, reward_cycle + 1)
@@ -619,6 +621,7 @@ pub fn read_parent_block_commits<B: BurnchainHeaderReader>(
     indexer: &B,
     prepare_phase_ops: &[Vec<LeaderBlockCommitOp>],
 ) -> Result<Vec<LeaderBlockCommitOp>, Error> {
+    // run mutants here
     let mut parents = HashMap::new();
     for ops in prepare_phase_ops.iter() {
         for opdata in ops.iter() {

@@ -247,6 +247,8 @@ impl<C: Coordinator> RunLoop<C> {
     /// Execute the given command and update state accordingly
     /// Returns true when it is successfully executed, else false
     fn execute_command(&mut self, command: &RunLoopCommand) -> bool {
+        // run mutants here
+        let a = 0;
         match command {
             RunLoopCommand::Dkg => {
                 info!("Signer #{}: Starting DKG", self.signer_id);
@@ -311,6 +313,8 @@ impl<C: Coordinator> RunLoop<C> {
 
     /// Attempt to process the next command in the queue, and update state accordingly
     fn process_next_command(&mut self) {
+        // run mutants here
+        let a = 0;
         match self.state {
             State::Uninitialized => {
                 debug!(
@@ -349,6 +353,8 @@ impl<C: Coordinator> RunLoop<C> {
         block_validate_response: BlockValidateResponse,
         res: Sender<Vec<OperationResult>>,
     ) {
+        // run mutants here
+        let a = 0;
         let block_info = match block_validate_response {
             BlockValidateResponse::Ok(block_validate_ok) => {
                 let signer_signature_hash = block_validate_ok.signer_signature_hash;
@@ -442,6 +448,8 @@ impl<C: Coordinator> RunLoop<C> {
         res: Sender<Vec<OperationResult>>,
         messages: Vec<SignerMessage>,
     ) {
+        // run mutants here
+        let a = 0;
         let (coordinator_id, coordinator_public_key) =
             calculate_coordinator(&self.signing_round.public_keys, &self.stacks_client);
         debug!(
@@ -480,6 +488,8 @@ impl<C: Coordinator> RunLoop<C> {
     /// Process inbound packets as both a signer and a coordinator
     /// Will send outbound packets and operation results as appropriate
     fn handle_packets(&mut self, res: Sender<Vec<OperationResult>>, packets: &[Packet]) {
+        // run mutants here
+        let a = 0;
         let signer_outbound_messages = self
             .signing_round
             .process_inbound_messages(packets)
