@@ -14,8 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-use hashbrown::hash_map::Entry;
-use hashbrown::{HashMap, HashSet};
+use hashbrown::hash_map::{
+    HashMap, {Entry, OccupiedEntry, VacantEntry},
+};
+use hashbrown::HashSet;
+use std::mem;
+
+use std::hash::BuildHasher;
 
 use crate::vm::analysis::AnalysisDatabase;
 use crate::vm::ast::errors::{ParseError, ParseErrors, ParseResult};
@@ -25,6 +30,7 @@ use crate::vm::functions::NativeFunctions;
 use crate::vm::representations::PreSymbolicExpressionType::{
     Atom, AtomValue, FieldIdentifier, List, SugaredFieldIdentifier, TraitReference, Tuple,
 };
+// use std::collections::{HashMap, hash_map::{Entry, OccupiedEntry, VacantEntry}};
 use crate::vm::representations::{
     ClarityName, PreSymbolicExpression, SymbolicExpression, TraitDefinition,
 };
@@ -39,6 +45,51 @@ impl BuildASTPass for TraitsResolver {
         command.run(contract_ast)?;
         Ok(())
     }
+}
+
+pub trait EntryExt<'a, K: 'a, V: 'a, S: 'a>
+where
+    S: BuildHasher,
+    Self: Sized,
+{
+    fn map_occupied(
+        &mut self,
+        f: impl FnOnce(&mut OccupiedEntry<'a, K, V, S>) -> Result<(), ParseErrors>,
+    ) -> Result<&mut Self, ParseErrors>;
+
+    fn map_vacant(
+        &mut self,
+        f: impl FnOnce(&mut VacantEntry<'a, K, V, S>) -> Result<(), ParseErrors>,
+    ) -> Result<&mut Self, ParseErrors>;
+}
+
+impl<'a, K: 'a, V: 'a, S: 'a> EntryExt<'a, K, V, S> for Entry<'a, K, V, S>
+where
+    S: BuildHasher,
+{
+    fn map_occupied(
+        &mut self,
+        f: impl FnOnce(&mut OccupiedEntry<'a, K, V, S>) -> Result<(), ParseErrors>,
+    ) -> Result<&mut Self, ParseErrors> {
+        if let Entry::Occupied(ref mut e) = self {
+            f(e)?;
+        }
+        Ok(self)
+    }
+
+    fn map_vacant(
+        &mut self,
+        f: impl FnOnce(&mut VacantEntry<'a, K, V, S>) -> Result<(), ParseErrors>,
+    ) -> Result<&mut Self, ParseErrors> {
+        if let Entry::Vacant(ref mut e) = self {
+            f(e)?;
+        }
+        Ok(self)
+    }
+}
+
+fn print_type_of<T>(_: &T) {
+    println!("{:?}", std::any::type_name::<T>())
 }
 
 impl TraitsResolver {
@@ -64,21 +115,45 @@ impl TraitsResolver {
                     match (&args[0].pre_expr, &args[1].pre_expr) {
                         (Atom(trait_name), List(trait_definition)) => {
                             // Check for collisions
-                            match contract_ast.referenced_traits.entry(trait_name.to_owned()) {
-                                Entry::Occupied(_) => {
+                            // match contract_ast.referenced_traits.entry(trait_name.to_owned()) {
+                            //     Entry::Occupied(e) => {
+                            //         return Err(ParseErrors::NameAlreadyUsed(
+                            //             trait_name.to_string(),
+                            //         )
+                            //         .into());
+                            //     }
+                            //     Entry::Vacant(e) => {
+                            //         // Traverse and probe for generics nested in the trait definition
+                            //         self.probe_for_generics(
+                            //             trait_definition.iter(),
+                            //             &mut referenced_traits,
+                            //             true,
+                            //         )?;
+                            //         let trait_id = TraitIdentifier {
+                            //             name: trait_name.clone(),
+                            //             contract_identifier: contract_ast
+                            //                 .contract_identifier
+                            //                 .clone(),
+                            //         };
+                            //         e.insert(TraitDefinition::Defined(trait_id));
+                            //     }
+                            // }
+                            contract_ast
+                                .referenced_traits
+                                .entry(trait_name.to_owned())
+                                .map_occupied(|_| {
                                     return Err(ParseErrors::NameAlreadyUsed(
                                         trait_name.to_string(),
                                     )
                                     .into());
-                                }
-                                Entry::Vacant(e) => {
-                                    // Traverse and probe for generics nested in the trait definition
+                                })?
+                                .map_vacant(|e| {
+                                    print_type_of(&e);
                                     self.probe_for_generics(
                                         trait_definition.iter(),
                                         &mut referenced_traits,
                                         true,
-                                    )?;
-
+                                    );
                                     let trait_id = TraitIdentifier {
                                         name: trait_name.clone(),
                                         contract_identifier: contract_ast
@@ -86,8 +161,10 @@ impl TraitsResolver {
                                             .clone(),
                                     };
                                     e.insert(TraitDefinition::Defined(trait_id));
-                                }
-                            }
+                                    Ok(())
+                                });
+                            //e type before in vacant call: VacantEntry<'static, ClarityName, TraitDefinition, BuildHasherDefault<AHasher>, Global>
+                            //e type with trait impl in vacant call: hashbrown::hash_map::VacantEntry<'_, ClarityName, TraitDefinition>
                         }
                         _ => return Err(ParseErrors::DefineTraitBadSignature.into()),
                     }
