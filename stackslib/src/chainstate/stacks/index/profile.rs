@@ -90,6 +90,15 @@ pub struct TrieBenchmark {
 
     /// Number of elapsed() errors encountered (i.e. due to clock skew)
     time_errors: u64,
+
+    //new measure
+    get_block_id_start_time: SystemTime,
+    get_block_id_total: u128,
+    get_block_id_time_to_ns: u128,
+
+    reopen_block_start_time: SystemTime,
+    reopen_block_total: u128,
+    reopen_block_time_to_ns: u128,
 }
 
 #[cfg(test)]
@@ -132,6 +141,15 @@ impl TrieBenchmark {
             marf_walk_find_backptr_node_start_time: SystemTime::now(),
 
             time_errors: 0,
+
+            //new measure
+            get_block_id_start_time: SystemTime::now(),
+            get_block_id_total: 0,
+            get_block_id_time_to_ns: 0,
+
+            reopen_block_start_time: SystemTime::now(),
+            reopen_block_time_to_ns: 0,
+            reopen_block_total: 0,
         }
     }
 
@@ -165,6 +183,12 @@ impl TrieBenchmark {
         self.total_marf_walk_find_backptr_node_time_ns = 0;
 
         self.time_errors = 0;
+
+        //new measure
+        self.get_block_id_total = 0;
+        self.get_block_id_time_to_ns = 0;
+        self.reopen_block_total = 0;
+        self.reopen_block_time_to_ns = 0;
     }
 
     /// Combine two benchmarks by adding up all timestamps and counts
@@ -201,7 +225,49 @@ impl TrieBenchmark {
         self.total_marf_walk_find_backptr_node_time_ns +=
             other.total_marf_walk_find_backptr_node_time_ns;
 
+        //new measure
+        self.get_block_id_total += other.get_block_id_total;
+        self.get_block_id_time_to_ns += other.get_block_id_time_to_ns;
+
+        self.reopen_block_time_to_ns += other.reopen_block_time_to_ns;
+        self.reopen_block_total += other.reopen_block_total;
+
         self.time_errors += other.time_errors;
+    }
+
+    pub fn reopen_block_start(&mut self) {
+        self.reopen_block_start_time = SystemTime::now();
+    }
+
+    pub fn reopen_block_finish(&mut self) -> u128 {
+        if let Ok(elapsed) = self.reopen_block_start_time.elapsed() {
+            let total_time = elapsed.as_nanos();
+
+            self.reopen_block_total += 1;
+            self.reopen_block_time_to_ns += total_time;
+            return total_time;
+        } else {
+            return 0;
+        }
+    }
+
+    pub fn get_block_id_start(&mut self) {
+        self.get_block_id_start_time = SystemTime::now();
+    }
+
+    pub fn get_block_id_finish(&mut self) -> u128 {
+        println!("debug this {:?}", self.get_block_id_start_time.elapsed());
+        if let Ok(elapsed) = self.get_block_id_start_time.elapsed() {
+            let total_time: u128 = elapsed.as_nanos();
+            let timeReturned: u128 = elapsed.as_nanos();
+
+            self.get_block_id_total += 1;
+            self.get_block_id_time_to_ns += total_time;
+
+            timeReturned
+        } else {
+            0
+        }
     }
 
     /// Begin measuring a call to read_nodetype()
@@ -450,6 +516,15 @@ impl TrieBenchmark {
             marf_walk_find_backptr_node_start_time: SystemTime::now(),
 
             time_errors: 0,
+
+            //new measure
+            get_block_id_start_time: SystemTime::now(),
+            get_block_id_total: 0,
+            get_block_id_time_to_ns: 0,
+
+            reopen_block_start_time: SystemTime::now(),
+            reopen_block_time_to_ns: 0,
+            reopen_block_total: 0,
         }
     }
 
@@ -508,4 +583,39 @@ impl TrieBenchmark {
     pub fn marf_find_backptr_node_start(&mut self) {}
 
     pub fn marf_find_backptr_node_finish(&mut self) {}
+
+    pub fn reopen_block_start(&mut self) {
+        self.reopen_block_start_time = SystemTime::now();
+    }
+
+    pub fn reopen_block_finish(&mut self) -> u128 {
+        if let Ok(elapsed) = self.reopen_block_start_time.elapsed() {
+            let total_time = elapsed.as_nanos();
+
+            self.reopen_block_total += 1;
+            self.reopen_block_time_to_ns += total_time;
+            return total_time;
+        } else {
+            return 0;
+        }
+    }
+
+    pub fn get_block_id_start(&mut self) {
+        self.get_block_id_start_time = SystemTime::now();
+    }
+
+    pub fn get_block_id_finish(&mut self) -> u128 {
+        // println!("debug this {:?}",self.get_block_id_start_time.elapsed());
+        if let Ok(elapsed) = self.get_block_id_start_time.elapsed() {
+            let total_time: u128 = elapsed.as_nanos();
+            let timeReturned: u128 = elapsed.as_nanos();
+
+            self.get_block_id_total += 1;
+            self.get_block_id_time_to_ns += total_time;
+
+            timeReturned
+        } else {
+            0
+        }
+    }
 }

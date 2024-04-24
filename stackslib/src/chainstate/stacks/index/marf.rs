@@ -1128,8 +1128,16 @@ impl<T: MarfTrieId> MARF<T> {
         block_hash: &T,
         key: &str,
     ) -> Result<Option<MARFValue>, Error> {
+        storage.bench_mut().get_block_id_start();
         let (cur_block_hash, cur_block_id) = storage.get_cur_block_and_id();
-
+        let end_time: &mut crate::chainstate::stacks::index::profile::TrieBenchmark =
+            storage.bench_mut();
+        let end_time: u128 = end_time.get_block_id_finish();
+        println!(
+            "for cur_block_id {:?} it tooked: {:?} ns",
+            Some(cur_block_id),
+            end_time
+        );
         let path = TriePath::from_key(key);
 
         let result = MARF::get_path(storage, block_hash, &path).or_else(|e| match e {
@@ -1138,6 +1146,7 @@ impl<T: MarfTrieId> MARF<T> {
         });
 
         // restore
+        storage.bench_mut().reopen_block_start();
         storage
             .open_block_maybe_id(&cur_block_hash, cur_block_id)
             .map_err(|e| {
@@ -1148,7 +1157,11 @@ impl<T: MarfTrieId> MARF<T> {
                 warn!("Result of failed key lookup '{}': {:?}", key, &result);
                 e
             })?;
-
+        let end_reopen: u128 = storage.bench_mut().reopen_block_finish();
+        println!(
+            "for cur_block_hash {:?} it tooked to reopen: {:?} ns",
+            cur_block_hash, end_reopen
+        );
         result.map(|option_result| option_result.map(|leaf| leaf.data))
     }
 
