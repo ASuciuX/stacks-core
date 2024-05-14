@@ -371,7 +371,6 @@ impl SignerRunLoop<Vec<OperationResult>, RunLoopCommand> for RunLoop {
         if let Some(cmd) = cmd {
             self.commands.push_back(cmd);
         }
-
         if self.state == State::Uninitialized {
             if let Err(e) = self.initialize_runloop() {
                 error!("Failed to initialize signer runloop: {e}.");
@@ -391,12 +390,11 @@ impl SignerRunLoop<Vec<OperationResult>, RunLoopCommand> for RunLoop {
             .as_ref()
             .expect("FATAL: cannot be an initialized signer with no reward cycle info.")
             .reward_cycle;
-
         if self.state == State::NoRegisteredSigners {
             let next_reward_cycle = current_reward_cycle.saturating_add(1);
             if let Some(event) = event {
                 info!("Signer is not registered for the current reward cycle ({current_reward_cycle}). Reward set of upcoming reward cycle ({next_reward_cycle}) is not yet determined. Waiting for confirmation...");
-                warn!("Ignoring event: {event:?}");
+                warn!("Ignoring event for 397NoRegisteredSigners: {event:?}");
             }
             return None;
         }
@@ -424,23 +422,26 @@ impl SignerRunLoop<Vec<OperationResult>, RunLoopCommand> for RunLoop {
                     error!("{signer}: failed to refresh DKG: {e}");
                 }
             }
-
+            
+            // TODO:Do we want to print the message only once or each block height?
+            // if only once, where is dkg refresh finalized triggered so that the signer will know its state
             // Has been determined and we are still not registered
             if self.state == State::NoRegisteredSigners {
                 let next_reward_cycle = current_reward_cycle.saturating_add(1);
                 if let Some(event) = event {
-                    info!("Signer is not registered for the current reward cycle ({current_reward_cycle}) or the upcoming reward cycle ({next_reward_cycle}). Nothing to do");
-                    warn!("Ignoring event: {event:?}");
+                    info!("Signer is not registered for the upcoming reward cycle ({next_reward_cycle}). Nothing to do");
+                    // info!("Signer is not registered for the current reward cycle ({current_reward_cycle}) or the upcoming reward cycle ({next_reward_cycle}). Nothing to do");
+                    warn!("Ignoring event NoRegisteredSigners: {event:?}");
                 }
                 return None;
             }
-
             // Has been determined and we are registered
-            if self.state == State::RegisteredSigners {
+            else if self.state == State::RegisteredSigners {
                 let next_reward_cycle = current_reward_cycle.saturating_add(1);
                 if let Some(event) = event {
-                    info!("Signer is (not) registered for the current reward cycle ({current_reward_cycle}) and the signer is registered for the upcoming reward cycle ({next_reward_cycle}). Nothing to do");
-                    warn!("Ignoring event: {event:?}");
+                    info!("Signer is registered for the upcoming reward cycle ({next_reward_cycle}). Nothing to do");
+                    // info!("Signer is (not) registered for the current reward cycle ({current_reward_cycle}) and the signer is registered for the upcoming reward cycle ({next_reward_cycle}). Nothing to do");
+                    warn!("Ignoring event RegisteredSigners: {event:?}");
                 }
                 return None;
             }
