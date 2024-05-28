@@ -1034,7 +1034,7 @@ impl StacksChainState {
     pub fn get_db_version(conn: &DBConn) -> Result<String, db_error> {
         let option_version = query_row::<String, _>(conn, "SELECT sqlite_version()", NO_PARAMS)?;
         if let Some(version) = option_version {
-            return Ok(version);    
+            return Ok(version);
         }
         Ok("no version".into())
     }
@@ -1062,9 +1062,11 @@ impl StacksChainState {
             );
             return Err(Error::InvalidChainstateDB);
         }
-        
-        println!("This is the sqlite version: {:#?}", Self::get_db_version(tx));
-        
+
+        println!(
+            "This is the sqlite version: {:#?}",
+            Self::get_db_version(tx)
+        );
 
         if db_config.version != CHAINSTATE_VERSION {
             while db_config.version != CHAINSTATE_VERSION {
