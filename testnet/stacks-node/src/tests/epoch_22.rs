@@ -130,8 +130,8 @@ fn disable_pox() {
     conf.node.wait_time_for_blocks = 1_000;
     conf.miner.wait_for_block_download = false;
 
-    conf.miner.first_attempt_time_ms = i64::max_value() as u64;
-    conf.miner.subsequent_attempt_time_ms = i64::max_value() as u64;
+    conf.miner.first_attempt_time_ms = i64::MAX as u64;
+    conf.miner.subsequent_attempt_time_ms = i64::MAX as u64;
 
     test_observer::spawn();
 
@@ -160,10 +160,11 @@ fn disable_pox() {
         4 * prepare_phase_len / 5,
         5,
         15,
-        u64::max_value() - 2,
-        u64::max_value() - 1,
+        u64::MAX - 2,
+        u64::MAX - 1,
         v1_unlock_height as u32,
         epoch_2_2 as u32 + 1,
+        u32::MAX,
         u32::MAX,
     );
     burnchain_config.pox_constants = pox_constants.clone();
@@ -662,8 +663,8 @@ fn pox_2_unlock_all() {
     conf.node.wait_time_for_blocks = 1_000;
     conf.miner.wait_for_block_download = false;
 
-    conf.miner.first_attempt_time_ms = i64::max_value() as u64;
-    conf.miner.subsequent_attempt_time_ms = i64::max_value() as u64;
+    conf.miner.first_attempt_time_ms = i64::MAX as u64;
+    conf.miner.subsequent_attempt_time_ms = i64::MAX as u64;
 
     test_observer::spawn();
 
@@ -692,10 +693,11 @@ fn pox_2_unlock_all() {
         4 * prepare_phase_len / 5,
         5,
         15,
-        u64::max_value() - 2,
-        u64::max_value() - 1,
+        u64::MAX - 2,
+        u64::MAX - 1,
         v1_unlock_height as u32,
         epoch_2_2 as u32 + 1,
+        u32::MAX,
         u32::MAX,
     );
     burnchain_config.pox_constants = pox_constants.clone();
@@ -1391,6 +1393,7 @@ fn test_pox_reorg_one_flap() {
             (1700 * reward_cycle_len).into(),
             v1_unlock_height,
             v2_unlock_height.try_into().unwrap(),
+            u32::MAX,
             u32::MAX,
         );
         burnchain_config.pox_constants = pox_constants.clone();

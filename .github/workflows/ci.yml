@@ -2,6 +2,9 @@
 name: CI
 
 on:
+  merge_group:
+    types:
+      - checks_requested
   push:
     branches:
       - master
@@ -21,16 +24,6 @@ on:
       - reopened
       - synchronize
       - ready_for_review
-    paths-ignore:
-      - "**.md"
-      - "**.yml"
-    ## might be better to use inclusive v exclusive paths here, ex:
-    # paths:
-    #   - "**.rs"
-    #   - "**.clar"
-  pull_request_review:
-    types:
-      - submitted
 
 defaults:
   run:
@@ -52,15 +45,6 @@ jobs:
   ##     - PR review comment
   ##     - PR change is requested
   rustfmt:
-    if: |
-      !(
-        github.event_name == 'pull_request_review' && 
-        github.event.action == 'submitted' && 
-        (
-          github.event.review.state == 'commented' ||
-          github.event.review.state == 'changes_requested'
-        )
-      )
     name: Rust Format
     runs-on: ubuntu-latest
     steps:
@@ -77,18 +61,18 @@ jobs:
 
       - name: Rustfmt
         id: rustfmt
-        uses: actions-rust-lang/rustfmt@2d1d4e9f72379428552fa1def0b898733fb8472d # v1.1.0
+        uses: stacks-network/actions/rustfmt@main
+        with:
+          alias: "fmt-stacks"
 
   ######################################################################################
   ## Create a tagged github release
   ##
   ## Runs when the following is true:
   ##  - tag is provided
-  ##  - workflow is building default branch (master)
   create-release:
     if: |
-      inputs.tag != '' &&
-      github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+      inputs.tag != ''
     name: Create Release
     needs:
       - rustfmt
@@ -101,22 +85,9 @@ jobs:
   ##
   ## Runs when:
   ##   - tag is not provided
-  ##   and the following are not true:
-  ##     - PR review submitted (not approved)
-  ##     and any of:
-  ##       - PR review comment
-  ##       - PR change is requested
   docker-image:
     if: |
-      inputs.tag == '' &&
-      !(
-        github.event_name == 'pull_request_review' &&
-        github.event.action == 'submitted' &&
-        (
-          github.event.review.state == 'commented' ||
-          github.event.review.state == 'changes_requested'
-        )
-      )
+      inputs.tag == ''
     name: Docker Image (Source)
     uses: ./.github/workflows/image-build-source.yml
     needs:
@@ -130,7 +101,6 @@ jobs:
   ##   or:
   ##     - no tag provided
   ##       and any of:
-  ##         - PR is approved (any approval will trigger)
   ##         - this workflow is called manually
   ##         - PR is opened
   ##         - commit to either (development, master) branch
@@ -138,13 +108,9 @@ jobs:
     if: |
       inputs.tag != '' || (
         inputs.tag == '' && (
-          (
-            github.event_name == 'pull_request_review' &&
-            github.event.action == 'submitted' &&
-            github.event.review.state == 'approved'
-          ) ||
           github.event_name == 'workflow_dispatch' ||
           github.event_name == 'pull_request' ||
+          github.event_name == 'merge_group' ||
           (
             contains('
               refs/heads/master
@@ -164,16 +130,28 @@ jobs:
   ##
   ## Runs when:
   ##   - tag is provided
-  ##   either or of the following:
-  ##     - tag is not provided
-  ##     - PR is approved
+  ##   or:
+  ##     - no tag provided
+  ##       and any of:
+  ##         - this workflow is called manually
+  ##         - PR is opened
+  ##         - PR added to merge queue
+  ##         - commit to either (development, next, master) branch
   stacks-core-tests:
     if: |
       inputs.tag != '' || (
-        inputs.tag == '' || (
-          github.event_name == 'pull_request_review' &&
-          github.event.action == 'submitted' &&
-          github.event.review.state == 'approved'
+        inputs.tag == '' && (
+          github.event_name == 'workflow_dispatch' ||
+          github.event_name == 'pull_request' ||
+          github.event_name == 'merge_group' ||
+          (
+            contains('
+              refs/heads/master
+              refs/heads/develop
+              refs/heads/next
+            ', github.event.pull_request.head.ref) &&
+            github.event_name == 'push'
+          )
         )
       )
     name: Stacks Core Tests
@@ -185,10 +163,18 @@ jobs:
   bitcoin-tests:
     if: |
       inputs.tag != '' || (
-        inputs.tag == '' || (
-          github.event_name == 'pull_request_review' &&
-          github.event.action == 'submitted' &&
-          github.event.review.state == 'approved'
+        inputs.tag == '' && (
+          github.event_name == 'workflow_dispatch' ||
+          github.event_name == 'pull_request' ||
+          github.event_name == 'merge_group' ||
+          (
+            contains('
+              refs/heads/master
+              refs/heads/develop
+              refs/heads/next
+            ', github.event.pull_request.head.ref) &&
+            github.event_name == 'push'
+          )
         )
       )
     name: Bitcoin Tests
@@ -224,3 +210,4 @@ jobs:
       - rustfmt
       - create-cache
     uses: ./.github/workflows/slow-tests.yml
+
