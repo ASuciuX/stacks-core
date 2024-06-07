@@ -82,6 +82,7 @@ pub struct RPCPeerInfoData {
     pub unanchored_tip: Option<StacksBlockId>,
     pub unanchored_seq: Option<u16>,
     pub exit_at_block_height: Option<u64>,
+    pub is_fully_synced: bool,
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub node_public_key: Option<StacksPublicKeyBuffer>,
@@ -130,6 +131,7 @@ impl RPCPeerInfoData {
         let public_key_buf = StacksPublicKeyBuffer::from_public_key(&public_key);
         let public_key_hash = Hash160::from_node_public_key(&public_key);
         let stackerdb_contract_ids = network.get_local_peer().stacker_dbs.clone();
+        let is_fully_synced = !network.ibd;
 
         RPCPeerInfoData {
             peer_version: network.burnchain.peer_version,
@@ -149,6 +151,7 @@ impl RPCPeerInfoData {
             genesis_chainstate_hash: genesis_chainstate_hash.clone(),
             node_public_key: Some(public_key_buf),
             node_public_key_hash: Some(public_key_hash),
+            is_fully_synced,
             affirmations: Some(RPCAffirmationData {
                 heaviest: network.heaviest_affirmation_map.clone(),
                 stacks_tip: network.stacks_tip_affirmation_map.clone(),

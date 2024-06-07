@@ -368,6 +368,7 @@ pub(crate) mod tests {
         let stackerdb_contract_ids =
             vec![boot_code_id("fake", false), boot_code_id("fake_2", false)];
         let peer_info = RPCPeerInfoData {
+            is_fully_synced: false,
             peer_version: thread_rng().next_u32(),
             pox_consensus: pox_consensus_hash.unwrap_or(generate_random_consensus_hash()),
             burn_block_height: burn_block_height.unwrap_or(thread_rng().next_u64()),

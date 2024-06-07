@@ -264,6 +264,7 @@ pub struct PeerNetwork {
     pub burnchain_tip: BlockSnapshot,
     pub chain_view_stable_consensus_hash: ConsensusHash,
     pub ast_rules: ASTRules,
+    pub ibd: bool,
 
     /// Current Stacks tip -- the highest block's consensus hash, block hash, and height
     pub stacks_tip: (ConsensusHash, BlockHeaderHash, u64),
@@ -471,6 +472,7 @@ impl PeerNetwork {
             peer_version: peer_version,
             epochs: epochs,
 
+            ibd: true,
             local_peer: local_peer,
             chain_view: chain_view,
             chain_view_stable_consensus_hash: ConsensusHash([0u8; 20]),
@@ -6137,6 +6139,8 @@ impl PeerNetwork {
             }
         }?;
 
+        self.ibd = ibd;
+        
         let p2p_poll_state = poll_states
             .remove(&self.p2p_network_handle)
             .expect("BUG: no poll state for p2p network handle");
