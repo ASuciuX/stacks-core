@@ -839,6 +839,9 @@ impl RelayerThread {
             return None;
         }
 
+        //modify function to run a mutant
+        let a = 0;
+
         match self.globals.get_leader_key_registration_state() {
             // do we need a VRF key registration?
             LeaderKeyRegistrationState::Inactive => {
