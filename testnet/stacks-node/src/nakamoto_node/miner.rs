@@ -620,7 +620,7 @@ impl BlockMinerThread {
         let (headers_conn, staging_tx) = chain_state.headers_conn_and_staging_tx_begin()?;
         NakamotoChainState::accept_block(
             &chainstate_config,
-            block,
+            &block,
             &mut sortition_handle,
             &staging_tx,
             headers_conn,

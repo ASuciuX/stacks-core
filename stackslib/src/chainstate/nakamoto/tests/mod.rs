@@ -1075,7 +1075,7 @@ pub fn test_load_store_update_nakamoto_blocks() {
             300,
         )
         .unwrap();
-        NakamotoChainState::store_block(&staging_tx, nakamoto_block.clone(), false).unwrap();
+        NakamotoChainState::store_block(&staging_tx, &nakamoto_block, false).unwrap();
 
         // tenure has one block
         assert_eq!(
@@ -1108,7 +1108,7 @@ pub fn test_load_store_update_nakamoto_blocks() {
         )
         .unwrap();
 
-        NakamotoChainState::store_block(&staging_tx, nakamoto_block_2.clone(), false).unwrap();
+        NakamotoChainState::store_block(&staging_tx, &nakamoto_block_2, false).unwrap();
 
         // tenure has two blocks
         assert_eq!(
@@ -1129,7 +1129,7 @@ pub fn test_load_store_update_nakamoto_blocks() {
         );
 
         // store, but do not process, a block
-        NakamotoChainState::store_block(&staging_tx, nakamoto_block_3.clone(), false).unwrap();
+        NakamotoChainState::store_block(&staging_tx, &nakamoto_block_3, false).unwrap();
 
         staging_tx.commit().unwrap();
         tx.commit().unwrap();
