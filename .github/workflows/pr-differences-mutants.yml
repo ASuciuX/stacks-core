@@ -9,6 +9,11 @@ on:
       - ready_for_review
     paths:
       - '**.rs'
+  workflow_dispatch:
+    inputs:
+      automated:
+        description: "Set to 'false' to ignore mutants limit."
+        required: true
 
 concurrency:
   group: pr-differences-${{ github.head_ref || github.ref || github.run_id }}
@@ -33,7 +38,9 @@ jobs:
 
     steps:
       - id: check_packages_and_shards
-        uses: stacks-network/actions/stacks-core/mutation-testing/check-packages-and-shards@main
+        uses: stacks-network/actions/stacks-core/mutation-testing/check-packages-and-shards@feat/mutation-testing
+        with:
+          automated: ${{ inputs.automated }}
 
   # Mutation testing - Execute on PR on small packages that have functions modified (normal run, no shards)
   pr-differences-mutants-small-normal:
@@ -49,7 +56,7 @@ jobs:
 
     steps:
       - name: Run mutants on diffs
-        uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@main
+        uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@feat/mutation-testing
         with:
           package: 'small'
 
@@ -72,7 +79,7 @@ jobs:
 
     steps:
       - name: Run mutants on diffs
-        uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@main
+        uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@feat/mutation-testing
         with:
           shard: ${{ matrix.shard }}
           package: 'small'
@@ -94,7 +101,7 @@ jobs:
         env:
           BITCOIND_TEST: 1
           RUST_BACKTRACE: full
-        uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@main
+        uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@feat/mutation-testing
         with:
           package: 'stackslib'
 
@@ -120,7 +127,7 @@ jobs:
         env:
           BITCOIND_TEST: 1
           RUST_BACKTRACE: full
-        uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@main
+        uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@feat/mutation-testing
         with:
           shard: ${{ matrix.shard }}
           package: 'stackslib'
@@ -142,7 +149,7 @@ jobs:
         env:
           BITCOIND_TEST: 1
           RUST_BACKTRACE: full
-        uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@main
+        uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@feat/mutation-testing
         with:
           package: 'stacks-node'
 
@@ -168,7 +175,7 @@ jobs:
         env:
           BITCOIND_TEST: 1
           RUST_BACKTRACE: full
-        uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@main
+        uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@feat/mutation-testing
         with:
           shard: ${{ matrix.shard }}
           package: 'stacks-node'
@@ -186,7 +193,7 @@ jobs:
 
     steps:
       - name: Run mutants on diffs
-        uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@main
+        uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@feat/mutation-testing
         with:
           package: 'stacks-signer'
 
@@ -211,7 +218,7 @@ jobs:
 
     steps:
       - name: Output Mutants
-        uses: stacks-network/actions/stacks-core/mutation-testing/output-pr-mutants@main
+        uses: stacks-network/actions/stacks-core/mutation-testing/output-pr-mutants@feat/mutation-testing
         with:
           stackslib_package: ${{ needs.check-big-packages-and-shards.outputs.run_stackslib }}
           shards_for_stackslib_package: ${{ needs.check-big-packages-and-shards.outputs.stackslib_with_shards }}
