@@ -40,6 +40,7 @@ jobs:
       run_small_packages: ${{ steps.check_packages_and_shards.outputs.run_small_packages }}
       small_packages_with_shards: ${{ steps.check_packages_and_shards.outputs.small_packages_with_shards }}
       run_stacks_signer: ${{ steps.check_packages_and_shards.outputs.run_stacks_signer }}
+      too_many_mutants: ${{ steps.check_packages_and_shards.outputs.too_many_mutants }}
 
     steps:
       - id: check_packages_and_shards
@@ -232,3 +233,4 @@ jobs:
           small_packages: ${{ needs.check-big-packages-and-shards.outputs.run_small_packages }}
           shards_for_small_packages: ${{ needs.check-big-packages-and-shards.outputs.small_packages_with_shards }}
           stacks_signer: ${{ needs.check-big-packages-and-shards.outputs.run_stacks_signer }}
+          too_many_mutants: ${{ needs.check-big-packages-and-shards.outputs.too_many_mutants }}
