@@ -11,9 +11,14 @@ on:
       - '**.rs'
   workflow_dispatch:
     inputs:
-      automated:
-        description: "Set to 'false' to ignore mutants limit."
-        required: true
+      ignore_timeout:
+        description: "Ignore mutants timeout limit"
+        required: false
+        type: choice
+        options:
+          - true
+          - false
+        default: 'true'
 
 concurrency:
   group: pr-differences-${{ github.head_ref || github.ref || github.run_id }}
@@ -40,7 +45,7 @@ jobs:
       - id: check_packages_and_shards
         uses: stacks-network/actions/stacks-core/mutation-testing/check-packages-and-shards@feat/mutation-testing
         with:
-          automated: ${{ inputs.automated }}
+          ignore_timeout: ${{ inputs.ignore_timeout }}
 
   # Mutation testing - Execute on PR on small packages that have functions modified (normal run, no shards)
   pr-differences-mutants-small-normal:
