@@ -163,6 +163,12 @@ mod tenure;
 mod tenure_downloader;
 mod tenure_downloader_set;
 mod tenure_downloader_unconfirmed;
+mod tenure_downloader_copy;
+mod tenure_downloader_set_copy;
+mod tenure_downloader_unconfirmed_copy;
+mod tenure_downloader_opy;
+mod tenure_downloader_set_opy;
+mod tenure_downloader_unconfirmed_opy;
 
 pub use crate::net::download::nakamoto::download_state_machine::{
     NakamotoDownloadState, NakamotoDownloadStateMachine,
