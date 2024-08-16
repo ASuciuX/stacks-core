@@ -26,11 +26,29 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  check-right-permissions:
+    name: Check Right Permissions
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Right Permissions To Trigger This
+        id: check_right_permissions
+        uses: stacks-network/actions/team-membership@feat/mutation-testing
+        with:
+          username: ${{ github.actor }}
+          team: 'Blockchain Team'
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Fail if the user does not have the right permissions
+        if: ${{ inputs.ignore_timeout == true && steps.check_right_permissions.outputs.is_team_member != 'true' }}
+        run: exit 1
+
+
   # Check and output whether to run big (`stacks-node`/`stackslib`) or small (others) packages with or without shards
   check-big-packages-and-shards:
     name: Check Packages and Shards
-
     runs-on: ubuntu-latest
+    needs: check-right-permissions
 
     outputs:
       run_stackslib: ${{ steps.check_packages_and_shards.outputs.run_stackslib }}
