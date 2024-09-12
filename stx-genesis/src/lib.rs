@@ -98,6 +98,7 @@ struct LinePairReader {
 impl Iterator for LinePairReader {
     type Item = [String; 2];
     fn next(&mut self) -> Option<Self::Item> {
+        // comment to rerun this with mutants
         if let (Some(l1), Some(l2)) = (self.val.next(), self.val.next()) {
             Some([l1.unwrap(), l2.unwrap()])
         } else {
