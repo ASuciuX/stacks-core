@@ -106,6 +106,10 @@ impl Iterator for LinePairReader {
     }
 }
 
+fn this_new_mutant() -> u64 {
+    return 34;
+}
+
 fn read_deflated_zonefiles(
     deflate_bytes: &'static [u8],
 ) -> Box<dyn Iterator<Item = GenesisZonefile>> {
